@@ -49,10 +49,6 @@ contains
             end if
         end subroutine enqueue  
 
-
-
-
-    
 !Desencola un cliente
     subroutine dequeue(this)
         class(queue), intent(inout) :: this
@@ -91,6 +87,13 @@ end module colaClientes
 module listaSimpleEnlazada
     implicit none
     private
+
+!Nodo de la pila que va en la lista
+    type :: string_node
+        character(:), allocatable :: value
+        type(string_node), pointer :: next => null()
+    end type string_node
+
 !Nodo de la lista
     type, public :: node
         private
@@ -99,9 +102,13 @@ module listaSimpleEnlazada
         integer :: NumeroImagenes
         integer :: imagenesPequenas
         integer :: imagenesGrandes
-        character(:), allocatable :: name
+        character(:), allocatable :: nombre
         type(node), pointer :: next => null()
-    end type node
+        type(string_node), pointer :: head => null()
+        contains
+            procedure :: push
+            procedure :: print
+        end type node
 
 !Lista que guardara los nodos
     type, public :: listaSimple
@@ -162,36 +169,87 @@ contains
     end function searchVentanilla
 
 !Busca la primer ventanilla desocupada o libre para asignarle un cliente (True)
-subroutine updateVentanilla(this)
-    class(listaSimple), intent(inout) :: this
+    subroutine updateVentanilla(this)
+        class(listaSimple), intent(inout) :: this
 
-    type(node), pointer :: current
+        type(node), pointer :: current
 
+        if (associated(this%head)) then
+            current => this%head
+            do while (associated(current))
+                if (current%EstadoVentanilla .eqv. .false.) then
+                    current%EstadoVentanilla = .true.
+                    print *, 'El nodo ',current%numeroVentanilla,'  ha sido actualizado'
+                    exit
+                end if
+                current => current%next
+            end do
+        else
+            print *, 'La lista está vacía.'
+        end if
+    end subroutine updateVentanilla
+
+subroutine apilar(this, value, value2)
+    class(node), intent(inout) :: this
+    type(node), pointer :: nodo
+    character(:), allocatable :: value
+    character(:), allocatable :: value2
+    nodo => this%head
     if (associated(this%head)) then
-        current => this%head
-        do while (associated(current))
-            if (current%EstadoVentanilla .eqv. .false.) then
-                current%EstadoVentanilla = .true.
-                print *, 'El nodo ',current%numeroVentanilla,'  ha sido actualizado'
-                exit
+        do while (associated(nodo))
+            if (nodo%nombre .eqv. value) then
+                call nodo%push(value2)
+            else 
+                nodo => nodo%next
             end if
-            current => current%next
         end do
+        call this%push(nodo%numeroVentanilla)
     else
         print *, 'La lista está vacía.'
     end if
-end subroutine updateVentanilla
+end subroutine apilar
 
+
+    end subroutine apilar
+
+
+    subroutine push(self, value)
+        class(node), intent(inout) :: self
+        character(len=*), intent(in) :: value
+
+        type(string_node), pointer :: new
+        allocate(new)
+        new%value = value
+
+        if(.not. associated(self%top)) then
+            self%top => new
+        else
+            new%next => self%top
+            self%top => new
+        end if
+    end subroutine push
 
     subroutine print(this)
         class(listaSimple), intent(in) :: this
         type(node), pointer :: current
+
+        type(string_node), pointer :: aux
+        aux => self%top
 
         current => this%head
 
         do while (associated(current))
             print *, current%numeroVentanilla
             print *, current%EstadoVentanilla
+            print *, current%NumeroImagenes
+            print *, current%imagenesPequenas
+            print *, current%imagenesGrandes
+            print *, current%name
+            do while (associated(aux))
+                print *, aux%value
+                aux => aux%next
+            end do
+
             current => current%next
         end do 
     end subroutine print
@@ -246,8 +304,15 @@ program Proyecto_202200089
                 call list%print()
 
                 !Paso para recibir imagenes en la pila por paso en cada nodo de la ventanilla que este ocupada/atendiendo
-
-                
+                print *, '¡¡¡¡¡¡¡¡¡¡¡'
+                print *, 'Se procede a ver la impresion de la lista con su pila'
+                call list%apilar('Cliente 1', 'Imagen 1')
+                call list%apilar('Cliente 1', 'Imagen 2')
+                call list%apilar('Cliente 2', 'Imagen 1')
+                call list%apilar('Cliente 3', 'Imagen 1')
+                call list%apilar('Cliente 3', 'Imagen 2')
+                call list%apilar('Cliente 3', 'Imagen 3')   
+                call list%print()             
             case (3)
                 exit
         end select

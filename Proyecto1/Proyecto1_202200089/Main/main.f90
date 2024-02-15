@@ -1,87 +1,165 @@
-! Modulo Lista Simple Enlazada=========================================================================================================
-! Este modulo implementa una lista simple enlazada
-module listaSimpleEnlazada
+!Modulo para cola de clientes=========================================================================================================
+! Este modulo implementa una cola de clientes
+module colaClientes
+    implicit none
+    private
+!Nodo de la cola
+    type :: node
+        integer :: id
+        character(:), allocatable :: nombre
+        integer :: imagenesPequenas
+        integer :: imagenesGrandes
+        type(node), pointer :: next => null()
+    end type node
+
+    type, public :: queue
+        private
+        type(node), pointer :: front => null()
+        type(node), pointer :: rear => null()
+    contains
+        procedure :: enqueue
+        procedure :: dequeue
+        procedure :: print
+    end type queue      
+
+contains
+!Encola un cliente
+    subroutine enqueue(this, id, nombre, imagenesPequenas, imagenesGrandes)
+            class(queue), intent(inout) :: this
+            integer, intent(in) :: id
+            character(len=*), intent(in) :: nombre
+            integer, intent(in) :: imagenesPequenas
+            integer, intent(in) :: imagenesGrandes
+
+            type(node), pointer :: temp
+
+            allocate(temp)
+            temp%id = id
+            temp%nombre = nombre
+            temp%imagenesPequenas = imagenesPequenas
+            temp%imagenesGrandes = imagenesGrandes
+            temp%next => null()
+
+            if (.not. associated(this%front)) then
+                this%front => temp
+                this%rear => temp
+            else
+                this%rear%next => temp
+                this%rear => temp
+            end if
+        end subroutine enqueue  
+
+!Desencola un cliente
+    subroutine dequeue(this)
+        class(queue), intent(inout) :: this
+        type(node), pointer :: temp
+
+        if (associated(this%front)) then
+            temp => this%front
+            this%front => this%front%next
+            deallocate(temp)
+        else
+            print *, 'La cola está vacía.'
+        end if
+    end subroutine dequeue  
+!Imprime la cola
+    subroutine print(this)
+        class(queue), intent(in) :: this
+        type(node), pointer :: current
+
+        current => this%front
+
+        do while (associated(current))
+            print *,'Id:', current%id
+            print*, 'Nombre: ', current%nombre
+            print*, "#Imagenes Pequenas", current%imagenesPequenas
+            print*, "#Imagenes Grandes" , current%imagenesGrandes
+            current => current%next
+        end do
+    end subroutine print
+end module colaClientes    
+!=======================================================================================================================================
+
+! Modulo de ventanilla=========================================================================================================
+module listaVentanilla
     implicit none
     private
 
-    type, public ::node
-        private
-        integer :: value
-        type(node), pointer :: next     
-    end type node
+    type :: string_node
+        character(:), allocatable :: value
+        type(string_node), pointer :: next => null()
+    end type string_node
 
-    type, public :: listaSimple
-        private
-        type(node), pointer :: head => null()
+    !nodo de lista de lista
+    type :: node
+        integer :: index
+
+        logical :: EstadoVentanilla = .false.
+        integer :: NumeroImagenes
+        integer :: imagenesPequenas
+        integer :: imagenesGrandes
+
+        character(:), allocatable :: name
+        type(node), pointer :: next => null()
+        type(string_node), pointer :: top => null()
     contains
         procedure :: push
-        procedure :: append
-        procedure :: print
+        procedure :: printer
         procedure :: delete
         procedure :: search
-    end type listaSimple
+    end type node
+
+    !objeto de lista de lista
+    type, public :: List_of_lists
+        type(node), pointer :: head => null()
+    contains
+        procedure :: addNode
+        procedure :: pushToNode
+        procedure :: printList
+        procedure :: deleteNode
+        procedure :: searchNode
+        procedure :: updateNode
+    end type List_of_lists
 
 contains
+subroutine addNode(this, index, name)
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(in) :: index
+    character(len=*), intent(in) :: name
 
-    subroutine push(this, value)
-        class(listaSimple), intent(inout) :: this
-        integer, intent(in) :: value
+    type(node), pointer :: temp, current
+    allocate(temp)
+    temp%index = index
+    temp%name = name
+    temp%next => null()
 
-        type(node), pointer :: temp
-        allocate(temp)
-        temp%value = value
-        temp%next => null()
+    if (.not. associated(this%head)) then
+        this%head => temp
+    else
+        current => this%head
+        do while(associated(current%next))
+            current => current%next
+        end do
+        current%next => temp
+    end if
+end subroutine addNode
 
-        if (.not. associated(this%head)) then
-            this%head => temp
-        else
-            temp%next => this%head
-            this%head => temp
-        end if
 
-        print *, 'pushed ', value
-    end subroutine push
 
-    subroutine append(this, value)
-        class(listaSimple), intent(inout) :: this
-        integer, intent(in) :: value
+    subroutine deleteNode(this, name)
+        class(List_of_lists), intent(inout) :: this
+        character(len=*), intent(in) :: name
 
-        type(node), pointer :: temp
-        type(node), pointer :: current
-
-        allocate(temp)
-        temp%value = value
-        temp%next => null()
-
-        if (.not. associated(this%head)) then
-            this%head => temp
-        else
-            current => this%head
-            do while (associated(current%next))
-                current => current%next
-            end do
-            current%next => temp
-        end if
-
-        print *, 'appended ', value
-    end subroutine append
-
-    subroutine delete(this, value)
-        class(listaSimple), intent(inout) :: this
-        integer, intent(in) :: value
         type(node), pointer :: current, previous
-
         current => this%head
         previous => null()
 
-        ! Buscar el nodo a eliminar
-        do while (associated(current) .and. current%value /= value)
+        do while (associated(current) .and. current%name /= name)
             previous => current
             current => current%next
         end do
 
-        ! Si se encontró el nodo
-        if(associated(current) .and. current%value == value) then
+        if(associated(current) .and. current%name == name) then
             if(associated(previous)) then
                 previous%next => current%next
             else
@@ -89,22 +167,138 @@ contains
             end if
 
             deallocate(current)
-            print *, 'Se eliminó el valor ', value
-        else
-            print *, 'No se encontró el valor ', value
         end if
+    end subroutine deleteNode
 
-    end subroutine delete
-
-    function search(this, value) result(retval)
-        class(listaSimple), intent(in) :: this
-        integer, intent(in) :: value
+    function searchNode(this) result(retval)
+        class(List_of_lists), intent(in) :: this
 
         type(node), pointer :: current
-
         logical :: retval
 
         current => this%head
+        retval = .false.
+
+        do while(associated(current))
+            if(current%EstadoVentanilla .eqv. .false.) then
+                retval = .true.
+                exit
+            end if
+            current => current%next
+        end do
+    end function searchNode
+
+    subroutine updateNode(this) 
+        class(List_of_lists), intent(in) :: this
+
+        type(node), pointer :: current
+
+        current => this%head
+
+
+        do while(associated(current))
+            if(current%EstadoVentanilla .eqv. .false.) then
+                current%EstadoVentanilla = .true.
+                print *, 'El nodo ',current%index,'  ha sido actualizado'
+                exit
+            end if
+            current => current%next
+        end do
+    end subroutine updateNode
+
+
+    subroutine pushToNode(this, name, value)
+        class(List_of_lists), intent(inout) :: this
+        character(len=*), intent(in) :: name, value
+
+        type(node), pointer :: aux
+        aux => this%head
+
+        do while(associated(aux))
+            if(aux%name == name) then
+                call aux%push(value)
+                exit
+            end if
+            aux => aux%next
+        end do
+    end subroutine pushToNode
+
+    subroutine printList(this)
+        class(List_of_lists), intent(in) :: this
+        type(node), pointer :: aux
+
+        aux => this%head
+
+        do while(associated(aux))
+            print *, 'INDICE: ', aux%index
+            print *, 'Nombre: ', aux%name
+            print *, 'Estado de la ventanilla: ', aux%EstadoVentanilla
+            call aux%printer()
+            print *, ""
+            aux => aux%next
+        end do
+    end subroutine printList
+
+    subroutine push(this, value)
+        class(node), intent(inout) :: this
+        character(len=*), intent(in) :: value
+
+        type(string_node), pointer :: new
+        allocate(new)
+        new%value = value
+
+        if(.not. associated(this%top)) then
+            this%top => new
+        else
+            new%next => this%top
+            this%top => new
+        end if
+    end subroutine push
+
+    subroutine printer(this)
+        class(node), intent(in) :: this
+        type(string_node), pointer :: aux
+        aux => this%top
+
+        print *, "Pila:"
+        do while(associated(aux))
+            print *, aux%value
+            aux => aux%next
+        end do
+    end subroutine printer
+
+    subroutine delete(this, value)
+        class(node), intent(inout) :: this
+        character(len=*), intent(in) :: value
+
+        type(string_node), pointer :: current, previous
+        current => this%top
+        previous => null()
+
+        do while (associated(current) .and. current%value /= value)
+            previous => current
+            current => current%next
+        end do
+
+        if(associated(current) .and. current%value == value) then
+            if(associated(previous)) then
+                previous%next => current%next
+            else
+                this%top => current%next
+            end if
+
+            deallocate(current)
+        end if
+    end subroutine delete
+
+    function search(this, value) result(retval)
+        class(node), intent(in) :: this
+        character(len=*), intent(in) :: value
+
+        type(string_node), pointer :: current
+        logical :: retval
+
+        current => this%top
         retval = .false.
 
         do while(associated(current))
@@ -114,22 +308,9 @@ contains
             end if
             current => current%next
         end do
-
     end function search
 
-    subroutine print(this)
-        class(listaSimple), intent(in) :: this
-        type(node), pointer :: current
-
-        current => this%head
-
-        do while (associated(current))
-            print *, current%value
-            current => current%next
-        end do 
-    end subroutine print
-    
-end module listaSimpleEnlazada
+end module listaVentanilla
 !=======================================================================================================================================
 
 ! Modulo Datos Personales===============================================================================================================
@@ -156,12 +337,14 @@ end module datosPersonales
 !Menu del proyecto
 program Proyecto_202200089
     use datosPersonales
-    use listaSimpleEnlazada
+    use colaClientes
+    use listaVentanilla
 
     implicit none
 
-    type(listaSimple) :: list
-    integer :: opcion, num1, num2
+    type(List_of_lists) :: list_Ventanilla
+    type(queue) :: colaVentanilla
+    integer :: opcion, num1, num2,i
 
     do  
         print*, ''
@@ -180,46 +363,38 @@ program Proyecto_202200089
 
         select case (opcion)
             case (1)
-                print *, 'Ingrese la direccion del archivo para la carga masiva de clientes'
+                print *, 'Ingrese la cantidad de clientes para encolar'
                 read *, num1
+
+                do i = 1, num1
+                    call colaVentanilla%enqueue(i, 'Cliente ', 1, 2)
+                end do
+
+                print*, 'Clientes encolados'
+
+                call colaVentanilla%print()
+
                 print *, 'Ingrese la cantidad de ventanillas que existiran'
                 read *, num2
-                print *, 'Carga de datos desde la direccion ',num1
-                print *, 'La cantidad de ventanillas seran de: ', num2
+                do i = 1, num2
+                    call list_Ventanilla%addNode(i, 'Ventanilla ')
+                end do
+                call list_Ventanilla%printList()
             case (2)
-                print *, 'Ejecutar paso'
+                !Ejecutar paso
+                if(.not. list_Ventanilla%searchNode()) then
+                    print *, 'No hay ventanillas disponibles'
+                else
+                    call list_Ventanilla%updateNode()
+                    print *, 'Se ha actualizado una ventanilla'
+                    call colaVentanilla%enqueue(1, 'Cliente 1', 1, 2)
+                    print*, ' '
+                    call list_Ventanilla%printList()
+                end if
             case (3)
                 print *, 'Estado de memoria de las estructuras'
             case (4)
-
-                    call list%append(1)
-                    call list%append(2)
-                    call list%append(3)
-                    call list%append(4)
-                    call list%append(5)
-
-                    print *, '//-----------------//'
-                    print *, 'La lista es:'
-                    print *, '//-----------------//'
-                    call list%print()
-
-                    print *, '//-----------------//'
-                    if(list%search(1)) then
-                        print *, 'El valor 1 esta en la lista'
-                    else
-                        print *, 'El valor 1 no esta en la lista'
-                    end if
-                    call list%delete(1)
-                    if(list%search(1)) then
-                        print *, 'El valor 1 esta en la lista'
-                    else
-                        print *, 'El valor 1 no esta en la lista'
-                    end if
-
-                    print *, '//-----------------//'
-                    print *, 'La lista es:'
-                    print *, '//-----------------//'
-                    call list%print()
+                print *, 'Reportes'
             case (5)
                 call print_datosPersonales
             case (6)    
