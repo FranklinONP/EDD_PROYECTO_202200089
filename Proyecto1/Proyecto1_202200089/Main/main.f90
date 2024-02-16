@@ -110,9 +110,12 @@ module listaVentanilla
         integer :: index
 
         logical :: EstadoVentanilla = .false.
-        integer :: NumeroImagenes
-        integer :: imagenesPequenas
-        integer :: imagenesGrandes
+        integer :: NumeroImagenes=0
+        integer :: imagenesPequenas=0
+        integer :: imagenesGrandes=0
+        integer :: ip
+        integer :: ig
+        integer :: ocupada=0
 
         character(:), allocatable :: name
         type(node), pointer :: next => null()
@@ -122,6 +125,7 @@ module listaVentanilla
         procedure :: printer
         procedure :: delete
         procedure :: search
+        procedure :: pop
     end type node
 
     !objeto de lista de lista
@@ -151,12 +155,20 @@ subroutine addNode(this, index, name)
 
     if (.not. associated(this%head)) then
         this%head => temp
+        print*, 'Nodo agregado'
+        print*, 'Ventanilla No. ', index, ' creada'
+        print*, 'Igrande', temp%imagenesGrandes
+        print*, 'Ipequena', temp%imagenesPequenas
     else
         current => this%head
         do while(associated(current%next))
             current => current%next
         end do
         current%next => temp
+                print*, 'Nodo agregado'
+                print*, 'Ventanilla No. ', index, ' creada'
+                print*, 'Igrande', temp%imagenesGrandes
+                print*, 'Ipequena', temp%imagenesPequenas
     end if
 end subroutine addNode
 
@@ -207,8 +219,10 @@ end subroutine addNode
     subroutine agregarImagenes(this)
         class(List_of_lists), intent(in) :: this
         integer :: ig, ip, id
+        integer :: cont
         type(node), pointer :: current
         current => this%head
+
 
         do while(associated(current))
             if(current%EstadoVentanilla .eqv. .true.) then
@@ -216,12 +230,32 @@ end subroutine addNode
                     print*, 'Valor de pequenas', current%imagenesPequenas
                     call current%push('Imagenes Pequenas')
                     current%imagenesPequenas = current%imagenesPequenas - 1 
+                    print*, 'Valor de pequenas', current%imagenesPequenas
+                    print*, '----------------------------------------------- '
                 else  if (current%imagenesGrandes/=0) then
                     print*, 'Valor de grandes', current%imagenesGrandes 
                     call current%push('Imagenes Grandes')
                     current%imagenesGrandes = current%imagenesGrandes - 1  
+                    print*, 'Valor de grandes', current%imagenesGrandes
+                    print*, '----------------------------------------------- '
+                else if (current%ocupada == 1) then
+                    do cont = 1, current%NumeroImagenes
+                        call current%pop()
+                    end do
+                    current%ocupada = 0
+                    current%NumeroImagenes = 0
+                    current%imagenesPequenas = 0
+                    current%imagenesGrandes = 0
+                    current%name = 'Ventanilla'
+                    current%ig = 0
+                    current%ip = 0
+                    print*, 'Ventanilla No. ', current%index, ' vaciada'
+                    print*, '----------------------------------------------- '
+        !logica para sacar o variar la ventanilla dado caso ya no tenga mas imagenes
                 else
                     current%EstadoVentanilla = .false.
+                    print*, 'Ventanilla No. ', current%index, ' cerrada'
+                    print*, '----------------------------------------------- '
                 end if
             end if
             current => current%next
@@ -246,6 +280,9 @@ end subroutine addNode
                 current%imagenesGrandes = ig
                 current%name = nombre
                 current%index = id
+                current%ig = ig
+                current%ip = ip
+                current%ocupada = 1
                 print *, 'El nodo ',current%index,'  ha sido actualizado'
                 exit
             end if
@@ -280,6 +317,8 @@ end subroutine addNode
             print *, 'INDICE: ', aux%index
             print *, 'Nombre: ', aux%name
             print *, 'Estado de la ventanilla: ', aux%EstadoVentanilla
+            print *, 'Imagenes Pequenas: ', aux%imagenesPequenas
+            print *, 'Imagenes Grandes: ', aux%imagenesGrandes
             call aux%printer()
             print *, ""
             aux => aux%next
@@ -301,6 +340,22 @@ end subroutine addNode
             this%top => new
         end if
     end subroutine push
+
+    subroutine pop(this)
+        class(node), intent(inout) :: this
+        type(string_node), pointer :: old
+
+        if(associated(this%top)) then
+            old => this%top
+            this%top => old%next
+            deallocate(old)
+        else
+            print *, "Error: la pila está vacía."
+        end if
+    end subroutine pop
+
+
+
 
     subroutine printer(this)
         class(node), intent(in) :: this
@@ -386,15 +441,16 @@ program Proyecto_202200089
     use datosPersonales
     use colaClientes
     use listaVentanilla
+    
 
     implicit none
 
     type(List_of_lists) :: list_Ventanilla
     type(queue) :: colaVentanilla
     integer :: opcion, num1, num2,i
-    integer :: id, imagenesPequenas, imagenesGrandes
+    integer :: id, imagenesPequenas, imagenesGrandes,paso
     character(len=50) :: nombre
-
+    paso = 0
     do  
         print*, ''
         print*, '============================================'
@@ -418,7 +474,7 @@ program Proyecto_202200089
                 read *, num1
 
                 do i = 1, num1
-                    call colaVentanilla%enqueue(i, 'Cliente ', 1, 2)
+                    call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
                 end do
 
                 print*, 'Clientes encolados'
@@ -434,10 +490,13 @@ program Proyecto_202200089
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '    
             case (2)
+                paso = paso + 1
+                print*, 'Paso No. ', paso
                 !Ejecutar paso
     !Apila imagenes en ventanilla si se pudiera
                 call list_Ventanilla%agregarImagenes()
                 print*, '----------------------------------------------- '
+                print*, 'Para visualizacion de las imagenes agregadas a las ventanillas:'
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '
 
@@ -445,14 +504,9 @@ program Proyecto_202200089
                 if(.not. list_Ventanilla%searchNode()) then
                     print *, 'No hay ventanillas disponibles'
                 else
+                    print*, 'Visualizacion de la ventanilla que fue apartada'
                     call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
                     call list_Ventanilla%updateNode(id, imagenesGrandes, imagenesPequenas, nombre)
-                    print*, '----------------------------------------------- '
-                    print*, 'id: ', id
-                    print*, 'Cliente atendido',nombre
-                    print*, 'Imagenes Pequenas: ', imagenesPequenas
-                    print*, 'Imagenes Grandes: ', imagenesGrandes   
-                    print*, '----------------------------------------------- '
                     call list_Ventanilla%printList()
                 end if
             case (3)
