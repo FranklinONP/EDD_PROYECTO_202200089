@@ -134,6 +134,7 @@ module listaVentanilla
         procedure :: deleteNode
         procedure :: searchNode
         procedure :: updateNode
+        procedure :: agregarImagenes
     end type List_of_lists
 
 contains
@@ -202,6 +203,30 @@ end subroutine addNode
             current => current%next
         end do
     end function searchNode
+
+    subroutine agregarImagenes(this)
+        class(List_of_lists), intent(in) :: this
+        integer :: ig, ip, id
+        type(node), pointer :: current
+        current => this%head
+
+        do while(associated(current))
+            if(current%EstadoVentanilla .eqv. .true.) then
+                if (current%imagenesPequenas /= 0) then
+                    print*, 'Valor de pequenas', current%imagenesPequenas
+                    call current%push('Imagenes Pequenas')
+                    current%imagenesPequenas = current%imagenesPequenas - 1 
+                else  if (current%imagenesGrandes/=0) then
+                    print*, 'Valor de grandes', current%imagenesGrandes 
+                    call current%push('Imagenes Grandes')
+                    current%imagenesGrandes = current%imagenesGrandes - 1  
+                else
+                    current%EstadoVentanilla = .false.
+                end if
+            end if
+            current => current%next
+        end do
+    end subroutine agregarImagenes
 
     subroutine updateNode(this,id,ig,ip,nombre) 
         class(List_of_lists), intent(in) :: this
@@ -410,7 +435,13 @@ program Proyecto_202200089
                 print*, '----------------------------------------------- '    
             case (2)
                 !Ejecutar paso
-    !Primero revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
+    !Apila imagenes en ventanilla si se pudiera
+                call list_Ventanilla%agregarImagenes()
+                print*, '----------------------------------------------- '
+                call list_Ventanilla%printList()
+                print*, '----------------------------------------------- '
+
+    !Revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
                 if(.not. list_Ventanilla%searchNode()) then
                     print *, 'No hay ventanillas disponibles'
                 else
@@ -424,7 +455,6 @@ program Proyecto_202200089
                     print*, '----------------------------------------------- '
                     call list_Ventanilla%printList()
                 end if
-
             case (3)
                 print *, 'Estado de memoria de las estructuras'
             case (4)
