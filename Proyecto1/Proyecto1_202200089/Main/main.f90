@@ -23,6 +23,7 @@ module colaClientes
     end type queue      
 
 contains
+    
 !Encola un cliente
     subroutine enqueue(this, id, nombre, imagenesPequenas, imagenesGrandes)
             class(queue), intent(inout) :: this
@@ -49,19 +50,30 @@ contains
             end if
         end subroutine enqueue  
 
-!Desencola un cliente
-    subroutine dequeue(this)
+
+ subroutine dequeue(this, id, ig, ip, nombre)
         class(queue), intent(inout) :: this
+        integer, intent(out) :: id
+        integer, intent(out) :: ig
+        integer, intent(out) :: ip
+        character(len=*), intent(out) :: nombre
         type(node), pointer :: temp
 
         if (associated(this%front)) then
             temp => this%front
+                id = temp%id
+                ig = temp%imagenesGrandes
+                ip = temp%imagenesPequenas
+                nombre = temp%nombre
             this%front => this%front%next
             deallocate(temp)
         else
             print *, 'La cola está vacía.'
         end if
-    end subroutine dequeue  
+    end subroutine dequeue
+
+
+
 !Imprime la cola
     subroutine print(this)
         class(queue), intent(in) :: this
@@ -77,6 +89,9 @@ contains
             current => current%next
         end do
     end subroutine print
+
+
+
 end module colaClientes    
 !=======================================================================================================================================
 
@@ -188,10 +203,12 @@ end subroutine addNode
         end do
     end function searchNode
 
-    subroutine updateNode(this) 
+    subroutine updateNode(this,id,ig,ip,nombre) 
         class(List_of_lists), intent(in) :: this
-
         type(node), pointer :: current
+
+        integer, intent(in) :: id, ig, ip
+        character(len=*), intent(in) :: nombre
 
         current => this%head
 
@@ -199,6 +216,11 @@ end subroutine addNode
         do while(associated(current))
             if(current%EstadoVentanilla .eqv. .false.) then
                 current%EstadoVentanilla = .true.
+                current%NumeroImagenes = ig + ip
+                current%imagenesPequenas = ip
+                current%imagenesGrandes = ig
+                current%name = nombre
+                current%index = id
                 print *, 'El nodo ',current%index,'  ha sido actualizado'
                 exit
             end if
@@ -345,6 +367,8 @@ program Proyecto_202200089
     type(List_of_lists) :: list_Ventanilla
     type(queue) :: colaVentanilla
     integer :: opcion, num1, num2,i
+    integer :: id, imagenesPequenas, imagenesGrandes
+    character(len=50) :: nombre
 
     do  
         print*, ''
@@ -363,6 +387,8 @@ program Proyecto_202200089
 
         select case (opcion)
             case (1)
+
+    !Se cargan los clientes a la cola
                 print *, 'Ingrese la cantidad de clientes para encolar'
                 read *, num1
 
@@ -371,26 +397,34 @@ program Proyecto_202200089
                 end do
 
                 print*, 'Clientes encolados'
-
                 call colaVentanilla%print()
+                print*, '----------------------------------------------- '
 
+    !Se setea la cantidad de ventanillas que estaran funcionando
                 print *, 'Ingrese la cantidad de ventanillas que existiran'
                 read *, num2
                 do i = 1, num2
                     call list_Ventanilla%addNode(i, 'Ventanilla ')
                 end do
                 call list_Ventanilla%printList()
+                print*, '----------------------------------------------- '    
             case (2)
                 !Ejecutar paso
+    !Primero revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
                 if(.not. list_Ventanilla%searchNode()) then
                     print *, 'No hay ventanillas disponibles'
                 else
-                    call list_Ventanilla%updateNode()
-                    print *, 'Se ha actualizado una ventanilla'
-                    call colaVentanilla%enqueue(1, 'Cliente 1', 1, 2)
-                    print*, ' '
+                    call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
+                    call list_Ventanilla%updateNode(id, imagenesGrandes, imagenesPequenas, nombre)
+                    print*, '----------------------------------------------- '
+                    print*, 'id: ', id
+                    print*, 'Cliente atendido',nombre
+                    print*, 'Imagenes Pequenas: ', imagenesPequenas
+                    print*, 'Imagenes Grandes: ', imagenesGrandes   
+                    print*, '----------------------------------------------- '
                     call list_Ventanilla%printList()
                 end if
+
             case (3)
                 print *, 'Estado de memoria de las estructuras'
             case (4)
