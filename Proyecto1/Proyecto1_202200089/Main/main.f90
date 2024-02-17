@@ -4,18 +4,18 @@ module colaClientes
     implicit none
     private
 !Nodo de la cola
-    type :: node
+    type :: nodeC
         integer :: id
         character(:), allocatable :: nombre
         integer :: imagenesPequenas
         integer :: imagenesGrandes
-        type(node), pointer :: next => null()
-    end type node
+        type(nodeC), pointer :: next => null()
+    end type nodeC
 
     type, public :: queue
         private
-        type(node), pointer :: front => null()
-        type(node), pointer :: rear => null()
+        type(nodeC), pointer :: front => null()
+        type(nodeC), pointer :: rear => null()
     contains
         procedure :: enqueue
         procedure :: dequeue
@@ -32,7 +32,7 @@ contains
             integer, intent(in) :: imagenesPequenas
             integer, intent(in) :: imagenesGrandes
 
-            type(node), pointer :: temp
+            type(nodeC), pointer :: temp
 
             allocate(temp)
             temp%id = id
@@ -57,7 +57,7 @@ contains
         integer, intent(out) :: ig
         integer, intent(out) :: ip
         character(len=*), intent(out) :: nombre
-        type(node), pointer :: temp
+        type(nodeC), pointer :: temp
 
         if (associated(this%front)) then
             temp => this%front
@@ -77,7 +77,7 @@ contains
 !Imprime la cola
     subroutine print(this)
         class(queue), intent(in) :: this
-        type(node), pointer :: current
+        type(nodeC), pointer :: current
 
         current => this%front
 
@@ -116,6 +116,7 @@ module listaVentanilla
         integer :: ip
         integer :: ig
         integer :: ocupada=0
+        logical :: encolar= .false.
 
         character(:), allocatable :: name
         type(node), pointer :: next => null()
@@ -133,11 +134,13 @@ module listaVentanilla
         type(node), pointer :: head => null()
     contains
         procedure :: addNode
+        procedure :: cabeza
         procedure :: pushToNode
         procedure :: printList
         procedure :: deleteNode
         procedure :: searchNode
         procedure :: updateNode
+        procedure :: colar
         procedure :: agregarImagenes
     end type List_of_lists
 
@@ -216,6 +219,7 @@ end subroutine addNode
         end do
     end function searchNode
 
+!Agrega imagenes y a su vez tambien elimina la pila de aquel nodo que haya termiando de recibir imagenes
     subroutine agregarImagenes(this)
         class(List_of_lists), intent(in) :: this
         integer :: ig, ip, id
@@ -246,14 +250,11 @@ end subroutine addNode
                     current%NumeroImagenes = 0
                     current%imagenesPequenas = 0
                     current%imagenesGrandes = 0
-                    current%name = 'Ventanilla'
-                    current%ig = 0
-                    current%ip = 0
                     print*, 'Ventanilla No. ', current%index, ' vaciada'
                     print*, '----------------------------------------------- '
         !logica para sacar o variar la ventanilla dado caso ya no tenga mas imagenes
-                else
                     current%EstadoVentanilla = .false.
+                    current%encolar = .true.
                     print*, 'Ventanilla No. ', current%index, ' cerrada'
                     print*, '----------------------------------------------- '
                 end if
@@ -262,6 +263,53 @@ end subroutine addNode
         end do
     end subroutine agregarImagenes
 
+function cabeza(this) result(retval)
+    class(List_of_lists), intent(in) :: this
+
+    type(node), pointer :: current
+    logical :: retval
+
+    current => this%head
+    retval = .false.
+
+    do while(associated(current))
+        if(current%encolar .eqv. .true.) then
+            retval = .true.
+            exit
+        end if
+        current => current%next
+    end do
+end function cabeza
+
+
+subroutine colar(this, id, ig, ip, nombre) 
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(out) :: id
+    integer, intent(out) :: ig, ip
+    character(len=*), intent(out) :: nombre
+
+    type(node), pointer :: current
+
+
+    current => this%head
+
+
+    do while(associated(current))
+        if(current%encolar .eqv. .true.) then
+            id = current%index
+            ig = current%ig
+            ip = current%ip
+            nombre = current%name
+            current%encolar = .false.
+            print *, 'El nodo ',current%index,'Con img G=',ig,' e img P=',ip,'  ha sido encolado'
+            print*, '----------------------------------------------- ================================='
+            exit
+        end if
+        current => current%next
+    end do
+end subroutine colar
+
+    
     subroutine updateNode(this,id,ig,ip,nombre) 
         class(List_of_lists), intent(in) :: this
         type(node), pointer :: current
@@ -444,11 +492,13 @@ program Proyecto_202200089
     
 
     implicit none
-
+    logical::cabeza
     type(List_of_lists) :: list_Ventanilla
     type(queue) :: colaVentanilla
     integer :: opcion, num1, num2,i
     integer :: id, imagenesPequenas, imagenesGrandes,paso
+    integer :: idC,igC,ipC
+    character(len=50):: nombreC
     character(len=50) :: nombre
     paso = 0
     do  
@@ -474,7 +524,11 @@ program Proyecto_202200089
                 read *, num1
 
                 do i = 1, num1
+                if (i==1) then
+                    call colaVentanilla%enqueue(i, 'Cliente ', 2, 1)
+                else 
                     call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
+                end if
                 end do
 
                 print*, 'Clientes encolados'
@@ -490,6 +544,7 @@ program Proyecto_202200089
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '    
             case (2)
+!case2
                 paso = paso + 1
                 print*, 'Paso No. ', paso
                 !Ejecutar paso
@@ -499,6 +554,17 @@ program Proyecto_202200089
                 print*, 'Para visualizacion de las imagenes agregadas a las ventanillas:'
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '
+
+    !Aca reviso las ventanillas listas para mandar a encolar imagenes
+                do
+                    
+                    cabeza =  list_Ventanilla%cabeza()
+                    print*, 'Valor de cabeza',cabeza
+                    if (.not. cabeza) exit
+                    call list_Ventanilla%colar(idC,igC,ipC,nombreC)
+                end do
+
+            
 
     !Revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
                 if(.not. list_Ventanilla%searchNode()) then

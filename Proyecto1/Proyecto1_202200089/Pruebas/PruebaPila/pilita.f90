@@ -33,7 +33,7 @@ subroutine push(this, nombreCliente, tipoImpresion, pesoImagen)
     allocate(temp)
     temp%nombreCliente = nombreCliente
     temp%tipoImpresion = tipoImpresion
-    temp%pesoImagen = pesoImagen
+    temp%pesoImagen = pesoImagen-1
     temp%next => null()
 
     if (.not. associated(this%front)) then
@@ -74,6 +74,12 @@ subroutine EjecutarPaso(this)
                 temp%pesoImagen = temp%pesoImagen - 1
             end if
         else
+        print*, '||||||||||||||||||||||||||||||||||||||||||||||||||'
+            print*, 'Aca mando el nodo para la lista de espera'
+            print*, 'Nombre: ', temp%nombreCliente
+            print*, "Tipo imagen", temp%tipoImpresion
+            print*, "Peso imagen" , temp%pesoImagen
+        print*, '||||||||||||||||||||||||||||||||||||||||||||||||||'
             temp2 => this%front
             this%front => this%front%next
         end if
@@ -102,7 +108,7 @@ program pilaaa
     use pilaImpresion   
     type(pila) :: pil
         call pil%push("Juan","pequena",1)
-        call pil%push("Pedro","grande",2)
+        call pil%push("Pedro","pequena",1)
         call pil%push("Maria","pequena",1)
         print*, "Pila de impresiones"
         call pil%print()
@@ -116,10 +122,12 @@ program pilaaa
         print*, "============================"
         call pil%EjecutarPaso()
         call pil%print()
+        print*, "============================"
         print*, "Ejecutando paso 3"
         print*, "============================"
         call pil%EjecutarPaso()
         call pil%print()
+        print*, "============================"
         print*, "Ejecutando paso 4"
         print*, "============================"
         call pil%EjecutarPaso()
