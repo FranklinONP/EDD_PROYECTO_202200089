@@ -140,7 +140,7 @@ module listaVentanilla
         procedure :: deleteNode
         procedure :: searchNode
         procedure :: updateNode
-        procedure :: colar
+        procedure :: colar2
         procedure :: agregarImagenes
     end type List_of_lists
 
@@ -281,8 +281,7 @@ function cabeza(this) result(retval)
     end do
 end function cabeza
 
-
-subroutine colar(this, id, ig, ip, nombre) 
+subroutine colar2(this, id, ig, ip, nombre) 
     class(List_of_lists), intent(inout) :: this
     integer, intent(out) :: id
     integer, intent(out) :: ig, ip
@@ -307,9 +306,8 @@ subroutine colar(this, id, ig, ip, nombre)
         end if
         current => current%next
     end do
-end subroutine colar
+end subroutine colar2
 
-    
     subroutine updateNode(this,id,ig,ip,nombre) 
         class(List_of_lists), intent(in) :: this
         type(node), pointer :: current
@@ -462,6 +460,77 @@ end subroutine colar
 
 end module listaVentanilla
 !=======================================================================================================================================
+!Modulo para cola de impresiones=========================================================================================================
+
+module colaImpresiones
+    implicit none
+    private
+!Nodo de la cola
+    type :: nodeI
+        integer :: id
+        character(:), allocatable :: nombre
+        integer :: peso
+        type(nodeI), pointer :: next => null()
+    end type nodeI
+
+    type, public :: cola_Impresion
+        private
+        type(nodeI), pointer :: front => null()
+        type(nodeI), pointer :: rear => null()
+    contains
+        procedure :: enqueue
+        procedure :: print
+    end type cola_Impresion    
+
+contains
+    
+!Encola un cliente
+    subroutine enqueue(this, id, nombre, peso)
+            class(cola_Impresion), intent(inout) :: this
+            integer, intent(in) :: id
+            character(len=*), intent(in) :: nombre
+            integer, intent(in) :: peso
+
+            type(nodeI), pointer :: temp
+
+            allocate(temp)
+            temp%id = id
+            temp%nombre = nombre
+            temp%peso = peso
+            temp%next => null()
+
+            if (.not. associated(this%front)) then
+                this%front => temp
+                this%rear => temp
+            else
+                this%rear%next => temp
+                this%rear => temp
+            end if
+        end subroutine enqueue  
+
+
+!Imprime la cola
+    subroutine print(this)
+        class(cola_Impresion), intent(in) :: this
+        type(nodeI), pointer :: current
+
+        current => this%front
+
+        do while (associated(current))
+            print *,'Id:', current%id
+            print*, 'Nombre: ', current%nombre
+            print*, "Peso", current%peso
+            current => current%next
+        end do
+    end subroutine print
+
+end module colaImpresiones
+
+    
+
+
+!=======================================================================================================================================
+
 
 ! Modulo Datos Personales===============================================================================================================
 module datosPersonales
@@ -489,17 +558,30 @@ program Proyecto_202200089
     use datosPersonales
     use colaClientes
     use listaVentanilla
+    use colaImpresiones
+    use iso_fortran_env, only: 
     
 
     implicit none
-    logical::cabeza
+    logical::cabeza,encolarImpresion,verificacion
     type(List_of_lists) :: list_Ventanilla
-    type(queue) :: colaVentanilla
+    type(queue) :: colaVentanilla   
+    type(cola_Impresion)::impresionesPequenas
+    type(cola_Impresion) :: impresionesGrandes
+
+
     integer :: opcion, num1, num2,i
     integer :: id, imagenesPequenas, imagenesGrandes,paso
-    integer :: idC,igC,ipC
+    integer :: idC,igC,ipC,peso
     character(len=50):: nombreC
-    character(len=50) :: nombre
+    character(len=50) :: nombre,tipoC
+
+    character(len=100) :: imgCliente
+    integer :: imgPeso
+    character(len=100) :: imgTipo
+    integer :: imgId,g,p
+
+    verificacion = .false.
     paso = 0
     do  
         print*, ''
@@ -561,12 +643,49 @@ program Proyecto_202200089
                     cabeza =  list_Ventanilla%cabeza()
                     print*, 'Valor de cabeza',cabeza
                     if (.not. cabeza) exit
-                    call list_Ventanilla%colar(idC,igC,ipC,nombreC)
+                    call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
+                    print*, 'Id',idC
+                    print*, 'Nombre',nombreC
+                    print*, 'Imagenes Grandes',igC
+                    print*, 'Imagenes Pequenas',ipC
+                    print*, '----------------------------------------------- '
+                    print*, 'Visualizacion de imagenes agregadas a cola de impresion'
+                    if (igC > 0) then
+                        do g = 1, igC
+                            print*, 'Imagen Grande'
+                            call impresionesGrandes%enqueue(idC, nombreC, igC)
+                        end do
+                    end if
+                    if (ipC > 0) then
+                        do p = 0, ipC
+                            print*, 'Imagen Pequena'
+                            call impresionesPequenas%enqueue(idC, nombreC, ipC)
+                        end do
+                    end if             
                 end do
 
-            
+                print*, 'Cola impresiones Pequenas'
+                call impresionesPequenas%print()
+                print*, 'Cola impresiones Grandes'
+                call impresionesGrandes%print() 
 
+                print*, '----------------------------------------------- '
+                print*, '----------------------------------------------- '
+                print*, '----------------------------------------------- '
     !Revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
+        !Como es una cola no puede entrar mas de 1 a la vez
+        !        do while(.true.)
+        !            if(.not. list_Ventanilla%searchNode()) then
+        !                print *, 'No hay ventanillas disponibles'
+        !                exit
+        !            else
+        !                print*, 'Visualizacion de la ventanilla que fue apartada'
+        !                call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
+        !                call list_Ventanilla%updateNode(id, imagenesGrandes, imagenesPequenas, nombre)
+        !                call list_Ventanilla%printList()
+        !            end if
+        !        end do  
+
                 if(.not. list_Ventanilla%searchNode()) then
                     print *, 'No hay ventanillas disponibles'
                 else
