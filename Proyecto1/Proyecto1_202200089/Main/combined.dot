@@ -1,0 +1,20 @@
+ digraph G {
+ rankdir=LR;
+ node4 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node5 -> node4 [dir="forward"];
+ node5 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ }
+ digraph G {
+ rankdir=LR;
+ node0 [label="Cliente: Cliente\n'Id: 10\n'Peso: 1", color="red", shape="rectangle"];
+ node1 [label="Cliente: Cliente\n'Id: 2\n'Peso: 1", color="red", shape="rectangle"];
+ node0 -> node1 [dir="forward"];
+ }
+ digraph G {
+ rankdir=LR;
+ node0 [label="Cliente: Cliente\n'Id: 10\n'Peso: 2", color="red", shape="rectangle"];
+ node1 [label="Cliente: Cliente\n'Id: 10\n'Peso: 2", color="red", shape="rectangle"];
+ node0 -> node1 [dir="forward"];
+ node2 [label="Cliente: Cliente\n'Id: 2\n'Peso: 1", color="red", shape="rectangle"];
+ node1 -> node2 [dir="forward"];
+ }

@@ -19,6 +19,7 @@ module colaClientes
     contains
         procedure :: enqueue
         procedure :: dequeue
+        procedure :: graph
         procedure :: print
     end type queue      
 
@@ -89,6 +90,48 @@ contains
             current => current%next
         end do
     end subroutine print
+
+
+!Agrega esta función al módulo colaClientes
+subroutine graph(this)
+    class(queue), intent(in) :: this
+    type(nodeC), pointer :: current
+    integer :: i
+    character(len=10) :: id_str, next_id_str,p,g
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='queue.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%front
+    i = 0
+    do while (associated(current))
+        write(id_str, '(I10)') current%id
+
+        write(p, '(I10)') current%imagenesPequenas
+        write(g, '(I10)') current%imagenesGrandes
+
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
+     & '\n''IMP: ' // trim(adjustl(p)) // '\n''IMG: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
+
+        if (associated(current%next)) then
+            write(next_id_str, '(I10)') current%next%id
+            write(10, *) 'node' // trim(adjustl(next_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng queue.dot -o queue.png")
+end subroutine graph
+
+
+
 
 
 
@@ -479,6 +522,8 @@ module colaImpresiones
         type(nodeI), pointer :: rear => null()
     contains
         procedure :: enqueue
+        procedure :: graphP
+        procedure :: graphG 
         procedure :: print
     end type cola_Impresion    
 
@@ -517,12 +562,93 @@ contains
         current => this%front
 
         do while (associated(current))
+            print *,'=========================='
             print *,'Id:', current%id
             print*, 'Nombre: ', current%nombre
             print*, "Peso", current%peso
+            print *,'=========================='
             current => current%next
         end do
     end subroutine print
+
+
+!Agrega esta función al módulo colaClientes
+subroutine graphP(this)
+    class(cola_Impresion), intent(in) :: this
+    type(nodeI), pointer :: current, previous
+    integer :: i
+    character(len=10) :: id_str, prev_id_str, g,idd
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='pequena.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%front
+    previous => null()
+    i = 0
+    do while (associated(current))
+         write(id_str, '(I10)') i
+        write(g, '(I10)') current%peso
+        write(idd, '(I10)') current%id
+
+
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
+     & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
+
+        if (associated(previous)) then
+            write(prev_id_str, '(I10)') (i-1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        previous => current
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng pequena.dot -o pequena.png")
+end subroutine graphP
+subroutine graphG(this)
+    class(cola_Impresion), intent(in) :: this
+    type(nodeI), pointer :: current, previous
+    integer :: i
+    character(len=10) :: id_str, prev_id_str, g,idd
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='grande.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%front
+    previous => null()
+    i = 0
+    do while (associated(current))
+        write(id_str, '(I10)') i
+        write(g, '(I10)') current%peso
+        write(idd, '(I10)') current%id
+
+
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
+     & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
+
+        if (associated(previous)) then
+            write(prev_id_str, '(I10)') (i-1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        previous => current
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng grande.dot -o grande.png")
+end subroutine graphG
 
 end module colaImpresiones
 
@@ -607,7 +733,7 @@ program Proyecto_202200089
 
                 do i = 1, num1
                 if (i==1) then
-                    call colaVentanilla%enqueue(i, 'Cliente ', 2, 1)
+                    call colaVentanilla%enqueue(10, 'Cliente ', 2, 1)
                 else 
                     call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
                 end if
@@ -657,7 +783,7 @@ program Proyecto_202200089
                         end do
                     end if
                     if (ipC > 0) then
-                        do p = 0, ipC
+                        do p = 1, ipC
                             print*, 'Imagen Pequena'
                             call impresionesPequenas%enqueue(idC, nombreC, ipC)
                         end do
@@ -696,6 +822,18 @@ program Proyecto_202200089
                 end if
             case (3)
                 print *, 'Estado de memoria de las estructuras'
+                call colaVentanilla%graph()
+                call impresionesPequenas%graphP()
+                call impresionesGrandes%graphG()
+                print*, 'cola pequenas'
+                call impresionesPequenas%print()
+                print*, 'cola grandes'
+                call impresionesGrandes%print()
+
+                CALL SYSTEM("type queue.dot pequena.dot grande.dot > combined.dot")
+                CALL SYSTEM("dot -Tpng combined.dot -o combined.png")
+
+
             case (4)
                 print *, 'Reportes'
             case (5)
