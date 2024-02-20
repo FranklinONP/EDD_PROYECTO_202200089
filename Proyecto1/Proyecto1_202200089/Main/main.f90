@@ -130,11 +130,6 @@ subroutine graph(this)
     call system("dot -Tpng queue.dot -o queue.png")
 end subroutine graph
 
-
-
-
-
-
 end module colaClientes    
 !=======================================================================================================================================
 
@@ -163,6 +158,7 @@ module listaVentanilla
 
         character(:), allocatable :: name
         type(node), pointer :: next => null()
+        type(node), pointer :: prev => null()
         type(string_node), pointer :: top => null()
     contains
         procedure :: push
@@ -218,6 +214,38 @@ subroutine addNode(this, index, name)
     end if
 end subroutine addNode
 
+!anadir de forma doblemente enlazada
+subroutine addNodeDouble(this, index, name)
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(in) :: index
+    character(len=*), intent(in) :: name
+
+    type(node), pointer :: temp, current
+    allocate(temp)
+    temp%index = index
+    temp%name = name
+    temp%next => null()
+    temp%prev => null()
+
+    if (.not. associated(this%head)) then
+        this%head => temp
+        print*, 'Nodo agregado'
+        print*, 'Ventanilla No. ', index, ' creada'
+        print*, 'Igrande', temp%imagenesGrandes
+        print*, 'Ipequena', temp%imagenesPequenas
+    else
+        current => this%head
+        do while(associated(current%next))
+            current => current%next
+        end do
+        current%next => temp
+        temp%prev => current
+        print*, 'Nodo agregado'
+        print*, 'Ventanilla No. ', index, ' creada'
+        print*, 'Igrande', temp%imagenesGrandes
+        print*, 'Ipequena', temp%imagenesPequenas
+    end if
+end subroutine addNodeDouble
 
 
     subroutine deleteNode(this, name)
@@ -243,6 +271,39 @@ end subroutine addNode
             deallocate(current)
         end if
     end subroutine deleteNode
+
+subroutine deleteNodeDouble(this, name)
+    class(List_of_lists), intent(inout) :: this
+    character(len=*), intent(in) :: name
+
+    type(node), pointer :: current, previous
+    current => this%head
+    previous => null()
+
+    do while (associated(current) .and. current%name /= name)
+        previous => current
+        current => current%next
+    end do
+
+    if(associated(current) .and. current%name == name) then
+        if(associated(previous)) then
+            previous%next => current%next
+            if (associated(current%next)) then
+                current%next%prev => previous
+            end if
+        else
+            this%head => current%next
+            if (associated(this%head)) then
+                this%head%prev => null()
+            end if
+        end if
+
+        deallocate(current)
+    end if
+end subroutine deleteNodeDouble
+
+    
+
 
     function searchNode(this) result(retval)
         class(List_of_lists), intent(in) :: this
@@ -762,6 +823,13 @@ program Proyecto_202200089
                 print*, 'Para visualizacion de las imagenes agregadas a las ventanillas:'
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '
+
+                !Aca bajo una unidad a las dos colas o tipos de impresion
+
+                !Neccesito crear la subrutina
+
+
+
 
     !Aca reviso las ventanillas listas para mandar a encolar imagenes
                 do
