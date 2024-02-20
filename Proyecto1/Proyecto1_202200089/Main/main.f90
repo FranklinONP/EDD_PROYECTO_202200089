@@ -574,6 +574,7 @@ module colaImpresiones
         integer :: id
         character(:), allocatable :: nombre
         integer :: peso
+        character(:), allocatable :: tipo
         type(nodeI), pointer :: next => null()
     end type nodeI
 
@@ -583,6 +584,10 @@ module colaImpresiones
         type(nodeI), pointer :: rear => null()
     contains
         procedure :: enqueue
+        procedure :: dequeue
+        procedure :: bajarUnidad
+        procedure :: verificarImpresion
+        procedure :: obtenerDatos
         procedure :: graphP
         procedure :: graphG 
         procedure :: print
@@ -591,29 +596,98 @@ module colaImpresiones
 contains
     
 !Encola un cliente
-    subroutine enqueue(this, id, nombre, peso)
-            class(cola_Impresion), intent(inout) :: this
-            integer, intent(in) :: id
-            character(len=*), intent(in) :: nombre
-            integer, intent(in) :: peso
+ subroutine enqueue(this, id, nombre, tipo, peso)
+    class(cola_Impresion), intent(inout) :: this
+    integer, intent(in) :: id  ! Change here
+    character(len=*), intent(in) :: nombre
+    character(len=*), intent(in) :: tipo
+    integer, intent(in) :: peso
 
-            type(nodeI), pointer :: temp
+    type(nodeI), pointer :: temp
 
-            allocate(temp)
-            temp%id = id
-            temp%nombre = nombre
-            temp%peso = peso
-            temp%next => null()
+    allocate(temp)
+    temp%id = id
+    temp%nombre = nombre
+    temp%tipo = tipo
+    temp%peso = peso
+    temp%next => null()
 
-            if (.not. associated(this%front)) then
-                this%front => temp
-                this%rear => temp
+    if (.not. associated(this%front)) then
+        this%front => temp
+        this%rear => temp
+    else
+        this%rear%next => temp
+        this%rear => temp
+    end if
+end subroutine enqueue
+
+
+ subroutine dequeue(this)
+        class(cola_Impresion), intent(inout) :: this
+        type(nodeI), pointer :: temp
+
+        if (associated(this%front)) then
+            temp => this%front
+
+            this%front => this%front%next
+            deallocate(temp)
+        else
+            print *, 'La cola está vacía.'
+        end if
+    end subroutine dequeue
+
+subroutine obtenerDatos(this)
+    class(cola_Impresion), intent(in) :: this
+    type(nodeI), pointer :: current
+    !integer, intent(out) :: id
+    !character(len=*), intent(out) :: nombre
+    !integer, intent(out) :: peso
+    current => this%front
+    if (associated(this%front)) then
+        print*, '=========================='
+        print*, 'Imagen saliente'
+        print*, 'Id:', current%id
+        print*, 'Nombre:', current%nombre
+        print*, 'Peso:', current%peso
+        print*, '=========================='
+    else
+        print *, 'La cola está vacía.'
+    end if
+    print*, '==========================' 
+
+end subroutine obtenerDatos
+
+
+subroutine bajarUnidad(this)
+        class(cola_Impresion), intent(in) :: this
+        type(nodeI), pointer :: current
+        if (associated(this%front)) then
+            current => this%front
+            current%peso = current%peso - 1
+        else
+            print *, 'La cola está vacía.'
+        end if
+
+end subroutine bajarUnidad
+
+subroutine verificarImpresion(this, desicion)
+        class(cola_Impresion), intent(in) :: this
+        type(nodeI), pointer :: current
+        logical, intent(out) :: desicion
+
+        current => this%front
+        if (associated(this%front)) then
+            if (current%peso == 0) then
+                desicion = .true.
             else
-                this%rear%next => temp
-                this%rear => temp
+                desicion = .false.
             end if
-        end subroutine enqueue  
 
+        else
+            print *, 'La cola está vacía.'
+        end if
+
+end subroutine verificarImpresion
 
 !Imprime la cola
     subroutine print(this)
@@ -768,6 +842,10 @@ program Proyecto_202200089
     character(len=100) :: imgTipo
     integer :: imgId,g,p
 
+    logical :: descp,descg
+    descp   = .false.
+    descg   = .false.
+
     verificacion = .false.
     paso = 0
     do  
@@ -824,14 +902,31 @@ program Proyecto_202200089
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '
 
+
+!Por logica desencolo primero, luego encolo
                 !Aca bajo una unidad a las dos colas o tipos de impresion
-
                 !Neccesito crear la subrutina
+                call impresionesPequenas%bajarUnidad()
+                call impresionesGrandes%bajarUnidad()
+
+                call impresionesPequenas%verificarImpresion(descp)
+                call impresionesGrandes%verificarImpresion(descg)
+
+                if (descp) then
+                    print*,'Imagen pequena impresa'
+                    call impresionesPequenas%obtenerDatos()
+                    call impresionesPequenas%dequeue()
+                end if
+                if (descg) then
+                    print*,'Imagen grande impresa'
+                    call impresionesGrandes%obtenerDatos()
+                    call impresionesGrandes%dequeue()
+                end if
+
+            
 
 
-
-
-    !Aca reviso las ventanillas listas para mandar a encolar imagenes
+                !Aca reviso las ventanillas listas para mandar a encolar imagenes
                 do
                     
                     cabeza =  list_Ventanilla%cabeza()
@@ -844,16 +939,17 @@ program Proyecto_202200089
                     print*, 'Imagenes Pequenas',ipC
                     print*, '----------------------------------------------- '
                     print*, 'Visualizacion de imagenes agregadas a cola de impresion'
+
                     if (igC > 0) then
                         do g = 1, igC
                             print*, 'Imagen Grande'
-                            call impresionesGrandes%enqueue(idC, nombreC, igC)
+                            call impresionesGrandes%enqueue(idC, nombreC,'Grande',igC)
                         end do
                     end if
                     if (ipC > 0) then
                         do p = 1, ipC
                             print*, 'Imagen Pequena'
-                            call impresionesPequenas%enqueue(idC, nombreC, ipC)
+                            call impresionesPequenas%enqueue(idC, nombreC,'Pequena',ipC)
                         end do
                     end if             
                 end do
