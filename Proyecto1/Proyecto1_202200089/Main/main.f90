@@ -660,8 +660,8 @@ end subroutine colar2
 subroutine graphV(this)
     class(List_of_lists), intent(in) :: this
     type(node), pointer :: current, previous
-    integer :: i, j
-    character(len=10) :: id_str, prev_id_str, g, idd, element_str
+    integer :: i, j,nvv
+    character(len=10) :: id_str, prev_id_str, g, idd, element_str,p,nv
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='Ventanilla.dot', status='replace', action='write')
@@ -673,11 +673,30 @@ subroutine graphV(this)
     i = 0
     do while (associated(current))
         write(id_str, '(I10)') i
-        write(g, '(I10)') current%index
+        write(nv,'(I10)') i+1
+        write(g, '(I10)') current%imagenesGrandes
+        write(p, '(I10)') current%imagenesPequenas
         write(idd, '(I10)') current%index
 
-        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%name)) // &
-     & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
+        if(current%imagenesGrandes == 0 .AND. current%imagenesPequenas==0) then
+            if(current%ocupada == 0 )then
+                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // & 
+                & '\n''Ventanilla Descoupada", color="red", shape="rectangle"];'
+            else 
+                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
+                    & '\n''Id: ' // trim(adjustl(idd))  //&
+                    & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                    & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
+            end if
+            
+        else
+            write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
+        end if
+
+        
 
         call agregarSublista(current, i)
 
