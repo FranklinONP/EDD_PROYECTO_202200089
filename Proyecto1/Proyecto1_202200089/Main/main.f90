@@ -154,6 +154,7 @@ module listaVentanilla
         integer :: ig
         integer :: ocupada=0
         logical :: encolar= .false.
+        integer :: pasos
 
         character(:), allocatable :: name
         type(node), pointer :: next => null()
@@ -179,7 +180,10 @@ module listaVentanilla
         procedure :: deleteNode
         procedure :: deleteNodeDouble
         procedure :: searchNode
+        procedure :: printAtendidos
+        procedure :: agregarAtendido
         procedure :: updateNode
+        procedure :: agregarClienteAtendido
         procedure :: agregarImpresion
         procedure :: colar2
         procedure :: agregarImagenes
@@ -215,6 +219,35 @@ subroutine addNode(this, index, name)
                 print*, 'Ipequena', temp%imagenesPequenas
     end if
 end subroutine addNode
+
+
+subroutine agregarAtendido(this, index, name,p,g,pasos)
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(in) :: index,p,g,pasos
+    character(len=*), intent(in) :: name
+
+    type(node), pointer :: temp, current
+    allocate(temp)
+    temp%index = index
+    temp%name = name
+    temp%imagenesPequenas = p
+    temp%imagenesGrandes = g
+    temp%pasos = pasos
+    temp%next => null()
+
+    if (.not. associated(this%head)) then
+        this%head => temp
+    else
+        current => this%head
+        do while(associated(current%next))
+            current => current%next
+        end do
+        current%next => temp
+    end if
+end subroutine agregarAtendido
+
+
+
 
 !anadir de forma doblemente enlazada
 subroutine addNodeDouble(this, index, name,numeroImagenes)
@@ -294,15 +327,37 @@ subroutine deleteNodeDouble(this)
 
             deallocate(current)
             exit
-        else
+        end if
             previous => current
             current => current%next
-        end if
     end do
 end subroutine deleteNodeDouble
 
 
+subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(out) :: id
+    character(len=*), intent(out) :: nombre
+    integer, intent(out) :: p
+    integer, intent(out) :: g
+    logical, intent(out) :: atendido
+    type(node), pointer :: current, previous
+    current => this%head
+    previous => null()
     
+    do while (associated(current))
+        if (current%NumeroImagenes == 0) then
+            id=current%index
+            nombre=current%name
+            p=current%imagenesPequenas
+            g=current%imagenesGrandes
+            atendido = .true.
+        end if
+            previous => current
+            current => current%next
+    end do
+
+end subroutine agregarClienteAtendido
 
 
     function searchNode(this) result(retval)
@@ -494,6 +549,25 @@ end subroutine colar2
             aux => aux%next
         end do
     end subroutine printList
+
+    subroutine printAtendidos(this)
+        class(List_of_lists), intent(in) :: this
+        type(node), pointer :: aux
+
+        aux => this%head
+
+        do while(associated(aux))
+            print *, 'Cliente atendido'
+            print *, 'INDICE: ', aux%index
+            print *, 'Nombre: ', aux%name
+            print *, 'Imagenes Pequenas: ', aux%imagenesPequenas
+            print *, 'Imagenes Grandes: ', aux%imagenesGrandes
+            print *, 'Pasos Ejecutados', aux%pasos
+            print *, ""
+            aux => aux%next
+        end do
+    end subroutine printAtendidos
+
 
     subroutine push(this, value)
         class(node), intent(inout) :: this
@@ -847,6 +921,7 @@ program Proyecto_202200089
 
     implicit none
     logical::cabeza,encolarImpresion,verificacion
+    type(List_of_lists) :: atendidos
     type(List_of_lists) :: list_Ventanilla
     type(List_of_lists)::listaEspera
     type(queue) :: colaVentanilla   
@@ -855,6 +930,10 @@ program Proyecto_202200089
 
     integer :: idAI
     character(len=100) :: nombreAI
+
+    logical :: atendido
+    integer :: idAtendido,gAtendido,pAtendido
+    character :: nombreAtendido
 
     integer :: opcion, num1, num2,i
     integer :: id, imagenesPequenas, imagenesGrandes,paso
@@ -936,7 +1015,11 @@ program Proyecto_202200089
 !Si tengo tengo clientes con todas sus imagenes recibidas los saco de la lista de espera
 !===========================================================================================================================
                 !Aca agrego ya los clientes atendidos
-
+                call listaEspera%agregarClienteAtendido(idAtendido,nombreAtendido,gAtendido,pAtendido,atendido)
+                if (atendido) then
+                    call atendidos%agregarAtendido(idAtendido,nombreAtendido,pAtendido,gAtendido,paso)
+                    atendido = .false.
+                end if
                 !Aca verifico numero de imagenes de la lista de espera si encuntra n clientes satisfechos salen de la lista de espera
                 call listaEspera%deleteNodeDouble()
 !Por logica desencolo primero, luego encolo
@@ -1041,6 +1124,8 @@ program Proyecto_202200089
                 print *, 'Reportes'
                 print*, 'Impresion de lista de espera para mientras'
                 call listaEspera%printList()
+                print*, 'Impresion de lista de atendidos'
+                call atendidos%printAtendidos()
             case (5)
                 call print_datosPersonales
             case (6)    
