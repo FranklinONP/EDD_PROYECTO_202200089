@@ -52,7 +52,7 @@ contains
         end subroutine enqueue  
 
 
- subroutine dequeue(this, id, ig, ip, nombre)
+ subroutine dequeue(this, id, ip, ig, nombre)
         class(queue), intent(inout) :: this
         integer, intent(out) :: id
         integer, intent(out) :: ig
@@ -146,7 +146,6 @@ module listaVentanilla
     !nodo de lista de lista
     type :: node
         integer :: index
-
         logical :: EstadoVentanilla = .false.
         integer :: NumeroImagenes=0
         integer :: imagenesPequenas=0
@@ -173,12 +172,15 @@ module listaVentanilla
         type(node), pointer :: head => null()
     contains
         procedure :: addNode
+        procedure :: addNodeDouble
         procedure :: cabeza
         procedure :: pushToNode
         procedure :: printList
         procedure :: deleteNode
+        procedure :: deleteNodeDouble
         procedure :: searchNode
         procedure :: updateNode
+        procedure :: agregarImpresion
         procedure :: colar2
         procedure :: agregarImagenes
     end type List_of_lists
@@ -215,15 +217,16 @@ subroutine addNode(this, index, name)
 end subroutine addNode
 
 !anadir de forma doblemente enlazada
-subroutine addNodeDouble(this, index, name)
+subroutine addNodeDouble(this, index, name,numeroImagenes)
     class(List_of_lists), intent(inout) :: this
-    integer, intent(in) :: index
+    integer, intent(in) ::index ,numeroImagenes
     character(len=*), intent(in) :: name
 
     type(node), pointer :: temp, current
     allocate(temp)
     temp%index = index
     temp%name = name
+    temp%NumeroImagenes = numeroImagenes
     temp%next => null()
     temp%prev => null()
 
@@ -231,8 +234,6 @@ subroutine addNodeDouble(this, index, name)
         this%head => temp
         print*, 'Nodo agregado'
         print*, 'Ventanilla No. ', index, ' creada'
-        print*, 'Igrande', temp%imagenesGrandes
-        print*, 'Ipequena', temp%imagenesPequenas
     else
         current => this%head
         do while(associated(current%next))
@@ -242,8 +243,6 @@ subroutine addNodeDouble(this, index, name)
         temp%prev => current
         print*, 'Nodo agregado'
         print*, 'Ventanilla No. ', index, ' creada'
-        print*, 'Igrande', temp%imagenesGrandes
-        print*, 'Ipequena', temp%imagenesPequenas
     end if
 end subroutine addNodeDouble
 
@@ -272,35 +271,36 @@ end subroutine addNodeDouble
         end if
     end subroutine deleteNode
 
-subroutine deleteNodeDouble(this, name)
+subroutine deleteNodeDouble(this)
     class(List_of_lists), intent(inout) :: this
-    character(len=*), intent(in) :: name
 
     type(node), pointer :: current, previous
     current => this%head
     previous => null()
 
-    do while (associated(current) .and. current%name /= name)
-        previous => current
-        current => current%next
-    end do
-
-    if(associated(current) .and. current%name == name) then
-        if(associated(previous)) then
-            previous%next => current%next
-            if (associated(current%next)) then
-                current%next%prev => previous
+    do while (associated(current))
+        if (current%NumeroImagenes == 0) then
+            if(associated(previous)) then
+                previous%next => current%next
+                if (associated(current%next)) then
+                    current%next%prev => previous
+                end if
+            else
+                this%head => current%next
+                if (associated(this%head)) then
+                    this%head%prev => null()
+                end if
             end if
+
+            deallocate(current)
+            exit
         else
-            this%head => current%next
-            if (associated(this%head)) then
-                this%head%prev => null()
-            end if
+            previous => current
+            current => current%next
         end if
-
-        deallocate(current)
-    end if
+    end do
 end subroutine deleteNodeDouble
+
 
     
 
@@ -367,6 +367,26 @@ end subroutine deleteNodeDouble
         end do
     end subroutine agregarImagenes
 
+
+
+        subroutine agregarImpresion(this,id,nombre,tipo)
+            class(List_of_lists), intent(in) :: this
+            integer, intent(in) :: id
+            character(len=*), intent(in) :: nombre,tipo
+            type(node), pointer :: current
+            current => this%head
+            do while(associated(current))
+                if(current%index == id ) then
+                    if(current%name == nombre)then
+                        call current%push(tipo)
+                        current%NumeroImagenes = current%NumeroImagenes - 1
+                    end if
+                end if
+                current => current%next
+            end do
+        end subroutine agregarImpresion
+
+
 function cabeza(this) result(retval)
     class(List_of_lists), intent(in) :: this
 
@@ -412,7 +432,7 @@ subroutine colar2(this, id, ig, ip, nombre)
     end do
 end subroutine colar2
 
-    subroutine updateNode(this,id,ig,ip,nombre) 
+    subroutine updateNode(this,id,ip,ig,nombre) 
         class(List_of_lists), intent(in) :: this
         type(node), pointer :: current
 
@@ -636,11 +656,11 @@ end subroutine enqueue
         end if
     end subroutine dequeue
 
-subroutine obtenerDatos(this)
+subroutine obtenerDatos(this,id,nombre)
     class(cola_Impresion), intent(in) :: this
     type(nodeI), pointer :: current
-    !integer, intent(out) :: id
-    !character(len=*), intent(out) :: nombre
+    integer, intent(out) :: id
+    character(len=*), intent(out) :: nombre
     !integer, intent(out) :: peso
     current => this%front
     if (associated(this%front)) then
@@ -650,6 +670,8 @@ subroutine obtenerDatos(this)
         print*, 'Nombre:', current%nombre
         print*, 'Peso:', current%peso
         print*, '=========================='
+        id = current%id
+        nombre = current%nombre
     else
         print *, 'La cola está vacía.'
     end if
@@ -826,10 +848,13 @@ program Proyecto_202200089
     implicit none
     logical::cabeza,encolarImpresion,verificacion
     type(List_of_lists) :: list_Ventanilla
+    type(List_of_lists)::listaEspera
     type(queue) :: colaVentanilla   
     type(cola_Impresion)::impresionesPequenas
     type(cola_Impresion) :: impresionesGrandes
 
+    integer :: idAI
+    character(len=100) :: nombreAI
 
     integer :: opcion, num1, num2,i
     integer :: id, imagenesPequenas, imagenesGrandes,paso
@@ -846,6 +871,7 @@ program Proyecto_202200089
     descp   = .false.
     descg   = .false.
 
+
     verificacion = .false.
     paso = 0
     do  
@@ -860,6 +886,8 @@ program Proyecto_202200089
         print *, '6. Salir'
         print *, 'Por favor, elige una opcion: '
         print*, '============================================'
+        print*, '||||||||||||||||||||||||||||||||||||||||||||'
+        print*, '============================================'
         print*, ''
         read *, opcion
 
@@ -872,7 +900,9 @@ program Proyecto_202200089
 
                 do i = 1, num1
                 if (i==1) then
-                    call colaVentanilla%enqueue(10, 'Cliente ', 2, 1)
+                                                !id,nombre,pequenas,grandes
+                                                !Numero, no peso
+                    call colaVentanilla%enqueue(10, 'Cliente ', 1, 1)
                 else 
                     call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
                 end if
@@ -903,6 +933,12 @@ program Proyecto_202200089
                 print*, '----------------------------------------------- '
 
 
+!Si tengo tengo clientes con todas sus imagenes recibidas los saco de la lista de espera
+!===========================================================================================================================
+                !Aca agrego ya los clientes atendidos
+
+                !Aca verifico numero de imagenes de la lista de espera si encuntra n clientes satisfechos salen de la lista de espera
+                call listaEspera%deleteNodeDouble()
 !Por logica desencolo primero, luego encolo
                 !Aca bajo una unidad a las dos colas o tipos de impresion
                 !Neccesito crear la subrutina
@@ -912,45 +948,51 @@ program Proyecto_202200089
                 call impresionesPequenas%verificarImpresion(descp)
                 call impresionesGrandes%verificarImpresion(descg)
 
+                !las imagenes que voy sacando las voy agregando ami lista de espera
                 if (descp) then
                     print*,'Imagen pequena impresa'
-                    call impresionesPequenas%obtenerDatos()
+                    call impresionesPequenas%obtenerDatos(idAI,nombreAI)
+                    call listaEspera%agregarImpresion(idAI,nombreAI,'pequena')
                     call impresionesPequenas%dequeue()
                 end if
                 if (descg) then
                     print*,'Imagen grande impresa'
-                    call impresionesGrandes%obtenerDatos()
+                    call impresionesGrandes%obtenerDatos(idAI,nombreAI)
+                    call listaEspera%agregarImpresion(idAI,nombreAI,'grande')
                     call impresionesGrandes%dequeue()
                 end if
 
-            
-
-
                 !Aca reviso las ventanillas listas para mandar a encolar imagenes
+                !Aca salen de ventanillas a colas de impresion
+                !Aca es donde se reservan los lugares para la lista de clientes en espera
                 do
                     
                     cabeza =  list_Ventanilla%cabeza()
                     print*, 'Valor de cabeza',cabeza
                     if (.not. cabeza) exit
-                    call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
-                    print*, 'Id',idC
-                    print*, 'Nombre',nombreC
-                    print*, 'Imagenes Grandes',igC
-                    print*, 'Imagenes Pequenas',ipC
-                    print*, '----------------------------------------------- '
-                    print*, 'Visualizacion de imagenes agregadas a cola de impresion'
+                        call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
+                        print*, 'Id',idC
+                        print*, 'Nombre',nombreC
+                        print*, 'Imagenes Grandes',igC
+                        print*, 'Imagenes Pequenas',ipC
+                        print*, '----------------------------------------------- '
+                        print*, 'Visualizacion de imagenes agregadas a cola de impresion'
+                        call listaEspera%addNodeDouble(idC, nombreC, igC+ipC)
+                        !Aca puedo agregar el nodo a lista doble enlazada de clientes en espera
 
-                    if (igC > 0) then
-                        do g = 1, igC
-                            print*, 'Imagen Grande'
-                            call impresionesGrandes%enqueue(idC, nombreC,'Grande',igC)
-                        end do
-                    end if
-                    if (ipC > 0) then
-                        do p = 1, ipC
-                            print*, 'Imagen Pequena'
-                            call impresionesPequenas%enqueue(idC, nombreC,'Pequena',ipC)
-                        end do
+                        if (igC > 0) then
+                            do g = 1, igC
+                                print*, 'Imagen Grande'
+                                call impresionesGrandes%enqueue(idC, nombreC,'Grande',2)
+                                igC=0
+                            end do
+                        end if
+                        if (ipC > 0) then
+                            do p = 1, ipC
+                                print*, 'Imagen Pequena'
+                                call impresionesPequenas%enqueue(idC, nombreC,'Pequena',1)
+                                ipC=0
+                            end do
                     end if             
                 end do
 
@@ -981,7 +1023,7 @@ program Proyecto_202200089
                 else
                     print*, 'Visualizacion de la ventanilla que fue apartada'
                     call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
-                    call list_Ventanilla%updateNode(id, imagenesGrandes, imagenesPequenas, nombre)
+                    call list_Ventanilla%updateNode(id,imagenesPequenas , imagenesGrandes, nombre)
                     call list_Ventanilla%printList()
                 end if
             case (3)
@@ -994,12 +1036,11 @@ program Proyecto_202200089
                 print*, 'cola grandes'
                 call impresionesGrandes%print()
 
-                CALL SYSTEM("type queue.dot pequena.dot grande.dot > combined.dot")
-                CALL SYSTEM("dot -Tpng combined.dot -o combined.png")
-
 
             case (4)
                 print *, 'Reportes'
+                print*, 'Impresion de lista de espera para mientras'
+                call listaEspera%printList()
             case (5)
                 call print_datosPersonales
             case (6)    
