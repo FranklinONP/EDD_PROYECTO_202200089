@@ -1,10 +1,16 @@
  digraph G {
  rankdir=LR;
- node0 [label="Cliente: Cliente\n'Id: 3\n'Peso: 3", color="red", shape="rectangle"];
- node1 [label="Cliente: Cliente\n'Id: 2\n'Peso: 2", color="red", shape="rectangle"];
- element10 [label="Imagenes Grandes", shape="ellipse"];
+ node0 [label="Cliente: Cliente\n'Id: 6\n'Peso: 6", color="red", shape="rectangle"];
+ node1 [label="Cliente: Cliente\n'Id: 5\n'Peso: 5", color="red", shape="rectangle"];
+ element10 [label="Imagenes G", shape="ellipse"];
  node1 -> element10 [dir="forward"];
- element11 [label="Imagenes Pequenas", shape="ellipse"];
- node1 -> element11 [dir="forward"];
  node0 -> node1 [dir="forward"];
+ node2 [label="Cliente: Cliente\n'Id: 3\n'Peso: 3", color="red", shape="rectangle"];
+ node1 -> node2 [dir="forward"];
+ node3 [label="Cliente: Cliente\n'Id: 4\n'Peso: 4", color="red", shape="rectangle"];
+ element30 [label="Imagenes P", shape="ellipse"];
+ node3 -> element30 [dir="forward"];
+ element30 -> element31 [dir="forward"];
+ element31 [label="Imagenes G", shape="ellipse"];
+ node2 -> node3 [dir="forward"];
  }

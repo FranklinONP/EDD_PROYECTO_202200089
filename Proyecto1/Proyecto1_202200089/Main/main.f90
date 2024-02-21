@@ -391,17 +391,17 @@ end subroutine agregarClienteAtendido
 
         do while(associated(current))
             if(current%EstadoVentanilla .eqv. .true.) then
-                if (current%imagenesPequenas /= 0) then
-                    print*, 'Valor de pequenas', current%imagenesPequenas
-                    call current%push('Imagenes Pequenas')
-                    current%imagenesPequenas = current%imagenesPequenas - 1 
-                    print*, 'Valor de pequenas', current%imagenesPequenas
-                    print*, '----------------------------------------------- '
-                else  if (current%imagenesGrandes/=0) then
+                if (current%imagenesGrandes /= 0) then
                     print*, 'Valor de grandes', current%imagenesGrandes 
                     call current%push('Imagenes Grandes')
                     current%imagenesGrandes = current%imagenesGrandes - 1  
                     print*, 'Valor de grandes', current%imagenesGrandes
+                    print*, '----------------------------------------------- '
+                else  if (current%imagenesPequenas/=0) then
+                    print*, 'Valor de pequenas', current%imagenesPequenas
+                    call current%push('Imagenes Pequenas')
+                    current%imagenesPequenas = current%imagenesPequenas - 1 
+                    print*, 'Valor de pequenas', current%imagenesPequenas
                     print*, '----------------------------------------------- '
                 else if (current%ocupada == 1) then
                     do cont = 1, current%NumeroImagenes
@@ -701,25 +701,36 @@ end subroutine graphV
 subroutine agregarSublista(this, parent_id)
     class(node), intent(in) :: this
     integer, intent(in) :: parent_id
-    type(string_node), pointer :: aux
+    type(string_node), pointer :: aux, prev_aux
     integer :: j
-    character(len=10) :: id_str, parent_id_str
+    character(len=10) :: id_str, parent_id_str, prev_id_str, node_label
 
     aux => this%top
+    prev_aux => null()
     j = 0
     do while(associated(aux))
         write(id_str, '(I10)') j
         write(parent_id_str, '(I10)') parent_id
-       write(10, *) 'element' // trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // &
-        & ' [label="' // trim(adjustl(aux%value)) // '", shape="ellipse"];'
-       write(10, *) 'node' // trim(adjustl(parent_id_str)) // ' -> element' // &
-        & trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // ' [dir="forward"];'
-
+        if (j == 0) then
+            node_label = trim(adjustl(aux%value))
+            write(10, *) 'element' // trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // &
+            & ' [label="' // node_label // '", shape="ellipse"];'
+            write(10, *) 'node' // trim(adjustl(parent_id_str)) // ' -> element' // &
+            & trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // ' [dir="forward"];'
+        else
+            write(prev_id_str, '(I10)') (j-1)
+            write(id_str, '(I10)') j
+            write(10, *) 'element' // trim(adjustl(parent_id_str)) // trim(adjustl(prev_id_str)) // ' -> element' // &
+            & trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // ' [dir="forward"];'
+            node_label = trim(adjustl(aux%value))
+            write(10, *) 'element' // trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // &
+            & ' [label="' // node_label // '", shape="ellipse"];'
+        end if
+        prev_aux => aux
         aux => aux%next
         j = j + 1
     end do
 end subroutine agregarSublista
-
 
 
 end module listaVentanilla
@@ -1047,7 +1058,7 @@ program Proyecto_202200089
                 if (i==1) then
                                                 !id,nombre,pequenas,grandes
                                                 !Numero, no peso
-                    call colaVentanilla%enqueue(10, 'Cliente ', 1, 1)
+                    call colaVentanilla%enqueue(2020, 'Cliente ', 2, 2)
                 else 
                     call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
                 end if

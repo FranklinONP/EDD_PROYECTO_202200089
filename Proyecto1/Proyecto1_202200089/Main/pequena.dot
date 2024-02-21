@@ -1,4 +1,8 @@
  digraph G {
  rankdir=LR;
- node0 [label="Cliente: Cliente\n'Id: 10\n'Peso: 1", color="red", shape="rectangle"];
+ node0 [label="Cliente: Cliente\n'Id: 2020\n'Peso: 1", color="red", shape="rectangle"];
+ node1 [label="Cliente: Cliente\n'Id: 2020\n'Peso: 1", color="red", shape="rectangle"];
+ node0 -> node1 [dir="forward"];
+ node2 [label="Cliente: Cliente\n'Id: 3\n'Peso: 1", color="red", shape="rectangle"];
+ node1 -> node2 [dir="forward"];
  }
