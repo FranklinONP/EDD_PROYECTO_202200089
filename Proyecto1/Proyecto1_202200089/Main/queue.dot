@@ -1,3 +1,12 @@
  digraph G {
  rankdir=LR;
+ node4 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node5 -> node4 [dir="forward"];
+ node5 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node6 -> node5 [dir="forward"];
+ node6 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node7 -> node6 [dir="forward"];
+ node7 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node8 -> node7 [dir="forward"];
+ node8 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
  }

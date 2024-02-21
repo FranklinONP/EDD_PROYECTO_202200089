@@ -163,6 +163,7 @@ module listaVentanilla
     contains
         procedure :: push
         procedure :: printer
+        procedure :: agregarSublista
         procedure :: delete
         procedure :: search
         procedure :: pop
@@ -181,6 +182,7 @@ module listaVentanilla
         procedure :: deleteNodeDouble
         procedure :: searchNode
         procedure :: printAtendidos
+        procedure :: graphV
         procedure :: agregarAtendido
         procedure :: updateNode
         procedure :: agregarClienteAtendido
@@ -655,6 +657,70 @@ end subroutine colar2
             current => current%next
         end do
     end function search
+subroutine graphV(this)
+    class(List_of_lists), intent(in) :: this
+    type(node), pointer :: current, previous
+    integer :: i, j
+    character(len=10) :: id_str, prev_id_str, g, idd, element_str
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='Ventanilla.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%head
+    previous => null()
+    i = 0
+    do while (associated(current))
+        write(id_str, '(I10)') i
+        write(g, '(I10)') current%index
+        write(idd, '(I10)') current%index
+
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%name)) // &
+     & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
+
+        call agregarSublista(current, i)
+
+        if (associated(previous)) then
+            write(prev_id_str, '(I10)') (i-1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        previous => current
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng Ventanilla.dot -o Ventanilla.png")
+end subroutine graphV
+
+
+subroutine agregarSublista(this, parent_id)
+    class(node), intent(in) :: this
+    integer, intent(in) :: parent_id
+    type(string_node), pointer :: aux
+    integer :: j
+    character(len=10) :: id_str, parent_id_str
+
+    aux => this%top
+    j = 0
+    do while(associated(aux))
+        write(id_str, '(I10)') j
+        write(parent_id_str, '(I10)') parent_id
+       write(10, *) 'element' // trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // &
+        & ' [label="' // trim(adjustl(aux%value)) // '", shape="ellipse"];'
+       write(10, *) 'node' // trim(adjustl(parent_id_str)) // ' -> element' // &
+        & trim(adjustl(parent_id_str)) // trim(adjustl(id_str)) // ' [dir="forward"];'
+
+        aux => aux%next
+        j = j + 1
+    end do
+end subroutine agregarSublista
+
+
 
 end module listaVentanilla
 !=======================================================================================================================================
@@ -1119,6 +1185,7 @@ program Proyecto_202200089
                 print*, 'cola grandes'
                 call impresionesGrandes%print()
 
+                call list_Ventanilla%graphV()
 
             case (4)
                 print *, 'Reportes'
