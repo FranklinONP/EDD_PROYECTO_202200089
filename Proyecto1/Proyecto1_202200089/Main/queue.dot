@@ -1,30 +1,3 @@
  digraph G {
  rankdir=LR;
- node9 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node10 -> node9 [dir="forward"];
- node10 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node11 -> node10 [dir="forward"];
- node11 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node12 -> node11 [dir="forward"];
- node12 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node13 -> node12 [dir="forward"];
- node13 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node14 -> node13 [dir="forward"];
- node14 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node15 -> node14 [dir="forward"];
- node15 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node16 -> node15 [dir="forward"];
- node16 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node17 -> node16 [dir="forward"];
- node17 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node18 -> node17 [dir="forward"];
- node18 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node19 -> node18 [dir="forward"];
- node19 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node20 -> node19 [dir="forward"];
- node20 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node21 -> node20 [dir="forward"];
- node21 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
- node22 -> node21 [dir="forward"];
- node22 [label="Cliente: Cliente\n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
  }

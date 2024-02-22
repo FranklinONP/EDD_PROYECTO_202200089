@@ -183,6 +183,8 @@ module listaVentanilla
         procedure :: searchNode
         procedure :: printAtendidos
         procedure :: graphV
+        procedure :: graphEspera
+        procedure :: graphAtendidos
         procedure :: agregarAtendido
         procedure :: updateNode
         procedure :: agregarClienteAtendido
@@ -335,7 +337,7 @@ subroutine deleteNodeDouble(this)
     end do
 end subroutine deleteNodeDouble
 
-
+!===========================================================================================================================================================
 subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
     class(List_of_lists), intent(inout) :: this
     integer, intent(out) :: id
@@ -381,6 +383,7 @@ end subroutine agregarClienteAtendido
     end function searchNode
 
 !Agrega imagenes y a su vez tambien elimina la pila de aquel nodo que haya termiando de recibir imagenes
+!De Ventanilla
     subroutine agregarImagenes(this)
         class(List_of_lists), intent(in) :: this
         integer :: ig, ip, id
@@ -751,6 +754,98 @@ subroutine agregarSublista(this, parent_id)
     end do
 end subroutine agregarSublista
 
+subroutine graphEspera(this)
+    class(List_of_lists), intent(in) :: this
+    type(node), pointer :: current, previous
+    integer :: i, j,nvv
+    character(len=10) :: id_str, prev_id_str, g, idd, element_str,p,nv
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='Espera.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%head
+    previous => null()
+    i = 0
+    do while (associated(current))
+        write(id_str, '(I10)') i
+        write(nv,'(I10)') i+1
+        write(g, '(I10)') current%imagenesGrandes
+        write(p, '(I10)') current%imagenesPequenas
+        write(idd, '(I10)') current%index
+
+
+                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
+                    & '\n''Id: ' // trim(adjustl(idd))  //&
+                    & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                    & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
+
+        
+
+        if (associated(previous)) then
+            write(prev_id_str, '(I10)') (i-1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        previous => current
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng Espera.dot -o Espera.png")
+end subroutine graphEspera
+
+subroutine graphAtendidos(this)
+    class(List_of_lists), intent(in) :: this
+    type(node), pointer :: current, previous
+    integer :: paso
+    integer :: i, j,nvv
+    character(len=10) :: id_str, prev_id_str, g, idd, element_str,p,nv,pas
+
+    ! Abre un archivo en formato DOT
+    open(unit=10, file='Atendidos.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+
+    current => this%head
+    previous => null()
+    i = 0
+    do while (associated(current))
+        write(id_str, '(I10)') i
+        write(nv,'(I10)') i+1
+        write(g, '(I10)') current%imagenesGrandes
+        write(p, '(I10)') current%imagenesPequenas
+        write(idd, '(I10)') current%index
+        paso=current%pasos
+        write(pas, '(I10)') paso
+
+                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
+                    & '\n''Id: ' // trim(adjustl(idd))  //&
+                    & '\n''Pasos: ' // trim(adjustl(pas))  //&
+                    & '\n''Cliente: ' // trim(adjustl('clienteAtendido')) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                    & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
+
+            
+
+        if (associated(previous)) then
+            write(prev_id_str, '(I10)') (i-1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        end if
+        previous => current
+        current => current%next
+        i = i + 1
+    end do
+
+    write(10, *) '}'
+    close(10)
+
+    ! Ejecuta el comando para generar la imagen
+    call system("dot -Tpng Atendidos.dot -o Atendidos.png")
+end subroutine graphAtendidos
 
 end module listaVentanilla
 !=======================================================================================================================================
@@ -1029,7 +1124,7 @@ program Proyecto_202200089
 
     logical :: atendido
     integer :: idAtendido,gAtendido,pAtendido
-    character :: nombreAtendido
+    character(len=100) :: nombreAtendido
 
     integer :: opcion, num1, num2,i
     integer :: id, imagenesPequenas, imagenesGrandes,paso
@@ -1070,18 +1165,27 @@ program Proyecto_202200089
             case (1)
 
     !Se cargan los clientes a la cola
-                print *, 'Ingrese la cantidad de clientes para encolar'
-                read *, num1
+                !print *, 'Ingrese la cantidad de clientes para encolar'
+                !read *, num1
 
-                do i = 1, num1
-                if (i==1) then
+                !do i = 1, num1
+                !if (i==1) then
                                                 !id,nombre,pequenas,grandes
                                                 !Numero, no peso
-                    call colaVentanilla%enqueue(2020, 'Cliente ', 2, 2)
-                else 
-                    call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
-                end if
-                end do
+                                                !Pequena y Grande
+                !    call colaVentanilla%enqueue(2020, 'Cliente ', 1, 1)
+                !else 
+                !    call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
+                !end if
+                !end do
+                call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
+                call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
+                call colaVentanilla%enqueue(3, 'Noj ', 1, 1)
+                call colaVentanilla%enqueue(4, 'Perez ', 1, 1)
+                call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
+                call colaVentanilla%enqueue(6, 'Eduardo ', 1, 1)
+                call colaVentanilla%enqueue(7, 'Noj ', 1, 1)
+
 
                 print*, 'Clientes encolados'
                 call colaVentanilla%print()
@@ -1110,12 +1214,14 @@ program Proyecto_202200089
 
 !Si tengo tengo clientes con todas sus imagenes recibidas los saco de la lista de espera
 !===========================================================================================================================
-                !Aca agrego ya los clientes atendidos
+!===============>>>>>>>> Aca agrego ya los clientes atendidos <<<<<<<<<==========================
+!Posible error
                 call listaEspera%agregarClienteAtendido(idAtendido,nombreAtendido,gAtendido,pAtendido,atendido)
                 if (atendido) then
                     call atendidos%agregarAtendido(idAtendido,nombreAtendido,pAtendido,gAtendido,paso)
                     atendido = .false.
                 end if
+                
                 !Aca verifico numero de imagenes de la lista de espera si encuntra n clientes satisfechos salen de la lista de espera
                 call listaEspera%deleteNodeDouble()
 !Por logica desencolo primero, luego encolo
@@ -1156,6 +1262,7 @@ program Proyecto_202200089
                         print*, 'Imagenes Pequenas',ipC
                         print*, '----------------------------------------------- '
                         print*, 'Visualizacion de imagenes agregadas a cola de impresion'
+                        !Aca manodo a lista de espera al nodo
                         call listaEspera%addNodeDouble(idC, nombreC, igC+ipC)
                         !Aca puedo agregar el nodo a lista doble enlazada de clientes en espera
 
@@ -1205,6 +1312,15 @@ program Proyecto_202200089
                     call list_Ventanilla%updateNode(id,imagenesPequenas , imagenesGrandes, nombre)
                     call list_Ventanilla%printList()
                 end if
+
+!Ver si tengo bien bien las colas de impresion 
+            print*, '----------------------------------------------- '
+                print*,'Para ver si estan bien las colas de impresion'
+                print*, 'Cola impresiones Pequenas'
+                call impresionesPequenas%print()
+                print*, 'Cola impresiones Grandes'
+                call impresionesGrandes%print()
+                print*,'Paso No. ', paso
             case (3)
                 print *, 'Estado de memoria de las estructuras'
                 call colaVentanilla%graph()
@@ -1216,13 +1332,18 @@ program Proyecto_202200089
                 call impresionesGrandes%print()
 
                 call list_Ventanilla%graphV()
-
-            case (4)
+!======================================================================
                 print *, 'Reportes'
                 print*, 'Impresion de lista de espera para mientras'
                 call listaEspera%printList()
+                call listaEspera%graphEspera()
                 print*, 'Impresion de lista de atendidos'
                 call atendidos%printAtendidos()
+                call atendidos%graphAtendidos()
+
+
+            case (4)
+                
             case (5)
                 call print_datosPersonales
             case (6)    
