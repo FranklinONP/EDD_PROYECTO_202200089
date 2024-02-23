@@ -8,6 +8,7 @@ type(json_file) :: json
     logical :: found 
     integer :: size, i,m,num_pasos = 1
     character(:), allocatable :: id, nombre, img_p, img_g
+    integer :: opcion
 
 
         integer :: idInt,img_gInt,img_pInt
@@ -49,6 +50,28 @@ type(json_file) :: json
         end do
         call json%destroy()
     
-        :D
 
+
+
+
+    do
+        print*, 'Selecciona una opción:'
+        print*, '1. Opción 1'
+        print*, '2. Opción 2'
+        print*, '3. Salir'
+        read*, opcion
+
+        select case (opcion)
+            case (1)
+                print*, 'Has seleccionado la opción 1.'
+            case (2)
+                print*, 'Has seleccionado la opción 2.'
+            case (3)
+                print*, 'Has seleccionado salir. Adiós!'
+                exit
+            case default
+                print*, 'Opción no válida. Por favor, intenta de nuevo.'
+        end select
+    end do
+   
 end program main
