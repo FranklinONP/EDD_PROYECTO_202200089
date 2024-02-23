@@ -178,6 +178,7 @@ module listaVentanilla
         procedure :: cabeza
         procedure :: pushToNode
         procedure :: printList
+        procedure :: printListEspera
         procedure :: deleteNode
         procedure :: deleteNodeDouble
         procedure :: searchNode
@@ -362,6 +363,7 @@ subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
     end do
 
 end subroutine agregarClienteAtendido
+
 
 
     function searchNode(this) result(retval)
@@ -554,6 +556,24 @@ end subroutine colar2
             aux => aux%next
         end do
     end subroutine printList
+    subroutine printListEspera(this)
+        class(List_of_lists), intent(in) :: this
+        type(node), pointer :: aux
+
+        aux => this%head
+
+        do while(associated(aux))
+            print *, 'INDICE: ', aux%index
+            print *, 'Nombre: ', aux%name
+            print *, 'Estado de la ventanilla: ', aux%EstadoVentanilla
+            print *, 'Imagenes Pequenas: ', aux%imagenesPequenas
+            print *, 'Imagenes Grandes: ', aux%imagenesGrandes
+            print*, 'Numero Imagenes', aux%NumeroImagenes
+            call aux%printer()
+            print *, ""
+            aux => aux%next
+        end do
+    end subroutine printListEspera
 
     subroutine printAtendidos(this)
         class(List_of_lists), intent(in) :: this
@@ -921,7 +941,7 @@ end subroutine enqueue
         end if
     end subroutine dequeue
 
-subroutine obtenerDatos(this,id,nombre)
+subroutine obtenerDatos(this,id,nombre)   
     class(cola_Impresion), intent(in) :: this
     type(nodeI), pointer :: current
     integer, intent(out) :: id
@@ -1200,72 +1220,66 @@ program Proyecto_202200089
                 call list_Ventanilla%printList()
                 print*, '----------------------------------------------- '    
             case (2)
-!case2
+    !Ejecutar paso
                 paso = paso + 1
                 print*, 'Paso No. ', paso
-                !Ejecutar paso
+                
     !Apila imagenes en ventanilla si se pudiera
+    !Agrega imagenes a las ventanillas que puedan recibirlas
                 call list_Ventanilla%agregarImagenes()
-                print*, '----------------------------------------------- '
-                print*, 'Para visualizacion de las imagenes agregadas a las ventanillas:'
-                call list_Ventanilla%printList()
-                print*, '----------------------------------------------- '
 
 
-!Si tengo tengo clientes con todas sus imagenes recibidas los saco de la lista de espera
-!===========================================================================================================================
-!===============>>>>>>>> Aca agrego ya los clientes atendidos <<<<<<<<<==========================
-!Posible error
+!Con <atendido> verifico si numeroImagenes es 0 para obtener sus datos 
+!agregarlos a lista atendidos
                 call listaEspera%agregarClienteAtendido(idAtendido,nombreAtendido,gAtendido,pAtendido,atendido)
                 if (atendido) then
                     call atendidos%agregarAtendido(idAtendido,nombreAtendido,pAtendido,gAtendido,paso)
                     atendido = .false.
                 end if
                 
-                !Aca verifico numero de imagenes de la lista de espera si encuntra n clientes satisfechos salen de la lista de espera
+!Hago la misma verificacion pero no devuelvo nada, unicamente si numeroImagenes=0 elimino ese nodo
                 call listaEspera%deleteNodeDouble()
+
 !Por logica desencolo primero, luego encolo
-                !Aca bajo una unidad a las dos colas o tipos de impresion
-                !Neccesito crear la subrutina
+!Aca bajo una unidad a las dos colas o tipos de impresion
+!El desencolar los dos tipos de impresiones funciona a la perfeccion
                 call impresionesPequenas%bajarUnidad()
                 call impresionesGrandes%bajarUnidad()
 
+!En teoria funciona perfectamente esto
+!Aca verifico si el peso de la primer imagen es 0, para que devuelva el true
+!de esta manera entra a su correspondiente if, para descenolar y mandar a lista de espera la imagen impresa
                 call impresionesPequenas%verificarImpresion(descp)
                 call impresionesGrandes%verificarImpresion(descg)
 
-                !las imagenes que voy sacando las voy agregando ami lista de espera
+!En teoria lo relacionado a impresion hasta aca funciona a la perfeccion, con las pruebas de consola
+!Las imagenes que voy sacando de las colas de impresion las voy agregando a mi lista de espera
+
+!aca esta el error ==============>>>>>>>><<<<<<<<<<<==================
                 if (descp) then
                     print*,'Imagen pequena impresa'
                     call impresionesPequenas%obtenerDatos(idAI,nombreAI)
                     call listaEspera%agregarImpresion(idAI,nombreAI,'pequena')
                     call impresionesPequenas%dequeue()
+                    descp=.false.
                 end if
                 if (descg) then
                     print*,'Imagen grande impresa'
                     call impresionesGrandes%obtenerDatos(idAI,nombreAI)
                     call listaEspera%agregarImpresion(idAI,nombreAI,'grande')
                     call impresionesGrandes%dequeue()
+                    descg=.false.
                 end if
 
-                !Aca reviso las ventanillas listas para mandar a encolar imagenes
-                !Aca salen de ventanillas a colas de impresion
-                !Aca es donde se reservan los lugares para la lista de clientes en espera
+!Aca reviso las ventanillas listas para mandar a encolar imagenes
+!Aca encolo las imagenes de todos de una vez, de manera secuencial
+!Aca es donde se reservan los lugares para la lista de clientes en espera
                 do
-                    
                     cabeza =  list_Ventanilla%cabeza()
                     print*, 'Valor de cabeza',cabeza
                     if (.not. cabeza) exit
                         call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
-                        print*, 'Id',idC
-                        print*, 'Nombre',nombreC
-                        print*, 'Imagenes Grandes',igC
-                        print*, 'Imagenes Pequenas',ipC
-                        print*, '----------------------------------------------- '
-                        print*, 'Visualizacion de imagenes agregadas a cola de impresion'
-                        !Aca manodo a lista de espera al nodo
                         call listaEspera%addNodeDouble(idC, nombreC, igC+ipC)
-                        !Aca puedo agregar el nodo a lista doble enlazada de clientes en espera
-
                         if (igC > 0) then
                             do g = 1, igC
                                 print*, 'Imagen Grande'
@@ -1281,39 +1295,23 @@ program Proyecto_202200089
                             end do
                     end if             
                 end do
-
-                print*, 'Cola impresiones Pequenas'
-                call impresionesPequenas%print()
-                print*, 'Cola impresiones Grandes'
-                call impresionesGrandes%print() 
-
-                print*, '----------------------------------------------- '
-                print*, '----------------------------------------------- '
-                print*, '----------------------------------------------- '
-    !Revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
-        !Como es una cola no puede entrar mas de 1 a la vez
-        !        do while(.true.)
-        !            if(.not. list_Ventanilla%searchNode()) then
-        !                print *, 'No hay ventanillas disponibles'
-        !                exit
-        !            else
-        !                print*, 'Visualizacion de la ventanilla que fue apartada'
-        !                call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
-        !                call list_Ventanilla%updateNode(id, imagenesGrandes, imagenesPequenas, nombre)
-        !                call list_Ventanilla%printList()
-        !            end if
-        !        end do  
-
+!Funciona bien
+!Revisa si hay ventanillas disponibles para poder pasar a atender a un cliente
                 if(.not. list_Ventanilla%searchNode()) then
                     print *, 'No hay ventanillas disponibles'
                 else
                     print*, 'Visualizacion de la ventanilla que fue apartada'
                     call colaVentanilla%dequeue(id, imagenesPequenas, imagenesGrandes, nombre)
                     call list_Ventanilla%updateNode(id,imagenesPequenas , imagenesGrandes, nombre)
-                    call list_Ventanilla%printList()
+                    !call list_Ventanilla%printList()
                 end if
 
 !Ver si tengo bien bien las colas de impresion 
+            print*, '----------------------------------------------- '
+            print*, 'Lista de espera'
+            call listaEspera%printListEspera()
+            print*, 'Lista Atendidos'
+            call atendidos%printAtendidos()
             print*, '----------------------------------------------- '
                 print*,'Para ver si estan bien las colas de impresion'
                 print*, 'Cola impresiones Pequenas'
@@ -1321,26 +1319,15 @@ program Proyecto_202200089
                 print*, 'Cola impresiones Grandes'
                 call impresionesGrandes%print()
                 print*,'Paso No. ', paso
+
             case (3)
-                print *, 'Estado de memoria de las estructuras'
+                print* , 'Estado de memoria de las estructuras'
                 call colaVentanilla%graph()
+                call list_Ventanilla%graphV()
                 call impresionesPequenas%graphP()
                 call impresionesGrandes%graphG()
-                print*, 'cola pequenas'
-                call impresionesPequenas%print()
-                print*, 'cola grandes'
-                call impresionesGrandes%print()
-
-                call list_Ventanilla%graphV()
-!======================================================================
-                print *, 'Reportes'
-                print*, 'Impresion de lista de espera para mientras'
-                call listaEspera%printList()
                 call listaEspera%graphEspera()
-                print*, 'Impresion de lista de atendidos'
-                call atendidos%printAtendidos()
                 call atendidos%graphAtendidos()
-
 
             case (4)
                 
