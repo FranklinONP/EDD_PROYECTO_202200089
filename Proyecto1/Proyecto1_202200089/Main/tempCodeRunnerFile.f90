@@ -1,1 +1,7 @@
-descp
+                call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
+                call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
+                call colaVentanilla%enqueue(3, 'Noj ', 1, 1)
+                call colaVentanilla%enqueue(4, 'Perez ', 1, 1)
+                call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
+                call colaVentanilla%enqueue(6, 'Eduardo ', 1, 1)
+                call colaVentanilla%enqueue(7, 'Noj ', 1, 1)

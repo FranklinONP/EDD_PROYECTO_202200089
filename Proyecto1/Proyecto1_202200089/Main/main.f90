@@ -1053,11 +1053,12 @@ subroutine graphP(this)
     ! Ejecuta el comando para generar la imagen
     call system("dot -Tpng pequena.dot -o pequena.png")
 end subroutine graphP
+
 subroutine graphG(this)
     class(cola_Impresion), intent(in) :: this
     type(nodeI), pointer :: current, previous
     integer :: i
-    character(len=10) :: id_str, prev_id_str, g,idd
+    character(len=100) :: id_str, prev_id_str, g,idd
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='grande.dot', status='replace', action='write')
@@ -1183,23 +1184,9 @@ program Proyecto_202200089
 
         select case (opcion)
             case (1)
-
-    !Se cargan los clientes a la cola
-                !print *, 'Ingrese la cantidad de clientes para encolar'
-                !read *, num1
-
-                !do i = 1, num1
-                !if (i==1) then
-                                                !id,nombre,pequenas,grandes
-                                                !Numero, no peso
-                                                !Pequena y Grande
-                !    call colaVentanilla%enqueue(2020, 'Cliente ', 1, 1)
-                !else 
-                !    call colaVentanilla%enqueue(i, 'Cliente ', 1, 1)
-                !end if
-                !end do
-                call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
-                call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
+                !Pequenas grandes
+                call colaVentanilla%enqueue(1, 'Franklin ', 2, 2)
+                call colaVentanilla%enqueue(2, 'Orlando ', 5, 1)
                 call colaVentanilla%enqueue(3, 'Noj ', 1, 1)
                 call colaVentanilla%enqueue(4, 'Perez ', 1, 1)
                 call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
