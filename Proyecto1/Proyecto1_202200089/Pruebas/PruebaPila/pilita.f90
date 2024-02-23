@@ -2,6 +2,7 @@
 module pilaImpresion
     implicit none
     private
+    !hika
 !Nodo de la cola
     type :: node
         character(:), allocatable :: nombreCliente
