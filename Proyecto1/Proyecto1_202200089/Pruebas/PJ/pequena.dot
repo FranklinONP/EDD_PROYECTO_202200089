@@ -1,6 +1,6 @@
  digraph G {
  rankdir=LR;
  inicio [label="Impresiones Pequeñas", color="blue", shape="rectangle"];
- node0 [label="Cliente: Luiz Higueros\n'Id: 4\n'Peso: 1", color="red", shape="rectangle"];
+ node0 [label="Cliente: Lucia\n'Id: 8\n'Peso: 1", color="red", shape="rectangle"];
  inicio -> node0 [dir="forward"];
  }

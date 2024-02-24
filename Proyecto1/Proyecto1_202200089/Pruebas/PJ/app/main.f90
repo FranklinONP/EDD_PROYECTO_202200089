@@ -1490,7 +1490,4 @@ subroutine cargaMasivaCliente()
         call json%destroy()
 end subroutine cargaMasivaCliente
 
-
-
-
 end program Proyecto_202200089
