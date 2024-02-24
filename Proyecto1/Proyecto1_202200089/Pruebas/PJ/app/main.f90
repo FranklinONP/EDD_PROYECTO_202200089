@@ -186,6 +186,8 @@ module listaVentanilla
         procedure :: graphV
         procedure :: graphEspera
         procedure :: graphAtendidos
+        procedure :: graficarCliente
+        procedure :: graficarMayorPaso
         procedure :: agregarAtendido
         procedure :: updateNode
         procedure :: agregarClienteAtendido
@@ -225,6 +227,71 @@ subroutine addNode(this, index, name)
     end if
 end subroutine addNode
 
+    
+       
+subroutine graficarCliente(this, id)
+    class(List_of_lists), intent(inout) :: this
+    integer, intent(in) :: id
+    type(node), pointer :: current
+    character(len=10) :: pas, g, p, idd
+    current => this%head
+    
+    do while(associated(current))
+        if (current%index == id) then
+            open(unit=10, file='especifico.dot', status='replace', action='write')
+            write(10, *) 'digraph G {'
+            write(10, *) 'rankdir=LR;'
+            write(pas, '(I10)') current%pasos
+            write(g, '(I10)') current%imagenesGrandes
+            write(p, '(I10)') current%imagenesPequenas
+            write(idd, '(I10)') current%index
+            write(10, *) 'node1 [label="Pasos: ' // trim(pas) // &
+                & '\nId: ' // trim(idd)  // &
+                & '\nCliente: ' // trim(current%name) // &
+                & '\nImagenes Grandes: ' // trim(g) // &
+                & '\nImagenes Pequenas: ' // trim(p) //'", color="red", shape="rectangle"];'
+            write(10, *) '}'
+            close(10)
+            call system("dot -Tpng especifico.dot -o especifico.png")
+            exit
+        end if
+        current => current%next
+    end do
+end subroutine graficarCliente
+
+subroutine graficarMayorPaso(this)
+    class(List_of_lists), intent(inout) :: this
+    integer :: mayor
+    type(node), pointer :: current, aux
+    character(len=10) :: pas, g, p, idd
+    current => this%head
+    aux => this%head
+    mayor = 0
+    
+    do while (associated(current))
+        if (mayor < current%pasos) then
+            mayor = current%pasos
+            aux = current
+        end if
+        current => current%next
+    end do
+    
+    open(unit=10, file='masPasos.dot', status='replace', action='write')
+    write(10, *) 'digraph G {'
+    write(10, *) 'rankdir=LR;'
+    write(pas, '(I10)') aux%pasos
+    write(g, '(I10)') aux%imagenesGrandes
+    write(p, '(I10)') aux%imagenesPequenas
+    write(idd, '(I10)') aux%index
+    write(10, *) 'node1 [label="Pasos: ' // trim(pas) // &
+        & '\nId: ' // trim(idd)  // &
+        & '\nCliente: ' // trim(aux%name) // &
+        & '\nImagenes Grandes: ' // trim(g) // &
+        & '\nImagenes Pequenas: ' // trim(p) //'", color="red", shape="rectangle"];'
+    write(10, *) '}'
+    close(10)
+    call system("dot -Tpng masPasos.dot -o masPasos.png")
+end subroutine graficarMayorPaso
 
 subroutine agregarAtendido(this, index, name,p,g,pasos)
     class(List_of_lists), intent(inout) :: this
@@ -357,6 +424,7 @@ subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
             p=current%imagenesPequenas
             g=current%imagenesGrandes
             atendido = .true.
+            exit
         end if
             previous => current
             current => current%next
@@ -801,7 +869,7 @@ subroutine graphEspera(this)
                     & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
                     & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
 
-        
+        call agregarSublista(current, i)
 
         if (associated(previous)) then
             write(prev_id_str, '(I10)') (i-1)
@@ -1150,7 +1218,7 @@ program Proyecto_202200089
     character(:), allocatable :: idCC, nombreCarga, img_p, img_g
 
 
-    integer :: idAI
+    integer :: idAI,especifico
     character(len=100) :: nombreAI
 
     logical :: atendido
@@ -1229,8 +1297,10 @@ program Proyecto_202200089
 
 !Con <atendido> verifico si numeroImagenes es 0 para obtener sus datos 
 !agregarlos a lista atendidos
+                print*, 'Antes entrar id=',idAtendido
                 call listaEspera%agregarClienteAtendido(idAtendido,nombreAtendido,gAtendido,pAtendido,atendido)
                 if (atendido) then
+                    print*, 'Id atendido es',idAtendido
                     call atendidos%agregarAtendido(idAtendido,nombreAtendido,pAtendido,gAtendido,paso)
                     atendido = .false.
                 end if
@@ -1329,6 +1399,12 @@ program Proyecto_202200089
 
             case (4)
                 
+                print*, 'Ingrese el id del clinete que desea graficar'
+                read*, especifico
+                call atendidos%graficarCliente(especifico)
+                call atendidos%graficarMayorPaso()
+
+
             case (5)
                 call print_datosPersonales
             case (6)    
