@@ -844,9 +844,9 @@ end subroutine agregarSublista
 
 subroutine graphEspera(this)
     class(List_of_lists), intent(in) :: this
-    type(node), pointer :: current, previous
-    integer :: i, j,nvv
-    character(len=10) :: id_str, prev_id_str, g, idd, element_str,p,nv
+    type(node), pointer :: current, previous, first
+    integer :: i, j, nvv
+    character(len=10) :: id_str, prev_id_str, g, idd, element_str, p, nv
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='Espera.dot', status='replace', action='write')
@@ -855,30 +855,40 @@ subroutine graphEspera(this)
 
     current => this%head
     previous => null()
+    first => current
     i = 0
     do while (associated(current))
         write(id_str, '(I10)') i
-        write(nv,'(I10)') i+1
+        write(nv, '(I10)') i + 1
         write(g, '(I10)') current%imagenesGrandes
         write(p, '(I10)') current%imagenesPequenas
         write(idd, '(I10)') current%index
 
-
-                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
-                    & '\n''Id: ' // trim(adjustl(idd))  //&
-                    & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
-                    & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
+            & '\n''Id: ' // trim(adjustl(idd))  //&
+            & '\n''Cliente: ' // trim(adjustl(current%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+            & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
 
         call agregarSublista(current, i)
 
         if (associated(previous)) then
-            write(prev_id_str, '(I10)') (i-1)
+            write(prev_id_str, '(I10)') (i - 1)
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="back"];'
             write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+            
         end if
         previous => current
         current => current%next
         i = i + 1
     end do
+
+    ! Conecta el último nodo con el primer nodo para formar la lista circular
+    if (associated(previous)) then
+        write(prev_id_str, '(I10)') (i - 1)
+        write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node0 [dir="forward"];'
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' -> node0 [dir="back"];'
+
+    end if
 
     write(10, *) '}'
     close(10)
@@ -886,6 +896,9 @@ subroutine graphEspera(this)
     ! Ejecuta el comando para generar la imagen
     call system("dot -Tpng Espera.dot -o Espera.png")
 end subroutine graphEspera
+
+!sirve nice
+
 
 subroutine graphAtendidos(this)
     class(List_of_lists), intent(in) :: this
@@ -1082,26 +1095,31 @@ end subroutine verificarImpresion
     end subroutine print
 
 
+
+
+
 !Agrega esta función al módulo colaClientes
 subroutine graphP(this)
     class(cola_Impresion), intent(in) :: this
     type(nodeI), pointer :: current, previous
     integer :: i
-    character(len=10) :: id_str, prev_id_str, g,idd
+    character(len=10) :: id_str, prev_id_str, g, idd
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='pequena.dot', status='replace', action='write')
     write(10, *) 'digraph G {'
     write(10, *) 'rankdir=LR;'
 
+    ! Agrega el nodo adicional al inicio
+    write(10, *) 'inicio [label="Impresiones Pequeñas", color="blue", shape="rectangle"];'
+
     current => this%front
     previous => null()
     i = 0
     do while (associated(current))
-         write(id_str, '(I10)') i
+        write(id_str, '(I10)') i
         write(g, '(I10)') current%peso
         write(idd, '(I10)') current%id
-
 
         write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
      & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
@@ -1109,6 +1127,8 @@ subroutine graphP(this)
         if (associated(previous)) then
             write(prev_id_str, '(I10)') (i-1)
             write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        else
+            write(10, *) 'inicio -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
         end if
         previous => current
         current => current%next
@@ -1122,32 +1142,42 @@ subroutine graphP(this)
     call system("dot -Tpng pequena.dot -o pequena.png")
 end subroutine graphP
 
+
+
+
+
+
+
 subroutine graphG(this)
     class(cola_Impresion), intent(in) :: this
     type(nodeI), pointer :: current, previous
     integer :: i
-    character(len=100) :: id_str, prev_id_str, g,idd
+    character(len=100) :: id_str, prev_id_str, g, idd
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='grande.dot', status='replace', action='write')
     write(10, *) 'digraph G {'
     write(10, *) 'rankdir=LR;'
 
+    ! Agrega el nodo adicional al inicio
+    write(10, *) 'inicio [label="Impresiones Grandes", color="blue", shape="rectangle"];'
+
     current => this%front
     previous => null()
     i = 0
     do while (associated(current))
-        write(id_str, '(I10)') i
+        write(id_str, '(I10)') i + 1
         write(g, '(I10)') current%peso
         write(idd, '(I10)') current%id
-
 
         write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
      & '\n''Id: ' // trim(adjustl(idd)) // '\n''Peso: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
 
         if (associated(previous)) then
-            write(prev_id_str, '(I10)') (i-1)
+            write(prev_id_str, '(I10)') i
             write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+        else
+            write(10, *) 'inicio -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
         end if
         previous => current
         current => current%next
