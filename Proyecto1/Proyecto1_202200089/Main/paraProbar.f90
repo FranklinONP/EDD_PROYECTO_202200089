@@ -1124,11 +1124,13 @@ end module datosPersonales
 
 !Menu del proyecto
 program Proyecto_202200089
+    use json_module
     use datosPersonales
     use colaClientes
     use listaVentanilla
     use colaImpresiones
-    use iso_fortran_env, only: 
+    use iso_fortran_env, only:
+     
     
 
     implicit none
@@ -1139,6 +1141,14 @@ program Proyecto_202200089
     type(queue) :: colaVentanilla   
     type(cola_Impresion)::impresionesPequenas
     type(cola_Impresion) :: impresionesGrandes
+
+    type(json_file) :: json
+    type(json_core) :: jsonc
+    type(json_value), pointer :: listPointer, animalPointer, attributePointer
+    logical :: found 
+    integer :: size, iC,m,num_pasos = 1
+    character(:), allocatable :: idC, nombre, img_p, img_g
+
 
     integer :: idAI
     character(len=100) :: nombreAI
@@ -1186,14 +1196,14 @@ program Proyecto_202200089
             case (1)
             print*, 'Ingrese la ruta del archivo para su ar'
                 !Pequenas grandes
-                call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
-                call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
-                call colaVentanilla%enqueue(3, 'Noj ', 1, 1)
-                call colaVentanilla%enqueue(4, 'Perez ', 1, 1)
-                call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
-                call colaVentanilla%enqueue(6, 'Eduardo ', 1, 1)
-                call colaVentanilla%enqueue(7, 'Noj ', 1, 1)
-
+                !call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
+                !call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
+                !call colaVentanilla%enqueue(3, 'Noj ', 1, 1)
+                !call colaVentanilla%enqueue(4, 'Perez ', 1, 1)
+                !call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
+                !call colaVentanilla%enqueue(6, 'Eduardo ', 1, 1)
+                !call colaVentanilla%enqueue(7, 'Noj ', 1, 1)
+                call cargaMasivaCliente()
 
                 print*, 'Clientes encolados'
                 call colaVentanilla%print()
@@ -1329,4 +1339,271 @@ program Proyecto_202200089
         end select
     end do
 
+contains 
+subroutine cargaMasivaCliente()
+        !character(len=*) :: direccion
+        integer :: idInt,img_gInt,img_pInt
+        print*, direccion
+        print *, "--------------Carga Masiva Cliente-------------------------"
+        
+        call json%initialize()
+       
+        call json%load(filename='C:\Users\50232\Desktop\pruebaJson.json')
+        call json%info('',n_children=size)
+        call json%get_core(jsonc)
+        call json%get('', listPointer, found)
+
+        do iC = 1, size
+            call jsonc%get_child(listPointer, iC, animalPointer, found)
+
+            call jsonc%get_child(animalPointer, 'id', attributePointer, found)
+            call jsonc%get(attributePointer, idC)
+
+            call jsonc%get_child(animalPointer, 'nombre', attributePointer, found)
+            call jsonc%get(attributePointer, nombre)
+
+            call jsonc%get_child(animalPointer, 'img_p', attributePointer, found) 
+            call jsonc%get(attributePointer, img_p)
+
+            call jsonc%get_child(animalPointer, 'img_g', attributePointer, found) 
+            call jsonc%get(attributePointer, img_g)
+
+            read(idC, *) idInt;
+            read(img_g, *) img_gInt;
+            read(img_p, *) img_pInt;
+            call colaVentanilla%enqueue(idC,nombre,img_pInt,img_gInt)
+            
+             print *, "----"
+             print *, 'ID: ', idC
+             print *, 'Nombre: ', nombre
+             print *, 'img_p: ', img_p
+             print *, 'img_g: ', img_g
+
+
+        end do
+        call json%destroy()
+end subroutine cargaMasivaCliente
+
+
+
+
 end program Proyecto_202200089
+
+
+
+
+
+
+
+
+
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+!=======================================================================================================================================
+
+
+
+
+
+
+module doubly_linked_list_m
+    implicit none
+    
+    type :: node
+        private
+        integer :: value
+        type(node), pointer :: next => null()
+        type(node), pointer :: prev => null()
+    end type node
+
+    type, public :: doubly_linked_list
+        private 
+        type(node), pointer :: head => null()
+        type(node), pointer :: tail => null()
+
+    contains
+        procedure :: append
+        procedure :: push
+        procedure :: insert
+        procedure :: print
+        procedure :: printRev
+    end type
+contains
+
+    subroutine push(self, value)
+        class(doubly_linked_list), intent(inout) :: self 
+        integer, intent(in) :: value  
+
+        type(node), pointer :: new
+        allocate(new)
+        new%value = value
+
+        if(.not. associated(self%head)) then
+            self%head => new
+            self%tail => new
+        else
+            new%next => self%head
+            self%head%prev => new
+            self%head => new
+        end if
+    end subroutine push
+
+    subroutine append(self, value)
+        class(doubly_linked_list), intent(inout) :: self 
+        integer, intent(in) :: value  
+
+        type(node), pointer :: new
+        allocate(new)
+        new%value = value
+
+        if(.not. associated(self%head)) then
+            self%head => new
+            self%tail => new  
+        else
+            new%prev => self%tail
+            self%tail%next => new
+            self%tail => new
+        end if
+    end subroutine
+
+    subroutine insert(self, index, value)
+        class(doubly_linked_list), intent(inout) :: self
+        type(node), pointer :: actual
+        integer, intent(in) :: index
+        integer, intent(in) :: value
+        integer :: i
+
+        type(node), pointer :: new
+        allocate(new)
+        new%value = value
+        i = 0
+        
+        actual => self%head
+
+        if((.not. associated(self%head)) .or. (index == 0)) then
+            call self%push(value)
+        else
+            do while((associated(actual%next)) .and. (i < index -1))
+                actual => actual%next
+                i = i + 1
+            end do
+
+            if(i < index - 1) then
+                call self%append(value)
+                return
+            end if
+
+            new%next => actual%next
+            new%prev => actual
+            actual%next%prev => new
+            actual%next => new
+        end if
+    end subroutine insert
+
+    subroutine print(self)
+        class(doubly_linked_list), intent(in) :: self
+        type(node), pointer :: current
+        current => self%head
+
+        do while(associated(current))
+            print *, current%value, ","
+            current => current%next
+        end do
+    end subroutine print
+
+    subroutine printRev(self)
+        class(doubly_linked_list), intent(in) :: self
+        type(node), pointer :: current
+        current => self%tail
+
+        do while(associated(current))
+            print *, current%value, ","
+            current => current%prev
+        end do
+    end subroutine printRev
+    
+end module doubly_linked_list_m
+
+program main
+use::json_module
+use::doubly_linked_list_m
+implicit none
+
+type(doubly_linked_list) :: myCola
+type(json_file) :: json
+    type(json_core) :: jsonc
+    type(json_value), pointer :: listPointer, animalPointer, attributePointer
+    logical :: found 
+    integer :: size, i,m,num_pasos = 1
+    character(len=:), allocatable :: direccion
+    character(:), allocatable :: id, nombre, img_p, img_g
+    integer:: op
+    print*, 'ingrese1'
+    read *, op
+    if (op == 1) then
+    print*, 'ingrese direccion'
+        read*, direccion
+        call cargaMasivaCliente(direccion)
+    end if
+    print*, 'ingrese2'
+    read *, op
+    if (op == 2) then
+        call myCola%print()
+    end if   
+
+contains 
+subroutine cargaMasivaCliente(direccion)
+        character(len=*) :: direccion
+        integer :: idInt,img_gInt,img_pInt
+        print*, direccion
+        print *, "--------------Carga Masiva Cliente-------------------------"
+        
+        call json%initialize()
+       
+        call json%load(filename=direccion)
+        call json%info('',n_children=size)
+        call json%get_core(jsonc)
+        call json%get('', listPointer, found)
+
+        do i = 1, size
+            call jsonc%get_child(listPointer, i, animalPointer, found)
+
+            call jsonc%get_child(animalPointer, 'id', attributePointer, found)
+            call jsonc%get(attributePointer, id)
+
+            call jsonc%get_child(animalPointer, 'nombre', attributePointer, found)
+            call jsonc%get(attributePointer, nombre)
+
+            call jsonc%get_child(animalPointer, 'img_p', attributePointer, found) 
+            call jsonc%get(attributePointer, img_p)
+
+            call jsonc%get_child(animalPointer, 'img_g', attributePointer, found) 
+            call jsonc%get(attributePointer, img_g)
+
+            read(id, *) idInt;
+            read(img_g, *) img_gInt;
+            read(img_p, *) img_pInt;
+            call myCola%append(img_gInt)
+            
+             print *, "----"
+             print *, 'ID: ', id
+             print *, 'Nombre: ', nombre
+             print *, 'img_p: ', img_p
+             print *, 'img_g: ', img_g
+
+
+        end do
+        call json%destroy()
+end subroutine cargaMasivaCliente
+end program main
