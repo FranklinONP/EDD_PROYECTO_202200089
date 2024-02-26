@@ -95,16 +95,20 @@ contains
 !Agrega esta función al módulo colaClientes
 subroutine graph(this)
     class(queue), intent(in) :: this
-    type(nodeC), pointer :: current
+    type(nodeC), pointer :: current, first
     integer :: i
-    character(len=10) :: id_str, next_id_str,p,g
+    character(len=10) :: id_str, next_id_str, p, g, id
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='queue.dot', status='replace', action='write')
     write(10, *) 'digraph G {'
     write(10, *) 'rankdir=LR;'
+    write(10, *) 'inicio [label="Cliente a ingresar", color="blue", shape="rectangle"];'
 
-    current => this%front
+    ! Enlaza el nodo inicial al primer nodo de la lógica
+    first => this%front
+
+    current => first
     i = 0
     do while (associated(current))
         write(id_str, '(I10)') current%id
@@ -113,15 +117,22 @@ subroutine graph(this)
         write(g, '(I10)') current%imagenesGrandes
 
         write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Cliente: ' // trim(adjustl(current%nombre)) // &
+     & '\n''Id: ' // trim(adjustl(id_str)) // '\n''IMG: ' //&
      & '\n''IMP: ' // trim(adjustl(p)) // '\n''IMG: ' // trim(adjustl(g)) // '", color="red", shape="rectangle"];'
 
         if (associated(current%next)) then
             write(next_id_str, '(I10)') current%next%id
-            write(10, *) 'node' // trim(adjustl(next_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+            write(10, *) 'node' // trim(adjustl(next_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="back"];'
         end if
         current => current%next
         i = i + 1
     end do
+
+    ! Enlaza el nodo inicial al primer nodo de la lógica
+    if (i > 0) then
+        write(next_id_str, '(I10)') first%id
+        write(10, *) 'inicio -> node' // trim(adjustl(next_id_str)) // ' [dir="fordward"];'
+    end if
 
     write(10, *) '}'
     close(10)
@@ -183,6 +194,7 @@ module listaVentanilla
         procedure :: deleteNodeDouble
         procedure :: searchNode
         procedure :: printAtendidos
+        procedure :: printTop5
         procedure :: graphV
         procedure :: graphEspera
         procedure :: graphAtendidos
@@ -322,15 +334,17 @@ end subroutine agregarAtendido
 
 
 !anadir de forma doblemente enlazada
-subroutine addNodeDouble(this, index, name,numeroImagenes)
+subroutine addNodeDouble(this, index, name,numeroImagenes,p,g)
     class(List_of_lists), intent(inout) :: this
-    integer, intent(in) ::index ,numeroImagenes
+    integer, intent(in) ::index ,numeroImagenes,p,g
     character(len=*), intent(in) :: name
 
     type(node), pointer :: temp, current
     allocate(temp)
     temp%index = index
     temp%name = name
+    temp%ip = p
+    temp%ig = g
     temp%NumeroImagenes = numeroImagenes
     temp%next => null()
     temp%prev => null()
@@ -660,6 +674,66 @@ end subroutine colar2
             aux => aux%next
         end do
     end subroutine printAtendidos
+    
+subroutine printTop5(this)
+    class(List_of_lists), intent(in) :: this
+    type(node), pointer :: aux, cliente1, cliente2, cliente3, cliente4, cliente5
+    integer :: imagenesGrandes1, imagenesGrandes2, imagenesGrandes3, imagenesGrandes4, imagenesGrandes5
+
+    imagenesGrandes1 = -1
+    imagenesGrandes2 = -1
+    imagenesGrandes3 = -1
+    imagenesGrandes4 = -1
+    imagenesGrandes5 = -1
+
+    aux => this%head
+    do while(associated(aux))
+        if (aux%imagenesGrandes > imagenesGrandes1) then
+            cliente5 => cliente4
+            imagenesGrandes5 = imagenesGrandes4
+            cliente4 => cliente3
+            imagenesGrandes4 = imagenesGrandes3
+            cliente3 => cliente2
+            imagenesGrandes3 = imagenesGrandes2
+            cliente2 => cliente1
+            imagenesGrandes2 = imagenesGrandes1
+            cliente1 => aux
+            imagenesGrandes1 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes > imagenesGrandes2) then
+            cliente5 => cliente4
+            imagenesGrandes5 = imagenesGrandes4
+            cliente4 => cliente3
+            imagenesGrandes4 = imagenesGrandes3
+            cliente3 => cliente2
+            imagenesGrandes3 = imagenesGrandes2
+            cliente2 => aux
+            imagenesGrandes2 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes > imagenesGrandes3) then
+            cliente5 => cliente4
+            imagenesGrandes5 = imagenesGrandes4
+            cliente4 => cliente3
+            imagenesGrandes4 = imagenesGrandes3
+            cliente3 => aux
+            imagenesGrandes3 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes > imagenesGrandes4) then
+            cliente5 => cliente4
+            imagenesGrandes5 = imagenesGrandes4
+            cliente4 => aux
+            imagenesGrandes4 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes > imagenesGrandes5) then
+            cliente5 => aux
+            imagenesGrandes5 = aux%imagenesGrandes
+        end if
+        aux => aux%next
+    end do
+
+    print *, 'Los 5 clientes con más imágenes grandes son:'
+    if (associated(cliente1)) print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesGrandes1, ' imágenes grandes'
+    if (associated(cliente2)) print *, 'Cliente 2: ', cliente2%name, ' con ', imagenesGrandes2, ' imágenes grandes'
+    if (associated(cliente3)) print *, 'Cliente 3: ', cliente3%name, ' con ', imagenesGrandes3, ' imágenes grandes'
+    if (associated(cliente4)) print *, 'Cliente 4: ', cliente4%name, ' con ', imagenesGrandes4, ' imágenes grandes'
+    if (associated(cliente5)) print *, 'Cliente 5: ', cliente5%name, ' con ', imagenesGrandes5, ' imágenes grandes'
+end subroutine printTop5
 
 
     subroutine push(this, value)
@@ -860,8 +934,8 @@ subroutine graphEspera(this)
     do while (associated(current))
         write(id_str, '(I10)') i
         write(nv, '(I10)') i + 1
-        write(g, '(I10)') current%imagenesGrandes
-        write(p, '(I10)') current%imagenesPequenas
+        write(g, '(I10)') current%ig
+        write(p, '(I10)') current%ip
         write(idd, '(I10)') current%index
 
         write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
@@ -1247,6 +1321,7 @@ program Proyecto_202200089
     integer :: size, iC,m,num_pasos = 1
     character(:), allocatable :: idCC, nombreCarga, img_p, img_g
 
+    character(len=1000):: direccion
 
     integer :: idAI,especifico
     character(len=100) :: nombreAI
@@ -1301,7 +1376,9 @@ program Proyecto_202200089
                 !call colaVentanilla%enqueue(5, 'Nestor ', 1, 1)
                 !call colaVentanilla%enqueue(6, 'Eduardo ', 1, 1)
                 !call colaVentanilla%enqueue(7, 'Noj ', 1, 1)
-                call cargaMasivaCliente()
+                read *, direccion
+                print*, 'Direccion', direccion
+                call cargaMasivaCliente(direccion)
 
                 print*, 'Clientes encolados'
                 call colaVentanilla%print()
@@ -1377,7 +1454,7 @@ program Proyecto_202200089
                     print*, 'Valor de cabeza',cabeza
                     if (.not. cabeza) exit
                         call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
-                        call listaEspera%addNodeDouble(idC, nombreC, igC+ipC)
+                        call listaEspera%addNodeDouble(idC, nombreC, igC+ipC,ipC,ipC)
                         if (igC > 0) then
                             do g = 1, igC
                                 print*, 'Imagen Grande'
@@ -1437,6 +1514,8 @@ program Proyecto_202200089
 
             case (5)
                 call print_datosPersonales
+                print*, '============================================'
+                call atendidos%printTop5()
             case (6)    
                 print *, 'Salir'
                 exit
@@ -1446,15 +1525,16 @@ program Proyecto_202200089
     end do
 
 contains 
-subroutine cargaMasivaCliente()
-        !character(len=*) :: direccion
+subroutine cargaMasivaCliente(direccion)
         integer :: idInt,img_gInt,img_pInt
-        !print*, direccion
+        character(len=1000), intent(in) :: direccion
+        print *, "--------------Carga Masiva Cliente-------------------------"
+        print*, direccion
         print *, "--------------Carga Masiva Cliente-------------------------"
         
         call json%initialize()
        
-        call json%load(filename='C:\Users\50232\Desktop\pruebaJson.json')
+        call json%load(filename=direccion)
         call json%info('',n_children=size)
         call json%get_core(jsonc)
         call json%get('', listPointer, found)
@@ -1462,17 +1542,17 @@ subroutine cargaMasivaCliente()
         do iC = 1, size
             call jsonc%get_child(listPointer, iC, animalPointer, found)
 
+            call jsonc%get_child(animalPointer, 'nombre', attributePointer, found)
+            call jsonc%get(attributePointer, nombreCarga)   
+
             call jsonc%get_child(animalPointer, 'id', attributePointer, found)
             call jsonc%get(attributePointer, idCC)
 
-            call jsonc%get_child(animalPointer, 'nombre', attributePointer, found)
-            call jsonc%get(attributePointer, nombreCarga)
+            call jsonc%get_child(animalPointer, 'img_g', attributePointer, found) 
+            call jsonc%get(attributePointer, img_g)
 
             call jsonc%get_child(animalPointer, 'img_p', attributePointer, found) 
             call jsonc%get(attributePointer, img_p)
-
-            call jsonc%get_child(animalPointer, 'img_g', attributePointer, found) 
-            call jsonc%get(attributePointer, img_g)
 
             read(idCC, *) idInt;
             read(img_g, *) img_gInt;

@@ -1,31 +1,18 @@
  digraph G {
  rankdir=LR;
- node0 [label="Ventanilla: 1\n'Id: 10\n'Cliente: Andrea\n'Imagenes Grandes: 0\n'Imagenes Pequenas: 0", color="red", shape="rectangle"];
+ node0 [label="Ventanilla: 1\n'Id: 6\n'Cliente: Marta Sanchez\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
  element00 [label="pequena   ", shape="ellipse"];
  node0 -> element00 [dir="forward"];
- element00 -> element01 [dir="forward"];
- element01 [label="pequena   ", shape="ellipse"];
- node1 [label="Ventanilla: 2\n'Id: 9\n'Cliente: Juana\n'Imagenes Grandes: 0\n'Imagenes Pequenas: 0", color="red", shape="rectangle"];
+ node1 [label="Ventanilla: 2\n'Id: 7\n'Cliente: David Fernandez\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
  element10 [label="pequena   ", shape="ellipse"];
  node1 -> element10 [dir="forward"];
- element10 -> element11 [dir="forward"];
- element11 [label="pequena   ", shape="ellipse"];
  node0 -> node1 [dir="back"];
  node0 -> node1 [dir="forward"];
- node2 [label="Ventanilla: 3\n'Id: 8\n'Cliente: Lucia\n'Imagenes Grandes: 0\n'Imagenes Pequenas: 0", color="red", shape="rectangle"];
+ node2 [label="Ventanilla: 3\n'Id: 8\n'Cliente: Elena Rodriguez\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
  element20 [label="pequena   ", shape="ellipse"];
  node2 -> element20 [dir="forward"];
- element20 -> element21 [dir="forward"];
- element21 [label="pequena   ", shape="ellipse"];
- element21 -> element22 [dir="forward"];
- element22 [label="pequena   ", shape="ellipse"];
  node1 -> node2 [dir="back"];
  node1 -> node2 [dir="forward"];
- node3 [label="Ventanilla: 4\n'Id: 8\n'Cliente: Lucia\n'Imagenes Grandes: 0\n'Imagenes Pequenas: 0", color="red", shape="rectangle"];
- element30 [label="pequena   ", shape="ellipse"];
- node3 -> element30 [dir="forward"];
- node2 -> node3 [dir="back"];
- node2 -> node3 [dir="forward"];
- node3 -> node0 [dir="forward"];
- node3 -> node0 [dir="back"];
+ node2 -> node0 [dir="forward"];
+ node2 -> node0 [dir="back"];
  }

@@ -1,3 +1,4 @@
  digraph G {
  rankdir=LR;
+ inicio [label="Cliente a ingresar", color="blue", shape="rectangle"];
  }
