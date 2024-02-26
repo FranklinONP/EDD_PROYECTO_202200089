@@ -1,0 +1,38 @@
+digraph G {
+  rankdir=LR;
+  Cliente1 [label="Nombre: 
+Pedro Martinez
+, ID: 
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+, Imágenes grandes: 
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+", shape=box];
+  Cliente2 [label="Nombre: 
+Laura Lopez
+, ID: 
+6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+, Imágenes grandes: 
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+", shape=box];
+  Cliente3 [label="Nombre: 
+Diego Garcia
+, ID: 
+9                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+, Imágenes grandes: 
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+", shape=box];
+  Cliente4 [label="Nombre: 
+Juan Perez
+, ID: 
+1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+, Imágenes grandes: 
+2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+", shape=box];
+  Cliente5 [label="Nombre: 
+Carlos Gonzalez
+, ID: 
+5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+, Imágenes grandes: 
+2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+", shape=box];
+}

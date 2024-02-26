@@ -195,6 +195,7 @@ module listaVentanilla
         procedure :: searchNode
         procedure :: printAtendidos
         procedure :: printTop5
+        procedure :: printTop5Min
         procedure :: graphV
         procedure :: graphEspera
         procedure :: graphAtendidos
@@ -316,6 +317,8 @@ subroutine agregarAtendido(this, index, name,p,g,pasos)
     temp%name = name
     temp%imagenesPequenas = p
     temp%imagenesGrandes = g
+    temp%ip = p
+    temp%ig = g
     temp%pasos = pasos
     temp%next => null()
 
@@ -435,8 +438,8 @@ subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
         if (current%NumeroImagenes == 0) then
             id=current%index
             nombre=current%name
-            p=current%imagenesPequenas
-            g=current%imagenesGrandes
+            p=current%ip
+            g=current%ig
             atendido = .true.
             exit
         end if
@@ -679,16 +682,17 @@ subroutine printTop5(this)
     class(List_of_lists), intent(in) :: this
     type(node), pointer :: aux, cliente1, cliente2, cliente3, cliente4, cliente5
     integer :: imagenesGrandes1, imagenesGrandes2, imagenesGrandes3, imagenesGrandes4, imagenesGrandes5
+    character (len=1000) ::idd, g, p
 
-    imagenesGrandes1 = -1
-    imagenesGrandes2 = -1
-    imagenesGrandes3 = -1
-    imagenesGrandes4 = -1
-    imagenesGrandes5 = -1
+    imagenesGrandes1 = 0
+    imagenesGrandes2 = 0
+    imagenesGrandes3 = 0
+    imagenesGrandes4 = 0
+    imagenesGrandes5 = 0
 
     aux => this%head
     do while(associated(aux))
-        if (aux%imagenesGrandes > imagenesGrandes1) then
+        if (aux%imagenesPequenas > imagenesGrandes1) then
             cliente5 => cliente4
             imagenesGrandes5 = imagenesGrandes4
             cliente4 => cliente3
@@ -698,8 +702,8 @@ subroutine printTop5(this)
             cliente2 => cliente1
             imagenesGrandes2 = imagenesGrandes1
             cliente1 => aux
-            imagenesGrandes1 = aux%imagenesGrandes
-        else if (aux%imagenesGrandes > imagenesGrandes2) then
+            imagenesGrandes1 = aux%imagenesPequenas
+        else if (aux%imagenesPequenas > imagenesGrandes2) then
             cliente5 => cliente4
             imagenesGrandes5 = imagenesGrandes4
             cliente4 => cliente3
@@ -707,33 +711,152 @@ subroutine printTop5(this)
             cliente3 => cliente2
             imagenesGrandes3 = imagenesGrandes2
             cliente2 => aux
-            imagenesGrandes2 = aux%imagenesGrandes
-        else if (aux%imagenesGrandes > imagenesGrandes3) then
+            imagenesGrandes2 = aux%imagenesPequenas
+        else if (aux%imagenesPequenas > imagenesGrandes3) then
             cliente5 => cliente4
             imagenesGrandes5 = imagenesGrandes4
             cliente4 => cliente3
             imagenesGrandes4 = imagenesGrandes3
             cliente3 => aux
-            imagenesGrandes3 = aux%imagenesGrandes
-        else if (aux%imagenesGrandes > imagenesGrandes4) then
+            imagenesGrandes3 = aux%imagenesPequenas
+        else if (aux%imagenesPequenas > imagenesGrandes4) then
             cliente5 => cliente4
             imagenesGrandes5 = imagenesGrandes4
             cliente4 => aux
-            imagenesGrandes4 = aux%imagenesGrandes
-        else if (aux%imagenesGrandes > imagenesGrandes5) then
+            imagenesGrandes4 = aux%imagenesPequenas
+        else if (aux%imagenesPequenas > imagenesGrandes5) then
             cliente5 => aux
-            imagenesGrandes5 = aux%imagenesGrandes
+            imagenesGrandes5 = aux%imagenesPequenas
         end if
         aux => aux%next
     end do
 
-    print *, 'Los 5 clientes con más imágenes grandes son:'
-    if (associated(cliente1)) print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesGrandes1, ' imágenes grandes'
-    if (associated(cliente2)) print *, 'Cliente 2: ', cliente2%name, ' con ', imagenesGrandes2, ' imágenes grandes'
-    if (associated(cliente3)) print *, 'Cliente 3: ', cliente3%name, ' con ', imagenesGrandes3, ' imágenes grandes'
-    if (associated(cliente4)) print *, 'Cliente 4: ', cliente4%name, ' con ', imagenesGrandes4, ' imágenes grandes'
-    if (associated(cliente5)) print *, 'Cliente 5: ', cliente5%name, ' con ', imagenesGrandes5, ' imágenes grandes'
+    open(unit=10, file='Max.dot', status='replace', action='write')
+write(10, *) 'digraph G {'
+write(10, *) 'rankdir=LR;'
+
+write(10, *) 'node' // trim(adjustl("0")) // ' [label=" ''Clientes con mayor''\n'' numero de ''\n''Imagenes Grandes ''", &
+                & color="red", shape="rectangle"];'
+
+print *, 'Los 5 clientes con más imágenes grandes son:'
+if (associated(cliente1)) then
+    print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesGrandes1, ' imágenes grandes'
+
+    write(idd, '(I10)') cliente1%index
+    write(g, '(I10)') imagenesGrandes1
+    write(10, *) 'node' // trim(adjustl("1")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente1%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("0")) // ' -> node' // trim(adjustl("1")) // ' [dir="forward"];'
+    
+end if
+if (associated(cliente2)) then
+    print *, 'Cliente 2: ', cliente2%name, ' con ', imagenesGrandes2, ' imágenes grandes'
+    write(idd, '(I10)') cliente2%index
+    write(g, '(I10)') imagenesGrandes2
+    write(10, *) 'node' // trim(adjustl("2")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente2%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("1")) // ' -> node' // trim(adjustl("2")) // ' [dir="forward"];'
+end if
+if (associated(cliente3)) then
+    print *, 'Cliente 3: ', cliente3%name, ' con ', imagenesGrandes3, ' imágenes grandes'
+    write(idd, '(I10)') cliente3%index
+    write(g, '(I10)') imagenesGrandes3
+    write(10, *) 'node' // trim(adjustl("3")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente3%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("2")) // ' -> node' // trim(adjustl("3")) // ' [dir="forward"];'
+end if
+if (associated(cliente4)) then
+    print *, 'Cliente 4: ', cliente4%name, ' con ', imagenesGrandes4, ' imágenes grandes'
+    write(idd, '(I10)') cliente4%index
+    write(g, '(I10)') imagenesGrandes4
+    write(10, *) 'node' // trim(adjustl("4")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente4%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("3")) // ' -> node' // trim(adjustl("4")) // ' [dir="forward"];'
+end if
+if (associated(cliente5)) then
+    print *, 'Cliente 5: ', cliente5%name, ' con ', imagenesGrandes5, ' imágenes grandes'
+    write(idd, '(I10)') cliente5%index
+    write(g, '(I10)') imagenesGrandes5
+    write(10, *) 'node' // trim(adjustl("5")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente5%name)) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
+                & '", color="red", shape="rectangle"];'
+         write(10, *) 'node' // trim(adjustl("4")) // ' -> node' // trim(adjustl("5")) // ' [dir="forward"];'
+end if
+
+write(10, *) '}'
+close(10)
+call system("dot -Tpng Max.dot -o Max.png")
+
 end subroutine printTop5
+
+subroutine printTop5Min(this)
+    class(List_of_lists), intent(in) :: this
+    type(node), pointer :: aux, cliente1, cliente2, cliente3, cliente4, cliente5
+    integer :: imagenesPequenas1, imagenesPequenas2, imagenesPequenas3, imagenesPequenas4, imagenesPequenas5
+
+    imagenesPequenas1 = HUGE(1)
+    imagenesPequenas2 = HUGE(1)
+    imagenesPequenas3 = HUGE(1)
+    imagenesPequenas4 = HUGE(1)
+    imagenesPequenas5 = HUGE(1)
+
+    aux => this%head
+    do while(associated(aux))
+        if (aux%imagenesGrandes < imagenesPequenas1) then
+            cliente5 => cliente4
+            imagenesPequenas5 = imagenesPequenas4
+            cliente4 => cliente3
+            imagenesPequenas4 = imagenesPequenas3
+            cliente3 => cliente2
+            imagenesPequenas3 = imagenesPequenas2
+            cliente2 => cliente1
+            imagenesPequenas2 = imagenesPequenas1
+            cliente1 => aux
+            imagenesPequenas1 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes < imagenesPequenas2) then
+            cliente5 => cliente4
+            imagenesPequenas5 = imagenesPequenas4
+            cliente4 => cliente3
+            imagenesPequenas4 = imagenesPequenas3
+            cliente3 => cliente2
+            imagenesPequenas3 = imagenesPequenas2
+            cliente2 => aux
+            imagenesPequenas2 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes < imagenesPequenas3) then
+            cliente5 => cliente4
+            imagenesPequenas5 = imagenesPequenas4
+            cliente4 => cliente3
+            imagenesPequenas4 = imagenesPequenas3
+            cliente3 => aux
+            imagenesPequenas3 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes < imagenesPequenas4) then
+            cliente5 => cliente4
+            imagenesPequenas5 = imagenesPequenas4
+            cliente4 => aux
+            imagenesPequenas4 = aux%imagenesGrandes
+        else if (aux%imagenesGrandes < imagenesPequenas5) then
+            cliente5 => aux
+            imagenesPequenas5 = aux%imagenesGrandes
+        end if
+        aux => aux%next
+    end do
+
+    print *, 'Los 5 clientes con menos imágenes pequeñas son:'
+    if (associated(cliente1)) print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesPequenas1, ' imágenes pequeñas'
+    if (associated(cliente2)) print *, 'Cliente 2: ', cliente2%name, ' con ', imagenesPequenas2, ' imágenes pequeñas'
+    if (associated(cliente3)) print *, 'Cliente 3: ', cliente3%name, ' con ', imagenesPequenas3, ' imágenes pequeñas'
+    if (associated(cliente4)) print *, 'Cliente 4: ', cliente4%name, ' con ', imagenesPequenas4, ' imágenes pequeñas'
+    if (associated(cliente5)) print *, 'Cliente 5: ', cliente5%name, ' con ', imagenesPequenas5, ' imágenes pequeñas'
+end subroutine printTop5Min
 
 
     subroutine push(this, value)
@@ -992,8 +1115,8 @@ subroutine graphAtendidos(this)
     do while (associated(current))
         write(id_str, '(I10)') i
         write(nv,'(I10)') i+1
-        write(g, '(I10)') current%imagenesGrandes
-        write(p, '(I10)') current%imagenesPequenas
+        write(g, '(I10)') current%ig
+        write(p, '(I10)') current%ip
         write(idd, '(I10)') current%index
         paso=current%pasos
         write(pas, '(I10)') paso
@@ -1454,7 +1577,7 @@ program Proyecto_202200089
                     print*, 'Valor de cabeza',cabeza
                     if (.not. cabeza) exit
                         call list_Ventanilla%colar2(idC,igC,ipC,nombreC)
-                        call listaEspera%addNodeDouble(idC, nombreC, igC+ipC,ipC,ipC)
+                        call listaEspera%addNodeDouble(idC, nombreC, igC+ipC,ipC,igC)
                         if (igC > 0) then
                             do g = 1, igC
                                 print*, 'Imagen Grande'
@@ -1516,6 +1639,7 @@ program Proyecto_202200089
                 call print_datosPersonales
                 print*, '============================================'
                 call atendidos%printTop5()
+                call atendidos%printTop5Min()
             case (6)    
                 print *, 'Salir'
                 exit
