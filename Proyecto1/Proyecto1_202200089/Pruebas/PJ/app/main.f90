@@ -802,6 +802,7 @@ subroutine printTop5Min(this)
     class(List_of_lists), intent(in) :: this
     type(node), pointer :: aux, cliente1, cliente2, cliente3, cliente4, cliente5
     integer :: imagenesPequenas1, imagenesPequenas2, imagenesPequenas3, imagenesPequenas4, imagenesPequenas5
+    character (len=1000) ::idd, g, p
 
     imagenesPequenas1 = HUGE(1)
     imagenesPequenas2 = HUGE(1)
@@ -850,12 +851,59 @@ subroutine printTop5Min(this)
         aux => aux%next
     end do
 
+open(unit=10, file='Min.dot', status='replace', action='write')
+write(10, *) 'digraph G {'
+write(10, *) 'rankdir=LR;'
+write(10, *) 'node' // trim(adjustl("0")) // ' [label=" ''Clientes con menor''\n'' numero de ''\n''Imagenes Pequenas ''", &
+                & color="red", shape="rectangle"];'
+
+
     print *, 'Los 5 clientes con menos imágenes pequeñas son:'
     if (associated(cliente1)) print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesPequenas1, ' imágenes pequeñas'
+        write(idd, '(I10)') cliente1%index
+        write(p, '(I10)') imagenesPequenas1
+        write(10, *) 'node' // trim(adjustl("1")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente1%name)) // '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("0")) // ' -> node' // trim(adjustl("1")) // ' [dir="forward"];'
     if (associated(cliente2)) print *, 'Cliente 2: ', cliente2%name, ' con ', imagenesPequenas2, ' imágenes pequeñas'
+        write(idd, '(I10)') cliente2%index
+        write(p, '(I10)') imagenesPequenas2
+        write(10, *) 'node' // trim(adjustl("2")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente2%name)) // '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("1")) // ' -> node' // trim(adjustl("2")) // ' [dir="forward"];'
     if (associated(cliente3)) print *, 'Cliente 3: ', cliente3%name, ' con ', imagenesPequenas3, ' imágenes pequeñas'
+        write(idd, '(I10)') cliente3%index
+        write(p, '(I10)') imagenesPequenas3
+        write(10, *) 'node' // trim(adjustl("3")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente3%name)) // '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("2")) // ' -> node' // trim(adjustl("3")) // ' [dir="forward"];'
     if (associated(cliente4)) print *, 'Cliente 4: ', cliente4%name, ' con ', imagenesPequenas4, ' imágenes pequeñas'
+        write(idd, '(I10)') cliente4%index
+        write(p, '(I10)') imagenesPequenas4
+        write(10, *) 'node' // trim(adjustl("4")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente4%name)) // '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("3")) // ' -> node' // trim(adjustl("4")) // ' [dir="forward"];'
     if (associated(cliente5)) print *, 'Cliente 5: ', cliente5%name, ' con ', imagenesPequenas5, ' imágenes pequeñas'
+        write(idd, '(I10)') cliente5%index
+        write(p, '(I10)') imagenesPequenas5
+        write(10, *) 'node' // trim(adjustl("5")) // ' [label=" ' //&
+                & '\n''Id: ' // trim(adjustl(idd))  //&
+                & '\n''Cliente: ' // trim(adjustl(cliente5%name)) // '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //&
+                & '", color="red", shape="rectangle"];'
+        write(10, *) 'node' // trim(adjustl("4")) // ' -> node' // trim(adjustl("5")) // ' [dir="forward"];'
+
+write(10, *) '}'
+close(10)
+call system("dot -Tpng Min.dot -o Min.png")
+
 end subroutine printTop5Min
 
 
