@@ -1764,17 +1764,16 @@ program Proyecto_202200089
 
             case (4)
                 
-                print*, 'Ingrese el id del clinete que desea graficar'
+                call atendidos%graficarMayorPaso()
+                call atendidos%printTop5()
+                call atendidos%printTop5Min()
+                print*, 'Ingrese el id del cliente que desea graficar'
                 read*, especifico
                 call atendidos%graficarCliente(especifico)
-                call atendidos%graficarMayorPaso()
-
 
             case (5)
                 call print_datosPersonales
                 print*, '============================================'
-                call atendidos%printTop5()
-                call atendidos%printTop5Min()
             case (6)    
                 print *, 'Salir'
                 exit
@@ -1787,9 +1786,7 @@ contains
 subroutine cargaMasivaCliente(direccion)
         integer :: idInt,img_gInt,img_pInt
         character(len=1000), intent(in) :: direccion
-        print *, "--------------Carga Masiva Cliente-------------------------"
         print*, direccion
-        print *, "--------------Carga Masiva Cliente-------------------------"
         
         call json%initialize()
        
