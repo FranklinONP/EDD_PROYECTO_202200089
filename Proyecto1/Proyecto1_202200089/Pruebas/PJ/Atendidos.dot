@@ -1,18 +1,10 @@
  digraph G {
  rankdir=LR;
- node0 [label="Ventanilla: 1\n'Id: 1\n'Pasos: 11\n'Cliente: clienteAtendido\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
- node1 [label="Ventanilla: 2\n'Id: 2\n'Pasos: 13\n'Cliente: clienteAtendido\n'Imagenes Grandes: 3\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node0 [label="Ventanilla: 1\n'Id: 1\n'Pasos: 10\n'Cliente: clienteAtendido\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
+ node1 [label="Ventanilla: 2\n'Id: 2\n'Pasos: 13\n'Cliente: clienteAtendido\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
  node0 -> node1 [dir="forward"];
- node2 [label="Ventanilla: 3\n'Id: 3\n'Pasos: 19\n'Cliente: clienteAtendido\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
+ node2 [label="Ventanilla: 3\n'Id: 3\n'Pasos: 15\n'Cliente: clienteAtendido\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
  node1 -> node2 [dir="forward"];
- node3 [label="Ventanilla: 4\n'Id: 4\n'Pasos: 21\n'Cliente: clienteAtendido\n'Imagenes Grandes: 3\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node3 [label="Ventanilla: 4\n'Id: 4\n'Pasos: 17\n'Cliente: clienteAtendido\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
  node2 -> node3 [dir="forward"];
- node4 [label="Ventanilla: 5\n'Id: 5\n'Pasos: 25\n'Cliente: clienteAtendido\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
- node3 -> node4 [dir="forward"];
- node5 [label="Ventanilla: 6\n'Id: 6\n'Pasos: 31\n'Cliente: clienteAtendido\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
- node4 -> node5 [dir="forward"];
- node6 [label="Ventanilla: 7\n'Id: 7\n'Pasos: 35\n'Cliente: clienteAtendido\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
- node5 -> node6 [dir="forward"];
- node7 [label="Ventanilla: 8\n'Id: 8\n'Pasos: 37\n'Cliente: clienteAtendido\n'Imagenes Grandes: 3\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
- node6 -> node7 [dir="forward"];
  }

@@ -1,14 +1,14 @@
  digraph G {
  rankdir=LR;
  node0 [label=" 'Clientes con menor'\n' numero de '\n'Imagenes Pequenas '",  color="red", shape="rectangle"];
- node1 [label=" \n'Id: 3\n'Cliente: Pedro Martinez\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node1 [label=" \n'Id: 3\n'Cliente: Carlos Martinez\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
  node0 -> node1 [dir="forward"];
- node2 [label=" \n'Id: 6\n'Cliente: Laura Lopez\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node2 [label=" \n'Id: 6\n'Cliente: Marta Sanchez\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
  node1 -> node2 [dir="forward"];
- node3 [label=" \n'Id: 1\n'Cliente: Juan Perez\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
+ node3 [label=" \n'Id: 2\n'Cliente: Ana Gonzalez\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
  node2 -> node3 [dir="forward"];
- node4 [label=" \n'Id: 5\n'Cliente: Carlos Gonzalez\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
+ node4 [label=" \n'Id: 5\n'Cliente: Javier Lopez\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
  node3 -> node4 [dir="forward"];
- node5 [label=" \n'Id: 7\n'Cliente: Jose Martinez\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
+ node5 [label=" \n'Id: 1\n'Cliente: Luis Ramirez\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
  node4 -> node5 [dir="forward"];
  }

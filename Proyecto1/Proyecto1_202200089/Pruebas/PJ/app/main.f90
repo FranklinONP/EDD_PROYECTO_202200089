@@ -157,6 +157,7 @@ module listaVentanilla
     !nodo de lista de lista
     type :: node
         integer :: index
+
         logical :: EstadoVentanilla = .false.
         integer :: NumeroImagenes=0
         integer :: imagenesPequenas=0
@@ -166,7 +167,7 @@ module listaVentanilla
         integer :: ocupada=0
         logical :: encolar= .false.
         integer :: pasos
-
+        integer :: value
         character(:), allocatable :: name
         type(node), pointer :: next => null()
         type(node), pointer :: prev => null()
@@ -195,6 +196,7 @@ module listaVentanilla
         procedure :: searchNode
         procedure :: printAtendidos
         procedure :: printTop5
+        procedure :: appendCc
         procedure :: printTop5Min
         procedure :: graphV
         procedure :: graphEspera
@@ -449,7 +451,7 @@ subroutine agregarClienteAtendido(this,id,nombre,p,g,atendido)
 
 end subroutine agregarClienteAtendido
 
-
+ 
 
     function searchNode(this) result(retval)
         class(List_of_lists), intent(in) :: this
@@ -607,6 +609,29 @@ end subroutine colar2
         end do
     end subroutine updateNode
 
+    subroutine appendCc(self, value)
+        class(List_of_lists), intent(inout) :: self
+        integer, intent(in) ::  value
+        
+        type(node), pointer :: new
+        type(node), pointer :: aux
+        allocate(new)
+
+        
+        if(associated(self%head)) then
+            aux => self%head
+            do while(.not. associated(aux%next, self%head))
+                aux => aux%next
+            end do
+            new%next => self%head
+            aux%next => new
+        else    
+            new%next => new
+            self%head => new
+        end if
+
+        print *, "Se ha insertado correctamente el valor: ", value
+    end subroutine appendCc
 
     subroutine pushToNode(this, name, value)
         class(List_of_lists), intent(inout) :: this
@@ -1163,8 +1188,8 @@ subroutine graphAtendidos(this)
     do while (associated(current))
         write(id_str, '(I10)') i
         write(nv,'(I10)') i+1
-        write(g, '(I10)') current%ig
-        write(p, '(I10)') current%ip
+        write(g, '(I10)') current%ip
+        write(p, '(I10)') current%ig
         write(idd, '(I10)') current%index
         paso=current%pasos
         write(pas, '(I10)') paso
@@ -1538,7 +1563,7 @@ program Proyecto_202200089
 
         select case (opcion)
             case (1)
-            print*, 'Ingrese la ruta del archivo para su ar'
+            print*, 'Ingrese la ruta del archivo Json para la carga de la cola'
                 !Pequenas grandes
                 !call colaVentanilla%enqueue(1, 'Franklin ', 1, 1)
                 !call colaVentanilla%enqueue(2, 'Orlando ', 1, 1)
@@ -1556,7 +1581,7 @@ program Proyecto_202200089
                 print*, '----------------------------------------------- '
 
     !Se setea la cantidad de ventanillas que estaran funcionando
-                print *, 'Ingrese la cantidad de ventanillas que existiran'
+                print *, 'Ingrese la cantidad de ventanillas que existiran durante la ejecucion'
                 read *, num2
                 do i = 1, num2
                     call list_Ventanilla%addNode(i, 'Ventanilla ')
