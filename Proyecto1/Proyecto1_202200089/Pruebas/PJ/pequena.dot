@@ -1,6 +1,4 @@
  digraph G {
  rankdir=LR;
  inicio [label="Impresiones Pequeñas", color="blue", shape="rectangle"];
- node0 [label="Cliente: David Fernandez\n'Id: 7\n'Peso: 1", color="red", shape="rectangle"];
- inicio -> node0 [dir="forward"];
  }

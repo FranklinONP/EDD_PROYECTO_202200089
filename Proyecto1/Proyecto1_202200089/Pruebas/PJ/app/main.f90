@@ -18,6 +18,7 @@ module colaClientes
         type(nodeC), pointer :: rear => null()
     contains
         procedure :: enqueue
+        procedure :: ultimoId
         procedure :: dequeue
         procedure :: graph
         procedure :: print
@@ -91,6 +92,22 @@ contains
         end do
     end subroutine print
 
+    subroutine ultimoId(this, id)
+        class(queue), intent(in) :: this
+        type(nodeC), pointer :: current
+        integer , intent(inout):: id
+
+
+        current => this%front
+
+        do while (associated(current))  
+            if(.not. associated(current%next)) then
+                id = current%id
+                exit
+            end if
+            current => current%next
+        end do
+    end subroutine ultimoId
 
 !Agrega esta función al módulo colaClientes
 subroutine graph(this)
@@ -666,6 +683,8 @@ end subroutine colar2
             aux => aux%next
         end do
     end subroutine printList
+
+
     subroutine printListEspera(this)
         class(List_of_lists), intent(in) :: this
         type(node), pointer :: aux
@@ -1112,6 +1131,8 @@ subroutine agregarSublista(this, parent_id)
     end do
 end subroutine agregarSublista
 
+
+
 subroutine graphEspera(this)
     class(List_of_lists), intent(in) :: this
     type(node), pointer :: current, previous, first
@@ -1519,7 +1540,7 @@ program Proyecto_202200089
 
     character(len=1000):: direccion
 
-    integer :: idAI,especifico
+    integer :: idAI,especifico,ultimoID
     character(len=100) :: nombreAI
 
     logical :: atendido
@@ -1531,12 +1552,12 @@ program Proyecto_202200089
     integer :: idC,igC,ipC,peso
     character(len=50):: nombreC
     character(len=50) :: nombre,tipoC
-
+    real :: r,ggg,ppp
     character(len=100) :: imgCliente
     integer :: imgPeso
     character(len=100) :: imgTipo
-    integer :: imgId,g,p
-
+    integer :: imgId,g,p,ac,aig,aip,vpf,an
+    character(len=6) :: nombres(50)
     logical :: descp,descg
     descp   = .false.
     descg   = .false.
@@ -1544,6 +1565,21 @@ program Proyecto_202200089
 
     verificacion = .false.
     paso = 0
+
+    nombres = [ &
+    'Carlos', 'Maria ', 'Juan  ', 'Ana   ', 'Jose  ', &
+    'Carmen', 'Franci', 'Isabel', 'Manuel', 'Laura ', &
+    'Antoni', 'Lucia ', 'Jesus ', 'Marta ', 'David ', &
+    'Sofia ', 'Pedro ', 'Sara  ', 'Javier', 'Paula ', &
+    'Daniel', 'Andrea', 'Rafael', 'Sandra', 'Miguel', &
+    'Beatr ', 'Fernan', 'Alicia', 'Pablo ', 'Teresa', &
+    'Luis  ', 'Elena ', 'Sergio', 'Rosa  ', 'Jorge ', &
+    'Silvia', 'Albert', 'Julia ', 'Ricard', 'Patric', &
+    'Angel ', 'Cristi', 'Mario ', 'Raquel', 'Diego ', &
+    'Susana', 'Alvaro', 'Gabrie', 'Adrian', 'Nomb50']
+
+
+
     do  
         print*, ''
         print*, '============================================'
@@ -1579,6 +1615,9 @@ program Proyecto_202200089
                 print*, 'Clientes encolados'
                 call colaVentanilla%print()
                 print*, '----------------------------------------------- '
+                call colaVentanilla%ultimoID(ultimoID)
+                print*, '============================================================================================='
+                print*, 'Ultimo ID', ultimoID
 
     !Se setea la cantidad de ventanillas que estaran funcionando
                 print *, 'Ingrese la cantidad de ventanillas que existiran durante la ejecucion'
@@ -1587,8 +1626,31 @@ program Proyecto_202200089
                     call list_Ventanilla%addNode(i, 'Ventanilla ')
                 end do
                 call list_Ventanilla%printList()
-                print*, '----------------------------------------------- '    
+                print*, '----------------------------------------------- '  
+                
             case (2)
+        !Logica para ingresar los clientes de manera aleatoria :D
+!=================================================================================
+                !ac aleatrio cliente, 
+                !aig aleatorio imagenes grandes, 
+                !aip aleatorio imagenes pequeñas
+                !an aleatorio numero arreglo en clientes
+                call random_seed()
+                call random_number(r)
+                call random_number(ppp)
+                call random_number(ggg)
+                ac=int(1+4*r)
+                do vpf=1,ac
+                    ultimoID=ultimoID+1
+                    an=int(1+49*r)
+                    aig=int(1+2*ggg)
+                    aip=int(1+2*ppp)
+                    call colaVentanilla%enqueue(ultimoID, nombres(ultimoID+1), aip, aig)
+                end do
+
+!==================================================================================
+
+
     !Ejecutar paso
                 paso = paso + 1
                 print*, 'Paso No. ', paso

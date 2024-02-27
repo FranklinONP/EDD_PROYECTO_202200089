@@ -1,6 +1,30 @@
  digraph G {
  rankdir=LR;
  inicio [label="Cliente a ingresar", color="blue", shape="rectangle"];
+ node3 [label="Cliente: Carlos Martinez\n'Id: 3\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node4 -> node3 [dir="back"];
+ node4 [label="Cliente: Laura Perez\n'Id: 4\n'IMG: \n'IMP: 3\n'IMG: 1", color="red", shape="rectangle"];
+ node5 -> node4 [dir="back"];
+ node5 [label="Cliente: Javier Lopez\n'Id: 5\n'IMG: \n'IMP: 2\n'IMG: 2", color="red", shape="rectangle"];
+ node6 -> node5 [dir="back"];
+ node6 [label="Cliente: Marta Sanchez\n'Id: 6\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node7 -> node6 [dir="back"];
+ node7 [label="Cliente: David Fernandez\n'Id: 7\n'IMG: \n'IMP: 1\n'IMG: 3", color="red", shape="rectangle"];
+ node8 -> node7 [dir="back"];
+ node8 [label="Cliente: Elena Rodriguez\n'Id: 8\n'IMG: \n'IMP: 2\n'IMG: 2", color="red", shape="rectangle"];
+ node9 -> node8 [dir="back"];
+ node9 [label="Cliente: Diego Garcia\n'Id: 9\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node10 -> node9 [dir="back"];
  node10 [label="Cliente: Carmen Gomez\n'Id: 10\n'IMG: \n'IMP: 3\n'IMG: 1", color="red", shape="rectangle"];
- inicio -> node10 [dir="fordward"];
+ node11 -> node10 [dir="back"];
+ node11 [label="Cliente: Lucia\n'Id: 11\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node12 -> node11 [dir="back"];
+ node12 [label="Cliente: Jesus\n'Id: 12\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node13 -> node12 [dir="back"];
+ node13 [label="Cliente: Marta\n'Id: 13\n'IMG: \n'IMP: 1\n'IMG: 1", color="red", shape="rectangle"];
+ node14 -> node13 [dir="back"];
+ node14 [label="Cliente: David\n'Id: 14\n'IMG: \n'IMP: 2\n'IMG: 1", color="red", shape="rectangle"];
+ node15 -> node14 [dir="back"];
+ node15 [label="Cliente: Sofia\n'Id: 15\n'IMG: \n'IMP: 2\n'IMG: 1", color="red", shape="rectangle"];
+ inicio -> node3 [dir="fordward"];
  }

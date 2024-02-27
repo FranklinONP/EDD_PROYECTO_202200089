@@ -1,14 +1,4 @@
  digraph G {
  rankdir=LR;
  inicio [label="Impresiones Grandes", color="blue", shape="rectangle"];
- node1 [label="Cliente: Javier Lopez\n'Id: 5\n'Peso: 1", color="red", shape="rectangle"];
- inicio -> node1 [dir="forward"];
- node2 [label="Cliente: Marta Sanchez\n'Id: 6\n'Peso: 2", color="red", shape="rectangle"];
- node1 -> node2 [dir="forward"];
- node3 [label="Cliente: David Fernandez\n'Id: 7\n'Peso: 2", color="red", shape="rectangle"];
- node2 -> node3 [dir="forward"];
- node4 [label="Cliente: David Fernandez\n'Id: 7\n'Peso: 2", color="red", shape="rectangle"];
- node3 -> node4 [dir="forward"];
- node5 [label="Cliente: David Fernandez\n'Id: 7\n'Peso: 2", color="red", shape="rectangle"];
- node4 -> node5 [dir="forward"];
  }
