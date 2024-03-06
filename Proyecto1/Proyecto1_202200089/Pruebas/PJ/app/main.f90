@@ -274,8 +274,8 @@ subroutine graficarCliente(this, id)
             write(10, *) 'digraph G {'
             write(10, *) 'rankdir=LR;'
             write(pas, '(I10)') current%pasos
-            write(g, '(I10)') current%imagenesGrandes
-            write(p, '(I10)') current%imagenesPequenas
+            write(g, '(I10)') current%imagenesPequenas
+            write(p, '(I10)') current%imagenesGrandes
             write(idd, '(I10)') current%index
             write(10, *) 'node1 [label="Pasos: ' // trim(pas) // &
                 & '\nId: ' // trim(idd)  // &
@@ -784,7 +784,7 @@ write(10, *) 'node' // trim(adjustl("0")) // ' [label=" ''Clientes con mayor''\n
 
 print *, 'Los 5 clientes con más imágenes grandes son:'
 if (associated(cliente1)) then
-    print *, 'Cliente 1: ', cliente1%name, ' con ', imagenesGrandes1, ' imágenes grandes'
+    print *, 'Cliente 1: ', cliente1%index, ' con ', imagenesGrandes1, ' imágenes grandes'
 
     write(idd, '(I10)') cliente1%index
     write(g, '(I10)') imagenesGrandes1
@@ -1190,13 +1190,11 @@ end subroutine graphEspera
 
 !sirve nice
 
-
 subroutine graphAtendidos(this)
     class(List_of_lists), intent(in) :: this
     type(node), pointer :: current, previous
-    integer :: paso
-    integer :: i, j,nvv
-    character(len=10) :: id_str, prev_id_str, g, idd, element_str,p,nv,pas
+    integer :: i
+    character(len=100) :: id_str, prev_id_str, g, idd, p, nv, pas,nnn
 
     ! Abre un archivo en formato DOT
     open(unit=10, file='Atendidos.dot', status='replace', action='write')
@@ -1207,26 +1205,29 @@ subroutine graphAtendidos(this)
     previous => null()
     i = 0
     do while (associated(current))
+        if (current%pasos == 1) then
+            current => current%next
+            cycle
+        end if
+
         write(id_str, '(I10)') i
-        write(nv,'(I10)') i+1
+        write(nv, '(I10)') i + 1
         write(g, '(I10)') current%ip
         write(p, '(I10)') current%ig
         write(idd, '(I10)') current%index
-        paso=current%pasos
-        write(pas, '(I10)') paso
+        write(pas, '(I10)') current%pasos
 
-                write(10, *) 'node' // trim(adjustl(id_str)) // ' [label="Ventanilla: ' // trim(adjustl(nv)) // &
-                    & '\n''Id: ' // trim(adjustl(idd))  //&
-                    & '\n''Pasos: ' // trim(adjustl(pas))  //&
-                    & '\n''Cliente: ' // trim(adjustl('clienteAtendido')) // '\n''Imagenes Grandes: ' // trim(adjustl(g)) //&
-                    & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
-
-            
+        write(10, *) 'node' // trim(adjustl(id_str)) // ' [label=" ' // &
+            & '\n''Id: ' // trim(adjustl(idd))  // &
+            & '\n''Pasos: ' // trim(adjustl(pas))  // &
+            &  '\n''Imagenes Grandes: ' // trim(adjustl(g)) // &
+            & '\n''Imagenes Pequenas: ' // trim(adjustl(p)) //'", color="red", shape="rectangle"];'
 
         if (associated(previous)) then
             write(prev_id_str, '(I10)') (i-1)
-            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ' [dir="forward"];'
+            write(10, *) 'node' // trim(adjustl(prev_id_str)) // ' -> node' // trim(adjustl(id_str)) // ';'
         end if
+
         previous => current
         current => current%next
         i = i + 1
@@ -1238,6 +1239,11 @@ subroutine graphAtendidos(this)
     ! Ejecuta el comando para generar la imagen
     call system("dot -Tpng Atendidos.dot -o Atendidos.png")
 end subroutine graphAtendidos
+
+
+
+
+
 
 end module listaVentanilla
 !=======================================================================================================================================
@@ -1554,7 +1560,7 @@ program Proyecto_202200089
     character(len=50) :: nombre,tipoC
     real :: r,ggg,ppp
     character(len=100) :: imgCliente
-    integer :: imgPeso
+    integer :: imgPeso,pCont
     character(len=100) :: imgTipo
     integer :: imgId,g,p,ac,aig,aip,vpf,an
     character(len=6) :: nombres(50)
@@ -1635,18 +1641,37 @@ program Proyecto_202200089
                 !aig aleatorio imagenes grandes, 
                 !aip aleatorio imagenes pequeñas
                 !an aleatorio numero arreglo en clientes
-                call random_seed()
-                call random_number(r)
-                call random_number(ppp)
-                call random_number(ggg)
-                ac=int(1+4*r)
-                do vpf=1,ac
-                    ultimoID=ultimoID+1
-                    an=int(1+49*r)
-                    aig=int(1+2*ggg)
-                    aip=int(1+2*ppp)
-                    call colaVentanilla%enqueue(ultimoID, nombres(ultimoID+1), aip, aig)
-                end do
+
+                select case (mod(paso, 10))
+                    case (3)
+                        write(*,*) "El número termina en 3."
+                        ! Acciones específicas para números que terminan en 3
+                        do vpf=1,4
+                        ultimoID=ultimoID+1
+                            call colaVentanilla%enqueue(ultimoID, nombres(paso+1), 3, 1)
+                        end do
+                    case (2)
+                        write(*,*) "El número termina en 2."
+                        ! Acciones específicas para números que terminan en 2
+                        do vpf=1,3
+                        ultimoID=ultimoID+1
+                            call colaVentanilla%enqueue(ultimoID, nombres(paso+1), 2, 2)
+                        end do
+                    case (6)
+                        write(*,*) "El número termina en 6."
+                        ! Acciones específicas para números que terminan en 6
+                        do vpf=1,2
+                        ultimoID=ultimoID+1
+                            call colaVentanilla%enqueue(ultimoID, nombres(paso+1), 1, 3)
+                        end do
+                    case default
+                        write(*,*) "El número no termina en 3, 2 ni 6."
+                        ! Acciones para otros casos
+                        do vpf=1,1
+                        ultimoID=ultimoID+1
+                        call colaVentanilla%enqueue(ultimoID, nombres(paso+1), 1, 1)
+                        end do
+                end select
 
 !==================================================================================
 
@@ -1763,14 +1788,19 @@ program Proyecto_202200089
                 call atendidos%graphAtendidos()
 
             case (4)
-                
+                print*, '1'
                 call atendidos%graficarMayorPaso()
-                call atendidos%printTop5()
-                call atendidos%printTop5Min()
+                
+                
+                print*, '4'
                 print*, 'Ingrese el id del cliente que desea graficar'
                 read*, especifico
+                print*, '5'
                 call atendidos%graficarCliente(especifico)
-
+                print*, '2'
+                call atendidos%printTop5()
+                print*, '3'
+                call atendidos%printTop5Min()
             case (5)
                 call print_datosPersonales
                 print*, '============================================'

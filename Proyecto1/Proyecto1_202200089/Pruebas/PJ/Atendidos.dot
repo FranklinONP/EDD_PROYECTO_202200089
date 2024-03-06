@@ -1,3 +1,16 @@
  digraph G {
  rankdir=LR;
+ node0 [label=" \n'Id: 1\n'Pasos: 10\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
+ node1 [label=" \n'Id: 2\n'Pasos: 15\n'Imagenes Grandes: 3\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node0 -> node1;
+ node2 [label=" \n'Id: 3\n'Pasos: 19\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
+ node1 -> node2;
+ node3 [label=" \n'Id: 5\n'Pasos: 23\n'Imagenes Grandes: 2\n'Imagenes Pequenas: 1", color="red", shape="rectangle"];
+ node2 -> node3;
+ node4 [label=" \n'Id: 6\n'Pasos: 25\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
+ node3 -> node4;
+ node5 [label=" \n'Id: 4\n'Pasos: 33\n'Imagenes Grandes: 4\n'Imagenes Pequenas: 2", color="red", shape="rectangle"];
+ node4 -> node5;
+ node6 [label=" \n'Id: 7\n'Pasos: 35\n'Imagenes Grandes: 1\n'Imagenes Pequenas: 3", color="red", shape="rectangle"];
+ node5 -> node6;
  }

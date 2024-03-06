@@ -1,4 +1,4 @@
  digraph G {
  rankdir=LR;
- node1 [label="Pasos:         17\nId:          4\nCliente: Laura Perez\nImagenes Grandes:          3\nImagenes Pequenas:          1", color="red", shape="rectangle"];
+ node1 [label="Pasos:         35\nId:          7\nCliente: Pedro Sanchez\nImagenes Grandes:          3\nImagenes Pequenas:          1", color="red", shape="rectangle"];
  }
