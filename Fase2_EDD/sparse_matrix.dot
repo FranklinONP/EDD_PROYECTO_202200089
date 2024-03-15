@@ -1,0 +1,21 @@
+digraph SparseMatrix {
+    node [shape=rectangle];
+    1
+ [label="1coma1
+"];
+    1
+ -> 1
+;
+    2
+ [label="2coma2
+"];
+    2
+ -> 2
+;
+    3
+ [label="3coma3
+"];
+    3
+ -> 3
+;
+}
