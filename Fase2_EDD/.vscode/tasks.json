@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "compile", // Task name
+        "type": "shell",
+        "command": "gfortran", // Compiler
+        "args": [
+          "-o",
+          "main",
+          "/app/main.f90",
+          "/src/abb.f90",
+            "src/header.f90",
+            "src/types.f90",
+            "matrix.f90",
+            "inventado.f90",
+
+        ],
+        "options": {  // Working directory
+          "cwd": "/"
+        }
+      }
+    ]
+  }

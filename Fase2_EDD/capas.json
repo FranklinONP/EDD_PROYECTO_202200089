@@ -1,26 +1,38 @@
 [{
-    "id_capa": 0,
+    "id_capa": 4,
     "pixeles": [
     {
-    "fila": 25,
-    "columna": 31,
+    "fila": 4,
+    "columna": 4,
     "color": "#FFCC33"
     },
     {
-    "fila": 38,
-    "columna": 31,
+    "fila": 6,
+    "columna": 6,
     "color": "#FFCC40"
+    },{
+    "fila": 8,
+    "columna": 8,
+    "color": "#FFCC50"
     }
     ]
-    },
-    {
-    "id_capa": 1,
-    "pixeles": [
-    {
-    "fila": 21,
-    "columna": 37,
-    "color": "#FFCC27"
-    }
-]
-    }
+    },{
+        "id_capa": 8,
+        "pixeles": [
+        {
+        "fila": 10,
+        "columna": 10,
+        "color": "#FFCC33"
+        },
+        {
+        "fila": 12,
+        "columna": 12,
+        "color": "#FFCC40"
+        },{
+        "fila": 14,
+        "columna": 14,
+        "color": "#FFCC50"
+        }
+        ]
+        }
 ]
