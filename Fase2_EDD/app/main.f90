@@ -1,22 +1,27 @@
 module clienteTemporal
     use abb_m
-    use AVL_Tree_M
+    use avl_m
     implicit none
     type :: cliente
         character(len=100) :: nombre
         character(len=100) :: dpi
         character(len=100) :: password
         type(abb) :: tree
-        type(Tree_t),pointer:: avl
+        type(avl),pointer:: avl
     end type cliente
 end module clienteTemporal
 
 program main
+    use matrix_m
     use json_module
     use iso_fortran_env, only:
     use clienteTemporal
+    use avl_m
     
     implicit none
+    type(avl) :: a
+    type(matrix) :: mtx,mtx2
+
     type(json_file) :: json
     type(json_core) :: jsonc
     type(json_value), pointer :: listPointer, animalPointer, attributePointer
@@ -43,6 +48,7 @@ program main
     
     integer :: keys(18) = [10, 5, 15, 3, 1, 12, 17, 7, 4, 6, 9, 11, 2, 20, 24, 21, 23, 28]
     integer :: i
+    logical :: alvF
 
     !call clienteObject%avl%newTree()
     !do i = 1, size(keys)
@@ -50,23 +56,89 @@ program main
     !end do
     !call clienteObject%avl%generateGraph()
 
-    call clienteObject%tree%insert(5);
-    call clienteObject%tree%insert(6)
-    call clienteObject%tree%insert(3)
+    !call clienteObject%tree%insert(5);
+    !call clienteObject%tree%insert(6)
+    !call clienteObject%tree%insert(3)
+    !call clienteObject%tree%graph("ABB");
 
-    call clienteObject%tree%graph("inserted")
-    call clienteObject%tree%search(5,2,2,"#B22222")
-    call clienteObject%tree%grapEspecifico(5)
-    read *, desicion
-    call clienteObject%tree%search(5,2,2,"#B55555")
-    call clienteObject%tree%grapEspecifico(5)
+    !call clienteObject%tree%search(5,2,2,"#B22222")
+    !call clienteObject%tree%grapEspecifico(5)
+    !read *, desicion
+    !call clienteObject%tree%search(5,2,2,"#B55555")
+    !call clienteObject%tree%grapEspecifico(5)
 
-    !direccion="mario.json"
-    !call cargaCapasID(direccion)                           FUNCIONA CORRECTAMENTE EL ARBOL BB
+    !direccion="MU.json"
     !call cargaCapas(direccion)
-    !call clienteObject%tree%graph("inserted")
+    !call clienteObject%tree%graph("ABB")
     !call clienteObject%tree%grapEspecifico(0)
 
+
+    !UNIR N MATRICES DISPERSAS  
+    !Inserto o cargo capas, en este caso 10,5,15 ids
+    call clienteObject%tree%insert(10)
+    call clienteObject%tree%insert(5)
+    call clienteObject%tree%insert(15)
+
+    !Agrego pixeles a la matriz de la capa 15
+    call clienteObject%tree%search(15,1,1,"#FF0000")
+    call clienteObject%tree%search(15,2,2,"#B22222")
+
+    !Jalo la matriz con id x del arbol de capas para pasarlo al abb del avl
+    call clienteObject%tree%extraerMatriz(15,mtx)
+    call mtx%print()
+    !tengo la matriz temporal la paso a abb del avl
+    !primero agrego los nodos al avl
+    call a%insert(20)
+    call a%insert(10)
+    call a%insert(29)
+    !Busco un nodo de los insertadors y le mando la matriz
+
+    !idImagen-IdCapa-matriz
+    call a%search(20,15,mtx)
+    call a%search(20,11,mtx)
+    call mtx2%insert(10,10,.true.,"#000000")
+    call a%search(20,18,mtx2)
+    print * , ""
+    print *, "==================================="
+    call a%abbImagen(20)
+    read *, desicion
+    !idImagen-IdCapa-matriz
+    call a%search(29,25,mtx)
+    call a%search(29,11,mtx)
+    call a%search(29,38,mtx)
+    print * , ""
+    print *, "==================================="
+    call a%abbImagen(29)
+    !idImagen-IdCapa-matriz
+    call a%search(10,25,mtx)
+    call a%search(10,11,mtx)
+    call a%search(10,38,mtx)
+    print * , ""
+    print *, "==================================="
+    call a%abbImagen(10)
+    call a%graficar()
+
+    !Crear imagen
+    print * , "Crear Imagen"
+    print * , "@@@@@@@@@@@@@@@@@@@@@@@@@"
+    call a%crearImagen(20)
+
+    !Ya puedo copiar y tengo capas en el abb de cada idImagen
+    !toca unir todas las que tenga el abb
+    
+
+    !call a%insert(20)
+    !call a%insert(10)
+    !call a%insert(29)
+    !call a%insert(8)
+    !call a%insert(19)
+
+    !print *, "Imprimiendo en preorden: "
+    !call a%preorden()
+    !call a%graficar()
+
+    !call a%search(39,alvF)
+    !print *, "Encontrado: ", alvF
 
 
 
@@ -161,32 +233,6 @@ subroutine cargaMasivaCliente(direccion)
         end do
         call json%destroy()
 end subroutine cargaMasivaCliente
-subroutine cargaCapasID(direccion)
-        character(len=100), intent(in) :: direccion
-        
-        call json%initialize()
-       
-        call json%load(filename=direccion)
-
-        call json%info('',n_children=sizee)
-        call json%get_core(jsonc)
-        call json%get('', listPointer, found) !obtengo cada trozo dentro de llaves
-
-        do iC = 1, sizee
-            call jsonc%get_child(listPointer, iC, animalPointer, found)
-
-            call jsonc%get_child(animalPointer, 'id_capa', attributePointer, found)
-            call jsonc%get(attributePointer, nombreAlbum)
-
-            call jsonc%get_child(animalPointer, 'pixeles', attributePointer, found)
-   
-            call jsonc%info(attributePointer,n_children=sizeAlbumes)
-            !Cargo el id de la capa
-            read(nombreAlbum, *) idCapaE;
-            call clienteObject%tree%insert(idCapaE)
-        end do
-        call json%destroy()
-end subroutine cargaCapasID
 
 subroutine cargaCapas(direccion)
         character(len=100), intent(in) :: direccion
@@ -210,6 +256,8 @@ subroutine cargaCapas(direccion)
             call jsonc%info(attributePointer,n_children=sizeAlbumes)
             !Cargo el id de la capa
             read(nombreAlbum, *) idCapaE;
+            call clienteObject%tree%insert(idCapaE)
+
             do iCAlbumes = 1, sizeAlbumes
                 call jsonc%get_child(attributePointer, iCAlbumes, todoAlbumes, found)
 
@@ -224,7 +272,7 @@ subroutine cargaCapas(direccion)
                 !Cargo el color a ese id de la capa actual
                 read(fila, *) filaE;
                 read(columna, *) columnaE;
-                call clienteObject%tree%search(idCapaE,filaE,columnaE,color)
+                call clienteObject%tree%search(idCapaE,columnaE,filaE,color)
                 print *, "----"
                 print *, 'Id capa: ',  nombreAlbum
                 print *, 'Pixeles '

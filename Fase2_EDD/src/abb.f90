@@ -1,12 +1,11 @@
 module abb_m
-    use matrix_m
+use linked_list_m
+use matrix_m
     implicit none
     private
     type :: Node_t
         integer :: value
-        integer :: init=0
-        logical :: raiz=.false.
-        type(matrix_t) :: mtx
+        type(matrix) :: mtx
         type(Node_t), pointer :: right => null()
         type(Node_t), pointer :: left => null()
     end type Node_t
@@ -23,100 +22,98 @@ module abb_m
         procedure :: graph
         procedure :: search
         procedure :: grapEspecifico
+        procedure :: extraerMatriz
+        procedure :: insertMatriz
+        procedure :: unirMatrices
     end type abb
 
-contains    
-    !Subrutinas del tipo abb
-    subroutine insert(self, val)
-        class(abb), intent(inout) :: self
-        integer, intent(in) :: val
+contains  
+    subroutine unirMatrices(self)
+        class(abb), intent(in) :: self
+        print *, "Uniendo matrices"
+        call unirMatricesRec(self%root)
+        
+    end subroutine unirMatrices
 
-        if (.not. associated(self%root)) then
-            allocate(self%root)
-            !self%root%left=>null()
-            !self%root%right=>null()
-            self%root%value = val
-            self%root%raiz=.true.
-            call self%root%mtx%init()
+recursive subroutine unirMatricesRec(root)
+    type(Node_t), pointer, intent(in) :: root
+    type(linked_list) :: lista
 
-        else
-            call insertRec(self%root, val)
+        if(associated(root)) then
+            ! RAIZ - IZQ - DER
+            !write(*, '(I0 A)', advance='no') root%value, " - "
+            call root%mtx%getPixels(lista)
+            call lista%print()
+            call preorderRec(root%left)
+            call preorderRec(root%right)
         end if
-    end subroutine insert
-    recursive subroutine insertRec(root, val)
-        type(Node_t), pointer, intent(inout) :: root
-        integer, intent(in) :: val
-        if (val < root%value) then
-            if (.not. associated(root%left)) then
-                allocate(root%left)
-                !root%left%left=>null()
-                !root%left%right=>null()
-                root%left%value = val
-                call root%mtx%init()
-            else
-                call insertRec(root%left, val)
-            end if
-        else if (val > root%value) then
-            if (.not. associated(root%right)) then
-                allocate(root%right)
-                !root%right%left=>null()
-                !root%right%right=>null()
-                root%right%value = val
-                call root%mtx%init()
-                print *, "Se ha insertado el valor", val
-            else
-                call insertRec(root%right, val)
-            end if
-        end if
-    end subroutine insertRec
-    
-    subroutine delete(self, val)
-        class(abb), intent(inout) :: self
-        integer, intent(inout) :: val
-    
-        self%root => deleteRec(self%root, val)
-    end subroutine delete
-    recursive function deleteRec(root, value) result(res)
-        type(Node_t), pointer :: root
-        integer, intent(in) :: value
-        type(Node_t), pointer :: res
-        type(Node_t), pointer :: temp
+end subroutine unirMatricesRec
 
-        if (.not. associated(root)) then
-            res => root
-            return
-        end if
+!==================================================================================================  
+subroutine extraerMatriz(self, original_val, mtx)
+    class(abb), intent(inout) :: self
+    integer, intent(in) :: original_val
+    type(matrix), intent(out) :: mtx
 
-        if (value < root%value) then
-            root%left => deleteRec(root%left, value)
-        else if (value > root%value) then
-            root%right => deleteRec(root%right, value)
-            
-        else
-            if (.not. associated(root%left)) then
-                temp => root%right
-                deallocate(root)
-                res => temp
-                return
-            else if (.not. associated(root%right)) then
-                temp => root%left
-                deallocate(root)
-                res => temp
-                return
-            else
-                call getMajorOfMinors(root%left, temp)
-                root%value = temp%value
-                root%left => deleteRec(root%left, temp%value)
-            end if
-        end if
+    mtx = search_and_modifyRec2(self%root, original_val)
 
-        res => root
-    end function deleteRec
+end subroutine extraerMatriz
 
+recursive function search_and_modifyRec2(root, original_value) result(mtx)
+    type(Node_t), pointer, intent(in) :: root
+    integer, intent(in) :: original_value
+    type(matrix) :: mtx
+
+    if (.not. associated(root)) then
+        print *, "El valor", original_value, "no se encuentra en el árbol."
+        return
+    end if
+
+    if (original_value < root%value) then
+        mtx = search_and_modifyRec2(root%left, original_value)
+    else if (original_value > root%value) then
+        mtx = search_and_modifyRec2(root%right, original_value)
+    else
+        print *, "El valor",root%value, " se ha encontrado "
+        mtx = root%mtx
+    end if
+end function search_and_modifyRec2
+!==================================================================================================
+subroutine insertMatriz(self, original_val,mtx)
+    class(abb), intent(inout) :: self
+    integer, intent(in) :: original_val
+    type(matrix), intent(in) :: mtx
+
+    call search_and_modifyRec3(self%root, original_val,mtx)
+end subroutine insertMatriz
+
+recursive subroutine search_and_modifyRec3(root, original_value,mtx)
+    type(Node_t), pointer :: root
+    integer, intent(in) :: original_value
+    type(matrix), intent(in) :: mtx
+
+    if (.not. associated(root)) then
+        print *, "El valor", original_value, "no se encuentra en el árbol."
+        return
+    end if
+
+    if (original_value < root%value) then
+        call search_and_modifyRec3(root%left, original_value,mtx)
+    else if (original_value > root%value) then
+        call search_and_modifyRec3(root%right, original_value,mtx)
+    else
+        print *, "El valor",root%value, " se ha encontrado "
+
+            root%mtx=mtx
+
+    end if
+end subroutine search_and_modifyRec3
+!==================================================================================================
 subroutine search(self, original_val,fila,columna,color)
     class(abb), intent(inout) :: self
     integer, intent(in) :: original_val
     integer, intent(in) :: fila,columna
+    !character(len=7), intent(in) :: color
     character(len=7), intent(in) :: color
 
     call search_and_modifyRec(self%root, original_val,fila,columna,color)
@@ -125,7 +122,9 @@ recursive subroutine search_and_modifyRec(root, original_value,fila,columna,colo
     type(Node_t), pointer :: root
     integer, intent(in) :: original_value
     integer, intent(in) :: fila,columna
-    character(len=7), intent(in) :: color
+    !character(len=7), intent(in) :: color
+    character(len=7), intent(in) ::  color
+
     if (.not. associated(root)) then
         print *, "El valor", original_value, "no se encuentra en el árbol."
         return
@@ -137,31 +136,11 @@ recursive subroutine search_and_modifyRec(root, original_value,fila,columna,colo
         call search_and_modifyRec(root%right, original_value,fila,columna,color)
     else
         print *, "El valor",root%value, " se ha encontrado "
-        print *,'Raiz es: ',root%raiz 
 
-        if (root%raiz .eqv. .true.) then
-            call root%mtx%init()
-            call root%mtx%add(fila,columna,1,color)  
-            root%raiz=0
-            root%init=1
-            print*,'Es raiz el: ',root%value
-        else if(.not. associated(root%left) .and. .not. associated(root%right)) then
-            print *, "El valor",root%value, " no tiene hijos"
-            if (root%init==0) then
-                call root%mtx%init()
-                call root%mtx%add(fila,columna,1,color)  
-                root%init=1
-            else 
-                call root%mtx%add(fila,columna,1,color)  
-            end if
-        else 
-            call root%mtx%add(fila,columna,1,color)  
-        end if 
-          
+            call root%mtx%insert(fila,columna,.true.,color)  
+
     end if
 end subroutine search_and_modifyRec
-
-
 
 
 subroutine grapEspecifico(self, original_val)
@@ -185,10 +164,88 @@ recursive subroutine grapRec(root, original_value)
         call grapRec(root%right, original_value)
     else
         print *, "El valor", original_value, " se ha encontrado"
-        call root%mtx%create_dot()
+        call root%mtx%graficar()
+        call root%mtx%tabla("tablaDOT")
+        call root%mtx%print()
     end if
 end subroutine grapRec
 
+
+    subroutine insert(self, val)
+        class(abb), intent(inout) :: self
+        integer, intent(in) :: val
+
+        if (.not. associated(self%root)) then
+            allocate(self%root)
+            self%root%value = val
+        else
+            call insertRec(self%root, val)
+        end if
+    end subroutine insert
+
+    recursive subroutine insertRec(root, val)
+        type(Node_t), pointer, intent(inout) :: root
+        integer, intent(in) :: val
+        
+        if (val < root%value) then
+            if (.not. associated(root%left)) then
+                allocate(root%left)
+                root%left%value = val
+            else
+                call insertRec(root%left, val)
+            end if
+        else if (val > root%value) then
+            if (.not. associated(root%right)) then
+                allocate(root%right)
+                root%right%value = val
+            else
+                call insertRec(root%right, val)
+            end if
+        end if
+    end subroutine insertRec
+
+    subroutine delete(self, val)
+        class(abb), intent(inout) :: self
+        integer, intent(inout) :: val
+    
+        self%root => deleteRec(self%root, val)
+    end subroutine delete
+
+    recursive function deleteRec(root, value) result(res)
+        type(Node_t), pointer :: root
+        integer, intent(in) :: value
+        type(Node_t), pointer :: res
+        type(Node_t), pointer :: temp
+
+        if (.not. associated(root)) then
+            res => root
+            return
+        end if
+
+        if (value < root%value) then
+            root%left => deleteRec(root%left, value)
+        else if (value > root%value) then
+            root%right => deleteRec(root%right, value)
+        else
+            if (.not. associated(root%left)) then
+                temp => root%right
+                deallocate(root)
+                res => temp
+                return
+            else if (.not. associated(root%right)) then
+                temp => root%left
+                deallocate(root)
+                res => temp
+                return
+            else
+                call getMajorOfMinors(root%left, temp)
+                root%value = temp%value
+                root%left => deleteRec(root%left, temp%value)
+            end if
+        end if
+
+        res => root
+    end function deleteRec
 
     recursive subroutine getMajorOfMinors(root, major)
         type(Node_t), pointer :: root, major
@@ -279,8 +336,7 @@ end subroutine grapRec
         if (associated(current)) then
             ! SE OBTIENE INFORMACION DEL NODO ACTUAL
           address = get_address_memory(current)
- !*       !write(str_value, '(I0)') current%Value
-          write(str_value, '(I0)') current%value
+          write(str_value, '(I0)') current%Value
           createNodes = createNodes // '"' // trim(address) // '"' // '[label="' // trim(str_value) // '"];' // new_line('a')
           ! VIAJAMOS A LA SUBRAMA IZQ
           if (associated(current%Left)) then

@@ -1,0 +1,24 @@
+digraph {
+  node [ shape=plaintext fontname=Helvetica ]
+
+  n [ label = <
+    <table border="0" cellborder="0" cellspacing="0" bgcolor="white">
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td bgcolor="#FF0000"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td bgcolor="#B22222"></td>
+      </tr>
+    </table>
+  > ]
+
+}
