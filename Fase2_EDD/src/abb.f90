@@ -33,36 +33,36 @@ use matrix_m
     end type abb
 
 contains  
-    subroutine unirMatrices(self)
+    subroutine unirMatrices(self,mR)
         class(abb), intent(in) :: self
-        type(linked_list) :: lista
-        type(node), pointer :: temp
+        type(matrix), intent(inout) :: mR
+        type(matrix) :: mtx
+
         print *, "Uniendo matrices"
-        call unirMatricesRec(self%root,lista)
+        call unirMatricesRec(self%root,mtx)
+        call mtx%print()
         print *, "Matrices unidas"
-        call lista%print()
-        !tengo la lista con todo
-        call lista%head(temp)
-        
-        print *, "Matrices unidas"
+        print *, "Matriz resultante"
+        mR=mtx
+        print *, "Matriz resultante"
+        call mR%print()
+
     end subroutine unirMatrices
-recursive subroutine unirMatricesRec(root,lista)
+recursive subroutine unirMatricesRec(root,mtx)
     type(Node_t), pointer, intent(in) :: root
-    type(linked_list) :: lista
+    type(matrix), intent(inout) :: mtx
 
         if (.not. associated(root)) then
             return
         end if
-            !write (*,*) "Agregando capa: ", root%value
-            call lista%append(root%value,1,"1234567",1)
-            call root%mtx%getPixels(root%mtx)
-            call unirMatricesRec(root%left,lista)
+            call root%mtx%getPixels(mtx)
+
+            call unirMatricesRec(root%left,mtx)
         if (.not. associated(root%left)) then
             return
         end if
-            call unirMatricesRec(root%right,lista)
-        call root%mtx%tabla("UnionM")
-        call root%mtx%graficar()
+            call unirMatricesRec(root%right,mtx)
+
 end subroutine unirMatricesRec
 
 !==================================================================================================  

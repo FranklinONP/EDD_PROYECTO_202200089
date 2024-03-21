@@ -45,7 +45,6 @@ contains
     recursive subroutine crearImagenRec(raiz, val) 
         type(nodo), pointer :: raiz
         integer, intent(in) :: val
-        type(matrix), pointer :: mtx
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:', val
@@ -58,8 +57,10 @@ contains
         else
             print*, 'Valor encontrado:', val
             !Mando una matriz y luego la uni
-            call raiz%abb%unirMatrices()
+            call raiz%abb%unirMatrices(raiz%mtx)
             print*, 'Matriz unida'
+            call raiz%mtx%graficar()
+            call raiz%mtx%tabla('Logrado')
 
         end if
 

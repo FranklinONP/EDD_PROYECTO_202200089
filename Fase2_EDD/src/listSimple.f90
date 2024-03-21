@@ -17,15 +17,9 @@ module linked_list_m
         procedure :: append
         procedure :: print
         procedure :: obtenerPixel
-        procedure :: head
     end type linked_list
 
 contains
-    subroutine head(self, head)
-        class(linked_list), intent(in) :: self
-        type(node), pointer, intent(out) :: head
-        head => self%head
-    end subroutine head
 
     subroutine append(self, fila, columna, color, nPixel)
         class(linked_list), intent(inout) :: self

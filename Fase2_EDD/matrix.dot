@@ -11,9 +11,14 @@
  "Nodo2_0"->"Nodo2_2"
  "Nodo2_0"->"Nodo2_2"[dir = back]
  "Nodo3_0"[label = "2", group="3"]                                                                                                                     
+ "Nodo3_0"->"Nodo11_0"
+ "Nodo3_0"->"Nodo11_0"[dir = back]
  "Nodo3_0"->"Nodo3_3"
  "Nodo3_0"->"Nodo3_3"[dir = back]
- {rank=same;"Nodo0_0";"Nodo2_0";"Nodo3_0"}
+ "Nodo11_0"[label = "10", group="11"]                                                                                                                  
+ "Nodo11_0"->"Nodo11_11"
+ "Nodo11_0"->"Nodo11_11"[dir = back]
+ {rank=same;"Nodo0_0";"Nodo2_0";"Nodo3_0";"Nodo11_0"}
  "Nodo0_2"[label = "1", group="0"]                                                                                                                     
  "Nodo0_2"->"Nodo2_2"
  "Nodo0_2"->"Nodo2_2"[dir = back]
@@ -24,6 +29,13 @@
  "Nodo0_3"[label = "2", group="0"]                                                                                                                     
  "Nodo0_3"->"Nodo3_3"
  "Nodo0_3"->"Nodo3_3"[dir = back]
+ "Nodo0_3"->"Nodo0_11"
+ "Nodo0_3"->"Nodo0_11"[dir = back]
  "Nodo3_3"[label = "#B22222", style = filled, fillcolor= "#B22222" group="3"]                                                                          
  {rank=same;"Nodo0_3";"Nodo3_3"}
+ "Nodo0_11"[label = "10", group="0"]                                                                                                                   
+ "Nodo0_11"->"Nodo11_11"
+ "Nodo0_11"->"Nodo11_11"[dir = back]
+ "Nodo11_11"[label = "#000000", style = filled, fillcolor= "#000000" group="11"]                                                                       
+ {rank=same;"Nodo0_11";"Nodo11_11"}
  }

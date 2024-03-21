@@ -346,25 +346,24 @@ contains
 
     subroutine getPixels(self,mtx)
         class(matrix), intent(in) :: self
-        integer :: i
-        integer :: j,cont
-        type(node), pointer :: aux
+        integer :: i,j
+        type(matrix), intent(inout) :: mtx
         type(node_val) :: val
-        type(matrix) :: mtx   
-        !type(linked_list), intent(inout) :: lista
-        cont=0
+
         print*, "Get pixels --->"
         do j = 0, self%height
             do i = 0, self%width
                 val = self%obtenerValor(i,j)
                 if(.not. val%exists) then
-                else                
-                    cont=cont+1
-                    !write (*,*) "PIxel ",j,i," ",val%color," ",cont 
-                    call mtx%insert(i,j,val%valor,val%color) 
+                else  
+                    print * , '----'  
+                    print * , 'i:',i,'j:',j,'val:',val%valor,'color:',val%color          
+                    call mtx%insert(i,j,.true.,val%color) 
+                    print * , '----'
                 end if
             end do
         end do 
+        print*, "Get pixels <---"
     end subroutine getPixels
 
 
