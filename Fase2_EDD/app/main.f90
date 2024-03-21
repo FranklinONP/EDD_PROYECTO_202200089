@@ -96,7 +96,9 @@ program main
     !idImagen-IdCapa-matriz
     call a%search(20,15,mtx)
     call a%search(20,11,mtx)
+    
     call mtx2%insert(10,10,.true.,"#000000")
+    call mtx2%graficar()
     call a%search(20,18,mtx2)
     print * , ""
     print *, "==================================="

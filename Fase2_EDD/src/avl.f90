@@ -59,6 +59,7 @@ contains
             print*, 'Valor encontrado:', val
             !Mando una matriz y luego la uni
             call raiz%abb%unirMatrices()
+            print*, 'Matriz unida'
 
         end if
 

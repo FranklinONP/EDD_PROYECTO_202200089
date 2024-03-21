@@ -344,30 +344,27 @@ contains
     end subroutine print
 
 
-    subroutine getPixels(self,lista)
+    subroutine getPixels(self,mtx)
         class(matrix), intent(in) :: self
         integer :: i
         integer :: j,cont
         type(node), pointer :: aux
         type(node_val) :: val
-        type(linked_list), intent(inout) :: lista
+        type(matrix) :: mtx   
+        !type(linked_list), intent(inout) :: lista
         cont=0
         print*, "Get pixels --->"
-
         do j = 0, self%height
             do i = 0, self%width
                 val = self%obtenerValor(i,j)
                 if(.not. val%exists) then
-                else
-                    !call mtx%insert(j,i,.true.,val%color)                  
+                else                
                     cont=cont+1
-                    write (*,*) "PIxel ",j,i," ",val%color," ",cont
-                    call lista%append(j,i,val%color,cont)     
+                    !write (*,*) "PIxel ",j,i," ",val%color," ",cont 
+                    call mtx%insert(i,j,val%valor,val%color) 
                 end if
             end do
-        end do
-        write(*,*) "#paso -------#"
-        
+        end do 
     end subroutine getPixels
 
 

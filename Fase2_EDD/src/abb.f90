@@ -9,7 +9,12 @@ use matrix_m
         type(Node_t), pointer :: right => null()
         type(Node_t), pointer :: left => null()
     end type Node_t
-
+    type :: node
+        private
+        integer :: fila,columna,nPixel
+        character(len=7) :: color
+        type(node), pointer :: next => null()
+    end type node
     type, public :: abb
         type(Node_t), pointer :: root => null()
 
@@ -30,23 +35,34 @@ use matrix_m
 contains  
     subroutine unirMatrices(self)
         class(abb), intent(in) :: self
+        type(linked_list) :: lista
+        type(node), pointer :: temp
         print *, "Uniendo matrices"
-        call unirMatricesRec(self%root)
+        call unirMatricesRec(self%root,lista)
+        print *, "Matrices unidas"
+        call lista%print()
+        !tengo la lista con todo
+        call lista%head(temp)
         
+        print *, "Matrices unidas"
     end subroutine unirMatrices
-
-recursive subroutine unirMatricesRec(root)
+recursive subroutine unirMatricesRec(root,lista)
     type(Node_t), pointer, intent(in) :: root
     type(linked_list) :: lista
 
-        if(associated(root)) then
-            ! RAIZ - IZQ - DER
-            !write(*, '(I0 A)', advance='no') root%value, " - "
-            call root%mtx%getPixels(lista)
-            call lista%print()
-            call preorderRec(root%left)
-            call preorderRec(root%right)
+        if (.not. associated(root)) then
+            return
         end if
+            !write (*,*) "Agregando capa: ", root%value
+            call lista%append(root%value,1,"1234567",1)
+            call root%mtx%getPixels(root%mtx)
+            call unirMatricesRec(root%left,lista)
+        if (.not. associated(root%left)) then
+            return
+        end if
+            call unirMatricesRec(root%right,lista)
+        call root%mtx%tabla("UnionM")
+        call root%mtx%graficar()
 end subroutine unirMatricesRec
 
 !==================================================================================================  
