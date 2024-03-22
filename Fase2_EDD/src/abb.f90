@@ -54,14 +54,11 @@ recursive subroutine unirMatricesRec(root,mtx)
 
         if (.not. associated(root)) then
             return
-        end if
+        else 
             call root%mtx%getPixels(mtx)
-
             call unirMatricesRec(root%left,mtx)
-        if (.not. associated(root%left)) then
-            return
-        end if
             call unirMatricesRec(root%right,mtx)
+        end if
 
 end subroutine unirMatricesRec
 
