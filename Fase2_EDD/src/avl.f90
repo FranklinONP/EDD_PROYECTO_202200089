@@ -28,10 +28,137 @@ module avl_m
         procedure :: search
         procedure :: abbImagen
         procedure :: crearImagen
+        procedure :: imagenPreorden
+        procedure :: imagenInorden
+        procedure :: imagenPostOrden
     end type avl
 
 contains
+!-----------------------------------------------------------------------------------------------------------------------
+!-----------------------------------------------------------------------------------------------------------------------
+!Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
+   subroutine imagenPostOrden(self, val,limite)
+        class(avl), intent(inout) :: self
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
 
+        call imagenPostOrdenRec(self%raiz, val,limite)
+
+    end subroutine imagenPostOrden
+    recursive subroutine imagenPostOrdenRec(raiz, val,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:', val
+            return
+        end if
+        if(val < raiz%valor) then
+            call imagenPostOrdenRec(raiz%izquierda, val,limite) 
+        else if(val > raiz%valor) then
+            call imagenPostOrdenRec(raiz%derecha, val,limite)
+        else
+            print*, 'Valor encontrado:', val
+            !Si ya tengo la matriz creada entonces ya lo la grafico
+            if (raiz%cargada .eqv. .true.)then
+                print*, 'Matriz ya creada=================================================================================='
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Preorder')
+            else 
+                call raiz%abb%GrapPostOrden(raiz%mtx,limite)
+                print*, 'Matriz unida'
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('PostOrden')
+                raiz%cargada = .true. 
+            end if
+        end if
+
+    end subroutine imagenPostOrdenRec
+!-----------------------------------------------------------------------------------------------------------------------
+!-----------------------------------------------------------------------------------------------------------------------
+!Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
+   subroutine imagenInorden(self, val,limite)
+        class(avl), intent(inout) :: self
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
+
+        call imagenInordenRec(self%raiz, val,limite)
+
+    end subroutine imagenInorden
+
+    recursive subroutine imagenInordenRec(raiz, val,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:', val
+            return
+        end if
+        if(val < raiz%valor) then
+            call imagenInordenRec(raiz%izquierda, val,limite) 
+        else if(val > raiz%valor) then
+            call imagenInordenRec(raiz%derecha, val,limite)
+        else
+            print*, 'Valor encontrado:', val
+            !Si ya tengo la matriz creada entonces ya lo la grafico
+            if (raiz%cargada .eqv. .true.)then
+                print*, 'Matriz ya creada=================================================================================='
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Inorden')
+            else 
+                call raiz%abb%GrapInorden(raiz%mtx,limite)
+                print*, 'Matriz unida'
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Inorde')
+                raiz%cargada = .true. 
+            end if
+        end if
+
+    end subroutine imagenInordenRec
+!-----------------------------------------------------------------------------------------------------------------------
+!-----------------------------------------------------------------------------------------------------------------------
+!Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
+   subroutine imagenPreorden(self, val,limite)
+        class(avl), intent(inout) :: self
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
+
+        call imagenPreordenRec(self%raiz, val,limite)
+
+    end subroutine imagenPreorden
+
+    recursive subroutine imagenPreordenRec(raiz, val,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: val
+        integer, intent(in) :: limite
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:', val
+            return
+        end if
+        if(val < raiz%valor) then
+            call imagenPreordenRec(raiz%izquierda, val,limite) 
+        else if(val > raiz%valor) then
+            call imagenPreordenRec(raiz%derecha, val,limite)
+        else
+            print*, 'Valor encontrado:', val
+            !Si ya tengo la matriz creada entonces ya lo la grafico
+            if (raiz%cargada .eqv. .true.)then
+                print*, 'Matriz ya creada=================================================================================='
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Preorder')
+            else 
+                call raiz%abb%GrapPreorder(raiz%mtx,limite)
+                print*, 'Matriz unida'
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Preorder')
+                raiz%cargada = .true. 
+            end if
+        end if
+
+    end subroutine imagenPreordenRec
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas

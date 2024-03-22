@@ -128,17 +128,20 @@ program main
     !call a%crearImagen(20)
 !===============================================================================================================================
 
-    direccion="mario.json"
+    direccion="capas.json"
     call cargaCapas(direccion)
     print *, "= Cargo capas ="
     direccion="unionMario.json"
     call cargaImagenes(direccion)
     call clienteObject%avl%graficar()
-    call clienteObject%avl%abbImagen(1)
-    call clienteObject%avl%crearImagen(1)
-    read *, desicion
-    call clienteObject%avl%abbImagen(1)
-    call clienteObject%avl%crearImagen(1)
+    print *, "========================== IMAGEN PREORDER LIMITE 4 ========================="
+    !solo creo la imagen a partir de lo que le mando pero aun no  se guarda en el avl como tal
+    !En lugar de eso solo la sustituye, a partir de la que hago la nueva 
+    !Call clienteObject%avl%crearImagen(1)
+    !read *, desicion
+    !Call clienteObject%avl%abbImagen(1)
+    Call clienteObject%avl%imagenPostOrden(1,4)
+
 
 
 
