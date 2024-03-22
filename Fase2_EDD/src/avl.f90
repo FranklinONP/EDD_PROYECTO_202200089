@@ -11,6 +11,7 @@ module avl_m
         integer :: altura = 1
         type(abb) :: abb
         type(matrix) :: mtx
+        logical :: cargada = .false.
         type(linked_list) :: list
         type(nodo), pointer :: derecha => null()
         type(nodo), pointer :: izquierda => null() 
@@ -56,12 +57,18 @@ contains
             call crearImagenRec(raiz%derecha, val)
         else
             print*, 'Valor encontrado:', val
-            !Mando una matriz y luego la uni
-            call raiz%abb%unirMatrices(raiz%mtx)
-            print*, 'Matriz unida'
-            call raiz%mtx%graficar()
-            call raiz%mtx%tabla('Logrado')
-
+            !Si ya tengo la matriz creada entonces ya lo la grafico
+            if (raiz%cargada .eqv. .true.)then
+                print*, 'Matriz ya creada=================================================================================='
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Logrado')
+            else 
+                call raiz%abb%unirMatrices(raiz%mtx)
+                print*, 'Matriz unida'
+                call raiz%mtx%graficar()
+                call raiz%mtx%tabla('Logrado')
+                raiz%cargada = .true. 
+            end if
         end if
 
     end subroutine crearImagenRec

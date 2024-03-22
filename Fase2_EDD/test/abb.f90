@@ -1,20 +1,14 @@
+
 module abb_m
-use linked_list_m
-use matrix_m
     implicit none
     private
+
     type :: Node_t
         integer :: value
-        type(matrix) :: mtx
         type(Node_t), pointer :: right => null()
         type(Node_t), pointer :: left => null()
     end type Node_t
-    type :: node
-        private
-        integer :: fila,columna,nPixel
-        character(len=7) :: color
-        type(node), pointer :: next => null()
-    end type node
+
     type, public :: abb
         type(Node_t), pointer :: root => null()
 
@@ -25,165 +19,11 @@ use matrix_m
         procedure :: inorder
         procedure :: posorder
         procedure :: graph
-        procedure :: search
-        procedure :: grapEspecifico
-        procedure :: extraerMatriz
-        procedure :: insertMatriz
-        procedure :: unirMatrices
     end type abb
 
-contains  
-    subroutine unirMatrices(self,mR)
-        class(abb), intent(in) :: self
-        type(matrix), intent(inout) :: mR
-        type(matrix) :: mtx
+contains    
 
-        print *, "Uniendo matrices"
-        call unirMatricesRec(self%root,mtx)
-        call mtx%print()
-        print *, "Matrices unidas"
-        print *, "Matriz resultante"
-        mR=mtx
-        print *, "Matriz resultante"
-        call mR%print()
-
-    end subroutine unirMatrices
-recursive subroutine unirMatricesRec(root,mtx)
-    type(Node_t), pointer, intent(in) :: root
-    type(matrix), intent(inout) :: mtx
-
-        if (.not. associated(root)) then
-            return
-        else 
-            call root%mtx%getPixels(mtx)
-            call unirMatricesRec(root%left,mtx)
-            call unirMatricesRec(root%right,mtx)
-        end if
-
-end subroutine unirMatricesRec
-
-!==================================================================================================  
-subroutine extraerMatriz(self, original_val, mtx)
-    class(abb), intent(inout) :: self
-    integer, intent(in) :: original_val
-    type(matrix), intent(out) :: mtx
-
-    mtx = search_and_modifyRec2(self%root, original_val)
-
-end subroutine extraerMatriz
-
-recursive function search_and_modifyRec2(root, original_value) result(mtx)
-    type(Node_t), pointer, intent(in) :: root
-    integer, intent(in) :: original_value
-    type(matrix) :: mtx
-
-    if (.not. associated(root)) then
-        print *, "El valor", original_value, "no se encuentra en el árbol."
-        return
-    end if
-
-    if (original_value < root%value) then
-        mtx = search_and_modifyRec2(root%left, original_value)
-    else if (original_value > root%value) then
-        mtx = search_and_modifyRec2(root%right, original_value)
-    else
-        print *, "El valor",root%value, " se ha encontrado "
-        mtx = root%mtx
-    end if
-end function search_and_modifyRec2
-!==================================================================================================
-subroutine insertMatriz(self, original_val,mtx)
-    class(abb), intent(inout) :: self
-    integer, intent(in) :: original_val
-    type(matrix), intent(in) :: mtx
-
-    call search_and_modifyRec3(self%root, original_val,mtx)
-end subroutine insertMatriz
-
-recursive subroutine search_and_modifyRec3(root, original_value,mtx)
-    type(Node_t), pointer :: root
-    integer, intent(in) :: original_value
-    type(matrix), intent(in) :: mtx
-
-    if (.not. associated(root)) then
-        print *, "El valor", original_value, "no se encuentra en el árbol."
-        return
-    end if
-
-    if (original_value < root%value) then
-        call search_and_modifyRec3(root%left, original_value,mtx)
-    else if (original_value > root%value) then
-        call search_and_modifyRec3(root%right, original_value,mtx)
-    else
-        print *, "El valor",root%value, " se ha encontrado "
-
-            root%mtx=mtx
-
-    end if
-end subroutine search_and_modifyRec3
-!==================================================================================================
-subroutine search(self, original_val,fila,columna,color)
-    class(abb), intent(inout) :: self
-    integer, intent(in) :: original_val
-    integer, intent(in) :: fila,columna
-    !character(len=7), intent(in) :: color
-    character(len=7), intent(in) :: color
-
-    call search_and_modifyRec(self%root, original_val,fila,columna,color)
-end subroutine search
-recursive subroutine search_and_modifyRec(root, original_value,fila,columna,color)
-    type(Node_t), pointer :: root
-    integer, intent(in) :: original_value
-    integer, intent(in) :: fila,columna
-    !character(len=7), intent(in) :: color
-    character(len=7), intent(in) ::  color
-
-    if (.not. associated(root)) then
-        print *, "El valor", original_value, "no se encuentra en el árbol."
-        return
-    end if
-
-    if (original_value < root%value) then
-        call search_and_modifyRec(root%left, original_value,fila,columna,color)
-    else if (original_value > root%value) then
-        call search_and_modifyRec(root%right, original_value,fila,columna,color)
-    else
-        print *, "El valor",root%value, " se ha encontrado "
-
-            call root%mtx%insert(fila,columna,.true.,color)  
-
-    end if
-end subroutine search_and_modifyRec
-
-
-subroutine grapEspecifico(self, original_val)
-    class(abb), intent(inout) :: self
-    integer, intent(in) :: original_val
-    call grapRec(self%root, original_val)
-end subroutine  grapEspecifico
-
-recursive subroutine grapRec(root, original_value)
-    type(Node_t), pointer :: root
-    integer, intent(in) :: original_value
-
-    if (.not. associated(root)) then
-        print *, "El valor", original_value, "no se encuentra en el árbol."
-        return
-    end if
-
-    if (original_value < root%value) then
-        call grapRec(root%left, original_value)
-    else if (original_value > root%value) then
-        call grapRec(root%right, original_value)
-    else
-        print *, "El valor", original_value, " se ha encontrado"
-        call root%mtx%graficar()
-        call root%mtx%tabla("tablaDOT")
-        call root%mtx%print()
-    end if
-end subroutine grapRec
-
-
+    !Subrutinas del tipo abb
     subroutine insert(self, val)
         class(abb), intent(inout) :: self
         integer, intent(in) :: val
@@ -195,7 +35,6 @@ end subroutine grapRec
             call insertRec(self%root, val)
         end if
     end subroutine insert
-
     recursive subroutine insertRec(root, val)
         type(Node_t), pointer, intent(inout) :: root
         integer, intent(in) :: val
@@ -223,7 +62,6 @@ end subroutine grapRec
     
         self%root => deleteRec(self%root, val)
     end subroutine delete
-
     recursive function deleteRec(root, value) result(res)
         type(Node_t), pointer :: root
         integer, intent(in) :: value
@@ -259,7 +97,6 @@ end subroutine grapRec
 
         res => root
     end function deleteRec
-
     recursive subroutine getMajorOfMinors(root, major)
         type(Node_t), pointer :: root, major
         if (associated(root%right)) then
@@ -342,6 +179,7 @@ end subroutine preorderRec
             write(*, '(I0 A)', advance='no') root%value, " - "
         end if
     end subroutine posordenRec
+
     
     subroutine graph(self, filename)
         class(abb), intent(in) :: self
@@ -426,3 +264,37 @@ end subroutine preorderRec
     end function get_address_memory
 
 end module abb_m
+
+program main
+    use abb_m
+    implicit none
+    
+    type(abb) :: tree
+    integer :: del, i
+    integer :: values(17) = [20, 8, 3, 1, 0, 15, 30, 48, 26, 10, 7, 5, 60, 19, 11, 21, 3]
+
+    ! Insertar valores de values
+    do i = 1, size(values)
+        call tree%insert(values(i))
+    end do 
+
+    call tree%graph("ABB")
+
+
+    write(*, '(A)') "Escribiendo en preorden: "
+    !Primeros 5 valores
+    call tree%preorder(7)
+    
+    write(*, '(A)') "Escribiendo en inorder: "
+    call tree%inorder(4)
+    
+    write(*, '(A)') "Escribiendo en inorder: "
+    call tree%inorder(1)
+
+    print *, "Escribiendo en posorden: "
+    call tree%posorder(8)
+    
+    write(*, '(A)') "Escribiendo en inorder: "
+    call tree%inorder(10)
+
+end program main
