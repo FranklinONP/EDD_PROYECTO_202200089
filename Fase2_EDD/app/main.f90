@@ -127,13 +127,13 @@ program main
     !print * , "@@@@@@@@@@@@@@@@@@@@@@@@@"
     !call a%crearImagen(20)
 !===============================================================================================================================
-    direccion="capas.json"
+    direccion="mario.json"
     call cargaCapas(direccion)
     print *, "= Cargo capas ="
-    direccion="imagenes.json"
+    direccion="unionMario.json"
     call cargaImagenes(direccion)
-    call clienteObject%avl%abbImagen(3)
-    call clienteObject%avl%crearImagen(3)
+    call clienteObject%avl%abbImagen(1)
+    call clienteObject%avl%crearImagen(1)
 
 
 
