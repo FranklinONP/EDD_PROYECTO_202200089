@@ -7,7 +7,7 @@ module clienteTemporal
         character(len=100) :: dpi
         character(len=100) :: password
         type(abb) :: tree
-        type(avl),pointer:: avl
+        type(avl) :: avl
     end type cliente
 end module clienteTemporal
 
@@ -45,6 +45,8 @@ program main
     integer :: values(17) = [20, 8, 3, 1, 0, 15, 30, 48, 26, 10, 7, 5, 60, 19, 11, 21, 3]
     integer :: desicion,del
     integer :: filaE,columnaE,idCapaE
+    integer :: idImagenE,capaImagenE
+    type(matrix) :: mtxTemporal
     
     integer :: keys(18) = [10, 5, 15, 3, 1, 12, 17, 7, 4, 6, 9, 11, 2, 20, 24, 21, 23, 28]
     integer :: i
@@ -72,58 +74,75 @@ program main
     !call clienteObject%tree%graph("ABB")
     !call clienteObject%tree%grapEspecifico(0)
 
-
+!===============================================================================================================================
     !UNIR N MATRICES DISPERSAS  
     !Inserto o cargo capas, en este caso 10,5,15 ids
-    call clienteObject%tree%insert(10)
-    call clienteObject%tree%insert(5)
-    call clienteObject%tree%insert(15)
+    !call clienteObject%tree%insert(10)
+    !call clienteObject%tree%insert(5)
+    !call clienteObject%tree%insert(15)
 
     !Agrego pixeles a la matriz de la capa 15
-    call clienteObject%tree%search(15,1,1,"#FF0000")
-    call clienteObject%tree%search(15,2,2,"#B22222")
+    !call clienteObject%tree%search(15,1,1,"#FF0000")
+    !call clienteObject%tree%search(15,2,2,"#B22222")
 
     !Jalo la matriz con id x del arbol de capas para pasarlo al abb del avl
-    call clienteObject%tree%extraerMatriz(15,mtx)
-    call mtx%print()
+    !call clienteObject%tree%extraerMatriz(15,mtx)
+    !call mtx%print()
     !tengo la matriz temporal la paso a abb del avl
     !primero agrego los nodos al avl
-    call a%insert(20)
-    call a%insert(10)
-    call a%insert(29)
+    !call a%insert(20)
+    !call a%insert(10)
+    !call a%insert(29)
     !Busco un nodo de los insertadors y le mando la matriz
 
     !idImagen-IdCapa-matriz
-    call a%search(20,15,mtx)
-    call a%search(20,11,mtx)
+    !call a%search(20,15,mtx)
+    !call a%search(20,11,mtx)
     
-    call mtx2%insert(10,10,.true.,"#000000")
-    call mtx2%graficar()
-    call a%search(20,18,mtx2)
-    print * , ""
-    print *, "==================================="
-    call a%abbImagen(20)
-    read *, desicion
+    !call mtx2%insert(10,10,.true.,"#000000")
+    !call mtx2%graficar()
+    !call a%search(20,18,mtx2)
+    !print * , ""
+    !print *, "==================================="
+    !call a%abbImagen(20)
+    !read *, desicion
     !idImagen-IdCapa-matriz
-    call a%search(29,25,mtx)
-    call a%search(29,11,mtx)
-    call a%search(29,38,mtx)
-    print * , ""
-    print *, "==================================="
-    call a%abbImagen(29)
+    !call a%search(29,25,mtx)
+    !call a%search(29,11,mtx)
+    !call a%search(29,38,mtx)
+    !print * , ""
+    !print *, "==================================="
+    !call a%abbImagen(29)
     !idImagen-IdCapa-matriz
-    call a%search(10,25,mtx)
-    call a%search(10,11,mtx)
-    call a%search(10,38,mtx)
-    print * , ""
-    print *, "==================================="
-    call a%abbImagen(10)
-    call a%graficar()
+    !call a%search(10,25,mtx)
+    !call a%search(10,11,mtx)
+    !call a%search(10,38,mtx)
+    !print * , ""
+    !print *, "==================================="
+    !call a%abbImagen(10)
+    !call a%graficar()
 
     !Crear imagen
-    print * , "Crear Imagen"
-    print * , "@@@@@@@@@@@@@@@@@@@@@@@@@"
-    call a%crearImagen(20)
+    !print * , "Crear Imagen"
+    !print * , "@@@@@@@@@@@@@@@@@@@@@@@@@"
+    !call a%crearImagen(20)
+!===============================================================================================================================
+    direccion="capas.json"
+    call cargaCapas(direccion)
+    print *, "= Cargo capas ="
+    direccion="imagenes.json"
+    call cargaImagenes(direccion)
+    call clienteObject%avl%abbImagen(3)
+    call clienteObject%avl%crearImagen(3)
+
+
+
+
+
+    !print * , "Carga de imagenes"
+    !Carga de imagenes
+    !direccion="imagenes.json"
+    !call cargaImagenes(direccion)
 
     !Ya puedo copiar y tengo capas en el abb de cada idImagen
     !toca unir todas las que tenga el abb
@@ -281,6 +300,7 @@ subroutine cargaCapas(direccion)
                 print *, 'Fila: ', fila
                 print *, 'Columna: ', columna
                 print *, 'Color: ', color
+                
 
             end do
 
@@ -345,16 +365,28 @@ subroutine cargaImagenes(direccion)
             call jsonc%get_child(animalPointer, 'capas', attributePointer, found)
    
             call jsonc%info(attributePointer,n_children=sizeAlbumes)
-            
+
+            !Inserto el nodo al avl del cliente
+            read(idImagen, *) idImagenE;
+            call clienteObject%avl%insert(idImagenE)
+ 
+
             do iCAlbumes = 1, sizeAlbumes
                 call jsonc%get_child(attributePointer, iCAlbumes, todoAlbumes, found)
-
                 call jsonc%get(todoAlbumes, capasImagenes)
 
             
                 print *, "----"
                 print *, 'Id Imagen: ',  idImagen
                 print *, 'Capas: ', capasimagenes 
+                !Busco y extraigo la matriz del id actual
+                read(capasimagenes, *) capaImagenE;
+                call clienteObject%tree%extraerMatriz(capaImagenE,mtxTemporal)
+                !mtxTemporal contiene la matriz de la capa con id actual
+                !Inserto la matriz al abb del avl
+                call clienteObject%avl%search(idImagenE,capaImagenE,mtxTemporal)
+                print *, "================ IMPRESION DE MATRIZ TEMPORAL ================"
+                call mtxTemporal%print()
 
             end do
 

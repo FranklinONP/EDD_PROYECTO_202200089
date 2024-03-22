@@ -1,41 +1,113 @@
  digraph Matrix {
  node[shape = "box"]
  "Nodo0_0"[label = "root", group="0"]                                                                                                                  
- "Nodo0_0"->"Nodo2_0"
- "Nodo0_0"->"Nodo2_0"[dir = back]
- "Nodo0_0"->"Nodo0_2"
- "Nodo0_0"->"Nodo0_2"[dir = back]
- "Nodo2_0"[label = "1", group="2"]                                                                                                                     
- "Nodo2_0"->"Nodo3_0"
- "Nodo2_0"->"Nodo3_0"[dir = back]
- "Nodo2_0"->"Nodo2_2"
- "Nodo2_0"->"Nodo2_2"[dir = back]
- "Nodo3_0"[label = "2", group="3"]                                                                                                                     
- "Nodo3_0"->"Nodo11_0"
- "Nodo3_0"->"Nodo11_0"[dir = back]
- "Nodo3_0"->"Nodo3_3"
- "Nodo3_0"->"Nodo3_3"[dir = back]
+ "Nodo0_0"->"Nodo5_0"
+ "Nodo0_0"->"Nodo5_0"[dir = back]
+ "Nodo0_0"->"Nodo0_5"
+ "Nodo0_0"->"Nodo0_5"[dir = back]
+ "Nodo5_0"[label = "4", group="5"]                                                                                                                     
+ "Nodo5_0"->"Nodo7_0"
+ "Nodo5_0"->"Nodo7_0"[dir = back]
+ "Nodo5_0"->"Nodo5_5"
+ "Nodo5_0"->"Nodo5_5"[dir = back]
+ "Nodo7_0"[label = "6", group="7"]                                                                                                                     
+ "Nodo7_0"->"Nodo9_0"
+ "Nodo7_0"->"Nodo9_0"[dir = back]
+ "Nodo7_0"->"Nodo7_7"
+ "Nodo7_0"->"Nodo7_7"[dir = back]
+ "Nodo9_0"[label = "8", group="9"]                                                                                                                     
+ "Nodo9_0"->"Nodo11_0"
+ "Nodo9_0"->"Nodo11_0"[dir = back]
+ "Nodo9_0"->"Nodo9_9"
+ "Nodo9_0"->"Nodo9_9"[dir = back]
  "Nodo11_0"[label = "10", group="11"]                                                                                                                  
+ "Nodo11_0"->"Nodo13_0"
+ "Nodo11_0"->"Nodo13_0"[dir = back]
  "Nodo11_0"->"Nodo11_11"
  "Nodo11_0"->"Nodo11_11"[dir = back]
- {rank=same;"Nodo0_0";"Nodo2_0";"Nodo3_0";"Nodo11_0"}
- "Nodo0_2"[label = "1", group="0"]                                                                                                                     
- "Nodo0_2"->"Nodo2_2"
- "Nodo0_2"->"Nodo2_2"[dir = back]
- "Nodo0_2"->"Nodo0_3"
- "Nodo0_2"->"Nodo0_3"[dir = back]
- "Nodo2_2"[label = "#FF0000", style = filled, fillcolor= "#FF0000" group="2"]                                                                          
- {rank=same;"Nodo0_2";"Nodo2_2"}
- "Nodo0_3"[label = "2", group="0"]                                                                                                                     
- "Nodo0_3"->"Nodo3_3"
- "Nodo0_3"->"Nodo3_3"[dir = back]
- "Nodo0_3"->"Nodo0_11"
- "Nodo0_3"->"Nodo0_11"[dir = back]
- "Nodo3_3"[label = "#B22222", style = filled, fillcolor= "#B22222" group="3"]                                                                          
- {rank=same;"Nodo0_3";"Nodo3_3"}
+ "Nodo13_0"[label = "12", group="13"]                                                                                                                  
+ "Nodo13_0"->"Nodo15_0"
+ "Nodo13_0"->"Nodo15_0"[dir = back]
+ "Nodo13_0"->"Nodo13_13"
+ "Nodo13_0"->"Nodo13_13"[dir = back]
+ "Nodo15_0"[label = "14", group="15"]                                                                                                                  
+ "Nodo15_0"->"Nodo17_0"
+ "Nodo15_0"->"Nodo17_0"[dir = back]
+ "Nodo15_0"->"Nodo15_15"
+ "Nodo15_0"->"Nodo15_15"[dir = back]
+ "Nodo17_0"[label = "16", group="17"]                                                                                                                  
+ "Nodo17_0"->"Nodo19_0"
+ "Nodo17_0"->"Nodo19_0"[dir = back]
+ "Nodo17_0"->"Nodo17_17"
+ "Nodo17_0"->"Nodo17_17"[dir = back]
+ "Nodo19_0"[label = "18", group="19"]                                                                                                                  
+ "Nodo19_0"->"Nodo21_0"
+ "Nodo19_0"->"Nodo21_0"[dir = back]
+ "Nodo19_0"->"Nodo19_19"
+ "Nodo19_0"->"Nodo19_19"[dir = back]
+ "Nodo21_0"[label = "20", group="21"]                                                                                                                  
+ "Nodo21_0"->"Nodo21_21"
+ "Nodo21_0"->"Nodo21_21"[dir = back]
+ {rank=same;"Nodo0_0";"Nodo5_0";"Nodo7_0";"Nodo9_0";"Nodo11_0";"Nodo13_0";"Nodo15_0";"Nodo17_0";"Nodo19_0";"Nodo21_0"}
+ "Nodo0_5"[label = "4", group="0"]                                                                                                                     
+ "Nodo0_5"->"Nodo5_5"
+ "Nodo0_5"->"Nodo5_5"[dir = back]
+ "Nodo0_5"->"Nodo0_7"
+ "Nodo0_5"->"Nodo0_7"[dir = back]
+ "Nodo5_5"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="5"]                                                                          
+ {rank=same;"Nodo0_5";"Nodo5_5"}
+ "Nodo0_7"[label = "6", group="0"]                                                                                                                     
+ "Nodo0_7"->"Nodo7_7"
+ "Nodo0_7"->"Nodo7_7"[dir = back]
+ "Nodo0_7"->"Nodo0_9"
+ "Nodo0_7"->"Nodo0_9"[dir = back]
+ "Nodo7_7"[label = "#FFCC40", style = filled, fillcolor= "#FFCC40" group="7"]                                                                          
+ {rank=same;"Nodo0_7";"Nodo7_7"}
+ "Nodo0_9"[label = "8", group="0"]                                                                                                                     
+ "Nodo0_9"->"Nodo9_9"
+ "Nodo0_9"->"Nodo9_9"[dir = back]
+ "Nodo0_9"->"Nodo0_11"
+ "Nodo0_9"->"Nodo0_11"[dir = back]
+ "Nodo9_9"[label = "#FFCC50", style = filled, fillcolor= "#FFCC50" group="9"]                                                                          
+ {rank=same;"Nodo0_9";"Nodo9_9"}
  "Nodo0_11"[label = "10", group="0"]                                                                                                                   
  "Nodo0_11"->"Nodo11_11"
  "Nodo0_11"->"Nodo11_11"[dir = back]
- "Nodo11_11"[label = "#000000", style = filled, fillcolor= "#000000" group="11"]                                                                       
+ "Nodo0_11"->"Nodo0_13"
+ "Nodo0_11"->"Nodo0_13"[dir = back]
+ "Nodo11_11"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="11"]                                                                       
  {rank=same;"Nodo0_11";"Nodo11_11"}
+ "Nodo0_13"[label = "12", group="0"]                                                                                                                   
+ "Nodo0_13"->"Nodo13_13"
+ "Nodo0_13"->"Nodo13_13"[dir = back]
+ "Nodo0_13"->"Nodo0_15"
+ "Nodo0_13"->"Nodo0_15"[dir = back]
+ "Nodo13_13"[label = "#FFCC40", style = filled, fillcolor= "#FFCC40" group="13"]                                                                       
+ {rank=same;"Nodo0_13";"Nodo13_13"}
+ "Nodo0_15"[label = "14", group="0"]                                                                                                                   
+ "Nodo0_15"->"Nodo15_15"
+ "Nodo0_15"->"Nodo15_15"[dir = back]
+ "Nodo0_15"->"Nodo0_17"
+ "Nodo0_15"->"Nodo0_17"[dir = back]
+ "Nodo15_15"[label = "#FFCC50", style = filled, fillcolor= "#FFCC50" group="15"]                                                                       
+ {rank=same;"Nodo0_15";"Nodo15_15"}
+ "Nodo0_17"[label = "16", group="0"]                                                                                                                   
+ "Nodo0_17"->"Nodo17_17"
+ "Nodo0_17"->"Nodo17_17"[dir = back]
+ "Nodo0_17"->"Nodo0_19"
+ "Nodo0_17"->"Nodo0_19"[dir = back]
+ "Nodo17_17"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="17"]                                                                       
+ {rank=same;"Nodo0_17";"Nodo17_17"}
+ "Nodo0_19"[label = "18", group="0"]                                                                                                                   
+ "Nodo0_19"->"Nodo19_19"
+ "Nodo0_19"->"Nodo19_19"[dir = back]
+ "Nodo0_19"->"Nodo0_21"
+ "Nodo0_19"->"Nodo0_21"[dir = back]
+ "Nodo19_19"[label = "#FFCC40", style = filled, fillcolor= "#FFCC40" group="19"]                                                                       
+ {rank=same;"Nodo0_19";"Nodo19_19"}
+ "Nodo0_21"[label = "20", group="0"]                                                                                                                   
+ "Nodo0_21"->"Nodo21_21"
+ "Nodo0_21"->"Nodo21_21"[dir = back]
+ "Nodo21_21"[label = "#FFCC50", style = filled, fillcolor= "#FFCC50" group="21"]                                                                       
+ {rank=same;"Nodo0_21";"Nodo21_21"}
  }
