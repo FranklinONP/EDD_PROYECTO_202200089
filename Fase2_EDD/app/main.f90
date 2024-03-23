@@ -17,6 +17,7 @@ program main
     use iso_fortran_env, only:
     use clienteTemporal
     use avl_m
+    use lista_module
     
     implicit none
     type(avl) :: a
@@ -51,6 +52,13 @@ program main
     integer :: keys(18) = [10, 5, 15, 3, 1, 12, 17, 7, 4, 6, 9, 11, 2, 20, 24, 21, 23, 28]
     integer :: i
     logical :: alvF
+
+    logical :: validacion=.true.
+    type(lista_m) :: listaTemporal
+    type(matrix) :: mtxTemporal2
+    logical :: resultLista=.false.
+    integer :: idLista,contadorLista=0
+
 
     !call clienteObject%avl%newTree()
     !do i = 1, size(keys)
@@ -140,7 +148,109 @@ program main
     !Call clienteObject%avl%crearImagen(1)
     !read *, desicion
     !Call clienteObject%avl%abbImagen(1)
-    Call clienteObject%avl%imagenPostOrden(1,4)
+    !Primero inserto el id de la imagen que voy a crear
+    !Verifico sino existe ya ese id
+    call clienteObject%avl%validarID(2,validacion)
+    if(validacion)then
+        print *, "No existe el id"
+        !creo mi nodo con ese id nuevo de mi imagen nueva
+        call clienteObject%avl%insert(2)
+        !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+        call clienteObject%tree%GrapPreorder(listaTemporal,4)
+        !La listaTemporal viene con los id-matrices
+        !Recorro la lista y extraigo la matriz de cada id junto a su id
+        contadorLista = 0 
+        do while (.true.)
+            contadorLista = contadorLista + 1
+            resultLista=.false.
+            call listaTemporal%existe(contadorLista,resultLista)
+            if (resultLista .eqv. .false.) then
+                exit
+            end if
+            call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+            print *, "matrizExtraida"
+            !call mtxTemporal2%print()
+            !read *, desicion
+            call clienteObject%avl%search(2,idLista,mtxTemporal2)
+        end do
+
+    else
+        !Call clienteObject%avl%imagenPostOrden(1,2)
+    end if
+   
+    call clienteObject%avl%graficar()
+    call clienteObject%avl%crearImagen(2)
+    call clienteObject%avl%abbImagen(2)
+    call clienteObject%avl%crearImagen(2)
+    print*,'======================== INORDEN =================================='
+    read *, desicion    
+    call clienteObject%avl%validarID(3,validacion)
+    if(validacion)then
+        print *, "No existe el id"
+        !creo mi nodo con ese id nuevo de mi imagen nueva
+        call clienteObject%avl%insert(3)
+        !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+        call clienteObject%tree%GrapInorden(listaTemporal,3)
+        !La listaTemporal viene con los id-matrices
+        !Recorro la lista y extraigo la matriz de cada id junto a su id 
+        contadorLista = 0
+        do while (.true.)
+            contadorLista = contadorLista + 1
+            resultLista=.false.
+            call listaTemporal%existe(contadorLista,resultLista)
+            if (resultLista .eqv. .false.) then
+                exit
+            end if
+            call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+            print *, "matrizExtraida"
+            !call mtxTemporal2%print()
+            !read *, desicion
+            call clienteObject%avl%search(3,idLista,mtxTemporal2)
+        end do
+
+    else
+        !Call clienteObject%avl%imagenPostOrden(1,2)
+    end if
+   
+    call clienteObject%avl%graficar()
+    call clienteObject%avl%crearImagen(3)
+    call clienteObject%avl%abbImagen(3)
+    call clienteObject%avl%crearImagen(3)
+
+    print*,'======================== POSTORDEN =================================='
+    read *, desicion
+    call clienteObject%avl%validarID(4,validacion)
+    if(validacion)then
+        print *, "No existe el id"
+        !creo mi nodo con ese id nuevo de mi imagen nueva
+        call clienteObject%avl%insert(4)
+        !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+        call clienteObject%tree%GrapPostOrden(listaTemporal,4)
+        !La listaTemporal viene con los id-matrices
+        !Recorro la lista y extraigo la matriz de cada id junto a su id 
+        contadorLista = 0
+        do while (.true.)
+            contadorLista = contadorLista + 1
+            resultLista=.false.
+            call listaTemporal%existe(contadorLista,resultLista)
+            if (resultLista .eqv. .false.) then
+                exit
+            end if
+            call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+            print *, "matrizExtraida"
+            !call mtxTemporal2%print()
+            !read *, desicion
+            call clienteObject%avl%search(4,idLista,mtxTemporal2)
+        end do
+
+    else
+        !Call clienteObject%avl%imagenPostOrden(1,2)
+    end if
+   
+    call clienteObject%avl%graficar()
+    call clienteObject%avl%crearImagen(4)
+    call clienteObject%avl%abbImagen(4)
+    call clienteObject%avl%crearImagen(4)
 
 
 

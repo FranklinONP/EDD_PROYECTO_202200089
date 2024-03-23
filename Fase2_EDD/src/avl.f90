@@ -2,7 +2,6 @@ module avl_m
     use abb_m
     use matrix_m
     use uuid_module
-    use linked_list_m
     implicit none
     private
 
@@ -12,7 +11,6 @@ module avl_m
         type(abb) :: abb
         type(matrix) :: mtx
         logical :: cargada = .false.
-        type(linked_list) :: list
         type(nodo), pointer :: derecha => null()
         type(nodo), pointer :: izquierda => null() 
     end type
@@ -31,9 +29,34 @@ module avl_m
         procedure :: imagenPreorden
         procedure :: imagenInorden
         procedure :: imagenPostOrden
+        procedure :: validarID
     end type avl
 
 contains
+!-----------------------------------------------------------------------------------------------------------------------
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine validarID(self,val,validacion)
+        class(avl), intent(in) :: self
+        logical, intent(inout) :: validacion
+        integer,intent(in) :: val
+        print *, 'Validando ID',validacion
+        call validarIDRec(self%raiz,val,validacion)
+    end subroutine validarID
+
+    recursive subroutine validarIDRec(raiz,val,validacion)
+        type(nodo), pointer, intent(in) :: raiz
+        logical, intent(inout) :: validacion
+        integer, intent(in) :: val  
+
+        if(associated(raiz)) then
+            if(raiz%valor == val) then
+                validacion = .true.
+            end if
+            call validarIDRec(raiz%izquierda,val,validacion)
+            call validarIDRec(raiz%derecha,val,validacion)
+        end if
+
+    end subroutine validarIDRec
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
@@ -66,7 +89,7 @@ contains
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('Preorder')
             else 
-                call raiz%abb%GrapPostOrden(raiz%mtx,limite)
+                !call raiz%abb%GrapPostOrden(raiz%mtx,limite)
                 print*, 'Matriz unida'
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('PostOrden')
@@ -108,7 +131,7 @@ contains
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('Inorden')
             else 
-                call raiz%abb%GrapInorden(raiz%mtx,limite)
+                !call raiz%abb%GrapInorden(raiz%mtx,limite)
                 print*, 'Matriz unida'
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('Inorde')
@@ -150,7 +173,7 @@ contains
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('Preorder')
             else 
-                call raiz%abb%GrapPreorder(raiz%mtx,limite)
+                !call raiz%abb%GrapPreorder(raiz%mtx,limite)
                 print*, 'Matriz unida'
                 call raiz%mtx%graficar()
                 call raiz%mtx%tabla('Preorder')

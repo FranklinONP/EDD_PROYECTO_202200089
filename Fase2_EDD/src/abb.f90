@@ -1,5 +1,5 @@
 module abb_m
-use linked_list_m
+use lista_module
 use matrix_m
     implicit none
     private
@@ -269,22 +269,21 @@ end subroutine grapRec
         end if
     end subroutine getMajorOfMinors
 
-subroutine GrapPreorder(self,mR,n)
+subroutine GrapPreorder(self,lR,n)
     class(abb), intent(in) :: self
-    type(matrix), intent(inout) :: mR
-    type(matrix) :: mtx    
+    type(lista_m), intent(inout) :: lR
+    type(lista_m) :: list    
     integer, intent(in) :: n
     integer :: contador = 0
-
-    call preorderRec(self%root,mtx, n, contador)
-    mR=mtx
+    call preorderRec(self%root,list, n, contador)
+    lR=list
     print *, "Matriz resultante Preorden"
     contador = 0
 end subroutine GrapPreorder
 
-recursive subroutine preorderRec(root,mtx, n, contador)
+recursive subroutine preorderRec(root,list, n, contador)
     type(Node_t), pointer, intent(in) :: root
-    type(matrix), intent(inout) :: mtx
+    type(lista_m), intent(inout) :: list
     integer, intent(inout) :: contador
     integer, intent(in) :: n
     
@@ -292,69 +291,69 @@ recursive subroutine preorderRec(root,mtx, n, contador)
         return
     else 
         if (contador >= n) return
-        call root%mtx%getPixels(mtx)
         write(*, '(I0, A)', advance='no') root%value, " - "
         contador = contador + 1
+        call list%push(contador,root%value,root%mtx)
         print *, "Contador: ", contador
-        call preorderRec(root%left,mtx, n, contador)
-        call preorderRec(root%right,mtx, n, contador)
+        call preorderRec(root%left,list, n, contador)
+        call preorderRec(root%right,list, n, contador)
     end if
 end subroutine preorderRec
 
-   subroutine GrapInorden(self,mR,n)
+   subroutine GrapInorden(self,lR,n)
         class(abb), intent(in) :: self
-        type(matrix), intent(inout) :: mR
-        type(matrix) :: mtx
+        type(lista_m), intent(inout) :: lR
+        type(lista_m) :: list   
         integer, intent(in) :: n
         integer :: contador = 0
-        call GrapInordenRec(self%root,mtx,n,contador)
-        mR=mtx
+        call GrapInordenRec(self%root,list,n,contador)
+        lR=list
         print *, "Matriz resultante Inorden"
         contador = 0
     end subroutine GrapInorden
 
-    recursive subroutine GrapInordenRec(root,mtx,n,contador)
+    recursive subroutine GrapInordenRec(root,list,n,contador)
         type(Node_t), pointer, intent(in) :: root
-        type(matrix), intent(inout) :: mtx
+        type(lista_m), intent(inout) :: list
         integer, intent(inout) :: contador
         integer, intent(in) :: n
 
         if(associated(root)) then
             ! IZQ - RAIZ - DER
-            call GrapInordenRec(root%left,mtx,n,contador)
+            call GrapInordenRec(root%left,list,n,contador)
             if (contador >= n) return
             contador = contador + 1
-            call root%mtx%getPixels(mtx)
+            call list%push(contador,root%value,root%mtx)
             write(*, '(I0 A)', advance='no') root%value, " - "
-            call GrapInordenRec(root%right,mtx,n,contador)
+            call GrapInordenRec(root%right,list,n,contador)
         end if
     end subroutine GrapInordenRec
 
-    subroutine GrapPostOrden(self,mR,n)
+    subroutine GrapPostOrden(self,lR,n)
         class(abb), intent(in) :: self
-        type(matrix), intent(inout) :: mR
-        type(matrix) :: mtx    
+        type(lista_m), intent(inout) :: lR
+        type(lista_m) :: list   
         integer, intent(in) :: n
         integer :: contador = 0
-        call GrapPostOrdenRec(self%root,mtx,n,contador)
-        mR=mtx
+        call GrapPostOrdenRec(self%root,list,n,contador)
+        lR=list
         print *, "Matriz resultante PostOrden"
         contador = 0
 
     end subroutine GrapPostOrden
-    recursive subroutine GrapPostOrdenRec(root,mtx,n,contador)
+    recursive subroutine GrapPostOrdenRec(root,list,n,contador)
         type(Node_t), pointer, intent(in) :: root
-        type(matrix), intent(inout) :: mtx
+        type(lista_m), intent(inout) :: list
         integer, intent(inout) :: contador
         integer, intent(in) :: n
 
         if(associated(root)) then
             ! IZQ - DER - RAIZ
-            call GrapPostOrdenRec(root%left,mtx,n,contador)
-            call GrapPostOrdenRec(root%right,mtx,n,contador)
+            call GrapPostOrdenRec(root%left,list,n,contador)
+            call GrapPostOrdenRec(root%right,list,n,contador)
              if (contador >= n) return
             contador = contador + 1
-            call root%mtx%getPixels(mtx)
+            call list%push(contador,root%value,root%mtx)
             write(*, '(I0 A)', advance='no') root%value, " - "
         end if
     end subroutine GrapPostOrdenRec
