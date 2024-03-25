@@ -1,0 +1,16 @@
+ digraph G {
+ rankdir=down;
+ node0 [label="Album 1", color="red", shape="rectangle"];
+ element00 [label="Cliente 3 ", shape="ellipse"];
+ node0 -> element00 [dir="down"];
+ element00 -> element01 [dir="down"];
+ element01 [label="Cliente 2 ", shape="ellipse"];
+ element01 -> element02 [dir="down"];
+ element02 [label="Cliente 1 ", shape="ellipse"];
+ node1 [label="Album 2", color="red", shape="rectangle"];
+ element10 [label="Cliente 4 ", shape="ellipse"];
+ node1 -> element10 [dir="down"];
+ node0 -> node1 [dir="fordward"];
+ node2 [label="Album 3", color="red", shape="rectangle"];
+ node1 -> node2 [dir="fordward"];
+ }

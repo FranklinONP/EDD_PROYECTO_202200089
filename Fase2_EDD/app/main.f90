@@ -1,17 +1,5 @@
-module clienteTemporal
-    use abb_m
-    use avl_m
-    implicit none
-    type :: cliente
-        character(len=100) :: nombre
-        character(len=100) :: dpi
-        character(len=100) :: password
-        type(abb) :: tree
-        type(avl) :: avl
-    end type cliente
-end module clienteTemporal
-
 program main
+    use avl_c
     use matrix_m
     use json_module
     use iso_fortran_env, only:
@@ -20,6 +8,8 @@ program main
     use lista_module
     
     implicit none
+    type(avlc) :: arbolClientes
+
     type(avl) :: a
     type(matrix) :: mtx,mtx2
 
@@ -59,6 +49,35 @@ program main
     logical :: resultLista=.false.
     integer :: idLista,contadorLista=0
 
+    character(len=5) :: admin
+    character(len=7) :: passwordAdmin
+    character(len=100) :: dpiUser,passwordUser,nombreUser
+    integer :: principal, principal1,principal2,principal3,principal4,principal5
+    logical :: isLoggedIn = .false.
+    logical :: exitAdmin=.false.,loginAdmin=.false.
+
+    integer :: dpiInt,dpiInt2    
+!======================================================================================================================================
+!======================================================================================================================================
+direccion="clientes.json"
+    call cargaMasivaCliente(direccion)
+direccion="capas.json"
+    call cargaCapas(direccion)
+    print *, '..............................................>'
+    print *, '..............................................>'
+    print *, '..............................................>'
+direccion='imagenes.json'
+    call cargaImagenes(direccion)
+print *, '..............................................>'
+    call arbolClientes%grafica(1)
+    print *, 'Grafica del avl del cliente1'
+    call arbolClientes%imagen(1,3)
+
+print *,'Ahora a graficar en preorden limite 3, la imagen id 1, del cliente id-1'
+read *, desicion
+    call arbolClientes%graficarPreorden(1,3)
+!=================================================================================================================
+!======================================================================================================================================
 
     !call clienteObject%avl%newTree()
     !do i = 1, size(keys)
@@ -363,10 +382,16 @@ subroutine cargaMasivaCliente(direccion)
             call jsonc%get_child(animalPointer, 'password', attributePointer, found) 
             call jsonc%get(attributePointer, password)
            
-             print *, "----"
-             print *, 'DPI: ', dpi
-             print *, 'Nombre: ', nombreCliente
-             print *, 'password: ', password
+             !Inserto el id del cliente en el arbol
+                read(dpi, *) dpiInt2
+             call arbolClientes%insert(dpiInt2)
+             !Busco ese id para setear datos del cliente
+             call arbolClientes%search(dpiInt2,nombreCliente,password)
+             !call arbolClientes%preorden()
+            print *, "////////"
+            print *, 'DPI: ',  dpi
+            print *, 'Nombre Cliente: ', nombreCliente
+            print *, 'Password: ', password
 
         end do
         call json%destroy()
@@ -394,8 +419,9 @@ subroutine cargaCapas(direccion)
             call jsonc%info(attributePointer,n_children=sizeAlbumes)
             !Cargo el id de la capa
             read(nombreAlbum, *) idCapaE;
-            call clienteObject%tree%insert(idCapaE)
-
+            !call clienteObject%tree%insert(idCapaE)
+            call arbolClientes%insertNodoCapa(1,idCapaE)
+            
             do iCAlbumes = 1, sizeAlbumes
                 call jsonc%get_child(attributePointer, iCAlbumes, todoAlbumes, found)
 
@@ -410,7 +436,8 @@ subroutine cargaCapas(direccion)
                 !Cargo el color a ese id de la capa actual
                 read(fila, *) filaE;
                 read(columna, *) columnaE;
-                call clienteObject%tree%search(idCapaE,columnaE,filaE,color)
+                !call clienteObject%tree%search(idCapaE,columnaE,filaE,color)
+                call arbolClientes%insertCapa(1,idCapaE,filaE,columnaE,color)
                 print *, "----"
                 print *, 'Id capa: ',  nombreAlbum
                 print *, 'Pixeles '
@@ -485,7 +512,8 @@ subroutine cargaImagenes(direccion)
 
             !Inserto el nodo al avl del cliente
             read(idImagen, *) idImagenE;
-            call clienteObject%avl%insert(idImagenE)
+            !call clienteObject%avl%insert(idImagenE)
+            call arbolClientes%insertNodoImagen(1,idImagenE)
  
 
             do iCAlbumes = 1, sizeAlbumes
@@ -498,12 +526,14 @@ subroutine cargaImagenes(direccion)
                 print *, 'Capas: ', capasimagenes 
                 !Busco y extraigo la matriz del id actual
                 read(capasimagenes, *) capaImagenE;
-                call clienteObject%tree%extraerMatriz(capaImagenE,mtxTemporal)
+                !call clienteObject%tree%extraerMatriz(capaImagenE,mtxTemporal)
+                call arbolClientes%extraerM(1,capaImagenE,mtxTemporal)
                 !mtxTemporal contiene la matriz de la capa con id actual
                 !Inserto la matriz al abb del avl
-                call clienteObject%avl%search(idImagenE,capaImagenE,mtxTemporal)
+                !call clienteObject%avl%search(idImagenE,capaImagenE,mtxTemporal)
+                call arbolClientes%insertMatriz(1,idImagenE,capaImagenE,mtxTemporal)
                 print *, "================ IMPRESION DE MATRIZ TEMPORAL ================"
-                call mtxTemporal%print()
+                !call mtxTemporal%print()
 
             end do
 

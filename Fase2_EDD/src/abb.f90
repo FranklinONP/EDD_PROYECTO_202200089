@@ -40,7 +40,7 @@ contains
 
         print *, "Uniendo matrices"
         call unirMatricesRec(self%root,mtx)
-        call mtx%print()
+        !call mtx%print()
         print *, "Matrices unidas"
         print *, "Matriz resultante"
         mR=mtx
