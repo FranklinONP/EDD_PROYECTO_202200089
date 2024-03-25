@@ -41,9 +41,75 @@ module avl_c
         procedure :: Imagen
         procedure :: Grafica
         procedure :: graficarPreorden
+        procedure :: graficaCapas
+        procedure :: login
     end type avlc
 
 contains
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine login(self, dpii, password,respuesta)
+        class(avlc), intent(inout) :: self
+        character(len=*), intent(in) :: password,dpii
+        logical, intent(inout) :: respuesta
+        integer :: dpi
+        read(dpii,*) dpi
+        call loginRec(self%raiz, dpi,password,respuesta)
+    end subroutine login
+
+    recursive subroutine loginRec(raiz, dpi,password,respuesta) 
+        type(nodo), pointer :: raiz
+        character(len=*), intent(in) :: password
+        integer, intent(in) :: dpi
+        logical, intent(inout) :: respuesta
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call loginRec(raiz%izquierda,dpi,password,respuesta)
+        
+        else if(dpi > raiz%valor) then
+            call loginRec(raiz%derecha,dpi,password,respuesta)
+
+        else
+            if(raiz%cliente%password .eq. password) then
+                respuesta = .true.
+            end if
+
+        end if
+    end subroutine loginRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine GraficaCapas(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call GraficaCapasRec(self%raiz, dpi)
+    end subroutine GraficaCapas
+
+    recursive subroutine GraficaCapasRec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call GraficaCapasRec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call GraficaCapasRec(raiz%derecha,dpi)
+
+        else
+            print*, 'DPI encontrado'
+            call raiz%cliente%tree%graph("ABB de Capas")
+            print *, 'ABB del cliente graficado'
+
+        end if
+    end subroutine GraficaCapasRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine Grafica(self, dpi)
         class(avlc), intent(inout) :: self

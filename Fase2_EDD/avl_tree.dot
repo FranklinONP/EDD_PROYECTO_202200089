@@ -1,7 +1,0 @@
- digraph G {
- "Nodod31a949d-ba1e-49c1-5a71-7934dbfe8eeb"[label= "           3 "]
- "Nodod31a949d-ba1e-49c1-5a71-7934dbfe8eeb"->"Nodo657511f6-74ea-40f5-7fd0-7474f6f7ec60"
- "Nodod31a949d-ba1e-49c1-5a71-7934dbfe8eeb"->"Nodo76b54676-7790-41ff-58f3-6438fbbf83a0"
- "Nodo657511f6-74ea-40f5-7fd0-7474f6f7ec60"[label= "           2 "]
- "Nodo76b54676-7790-41ff-58f3-6438fbbf83a0"[label= "           4 "]
- }

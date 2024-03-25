@@ -56,7 +56,294 @@ program main
     logical :: isLoggedIn = .false.
     logical :: exitAdmin=.false.,loginAdmin=.false.
 
-    integer :: dpiInt,dpiInt2    
+    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc
+    logical :: respuesta=.false.
+!======================================================================================================================================
+!======================================================================================================================================
+    do
+        print *, 'Menu Principal'
+        print *, '1. Administrador'
+        print *, '2. Iniciar Sesión'
+        print *, '3. Salir'
+        read *, principal
+
+        select case (principal)
+            case (1)
+                do while (.not. loginAdmin)
+                    print *, 'Ingrese su usuario'
+                    read *, dpiUser
+                    print *, 'Ingrese su contraseña '
+                    read *, passwordUser
+                    if (dpiUser .eq. 'admin' .and. passwordUser .eq. 'EDD2024') then
+                        loginAdmin = .true.
+                    else
+                        print *, 'Usuario o contraseña incorrectos'
+                    end if
+                end do
+
+                exitAdmin = .false.
+                do while (.not. exitAdmin)
+                    print *, 'Menu Administrador'
+                    print *, '1. Carga Masiva de Clientes'
+                    print *, '2. Graficar árbol de Clientes'
+                    print *, '3. Operaciones sobre Usuarios'
+                    print *, '4. Reporte Administrador'
+                    print *, '5. Regresar al Menu Principal'
+                    read *, principal1
+
+                    select case (principal1)
+                        case (1)
+                            print *, 'Carga Masiva de Clientes'
+                                direccion="clientes.json"
+                                call cargaMasivaCliente(direccion)
+                        case (2)
+                            print *, 'Graficar árbol de Clientes'
+                                
+                        case (3)
+                            do while (.true.)
+                                print *, 'Menu Operaciones sobre Usuarios'
+                                print *, '1. Insertar'
+                                print *, '2. Modificar'
+                                print *, '3. Eliminar'
+                                print *, '4. Regresar'
+                                read *, principal2
+
+                                select case (principal2)
+                                    case (1)
+                                        print *, 'Insertar'
+                                    case (2)
+                                        print *, 'Modificar'
+                                    case (3)
+                                        print *, 'Eliminar'
+                                    case (4)
+                                        exit
+                                    case default
+                                        print *, 'Opcion no válida'
+                                end select
+                            end do
+                        case (4)
+                            print *, 'Reporte Administrador'
+                        case (5)
+                            
+                            exitAdmin = .true.
+                        case default
+                            print *, 'Opcion no válida'
+                    end select
+                end do
+
+            case (2)
+                do while (.not. isLoggedIn)
+                    print *, 'Ingrese su usuario'
+                    read *, dpiUser
+                    print *, 'Ingrese su contraseña '
+                    read *, passwordUser
+                    !if (dpiUser .eq. 'frank' .and. passwordUser .eq. '1') then
+                    !    isLoggedIn = .true.
+                    print * , "Respusta ",respuesta
+                    print * , "DPI: ",dpiUser," Password: ",passwordUser
+                    call arbolClientes%login(dpiUser,passwordUser,respuesta)
+                    print * , "Respusta ",respuesta
+                    if (respuesta)then
+                        isLoggedIn = .true.
+                    else
+                        print *, 'Usuario o contraseña incorrectos'
+                    end if
+                end do
+
+                do while (.true.)
+                    print *, 'SubMenu 2'
+                    print *, '1. Cargar Jsons'
+                    print *, '2. Crear Imagenes'
+                    print *, '3. Ver Estructuras'
+                    print *, '4. Salir'
+                    read (dpiUser, *)dpiUserInt
+                    read *, principal1
+
+                    select case (principal1)
+                        case (1)
+                            do while (.true.)
+                                print *, 'Menu Cargar Jsons'
+                                print *, '1. Cargar Capas'
+                                print *, '2. Cargar Albumes'
+                                print *, '3. Cargar Imagenes'
+                                print *, '4. Regresar'
+                                read *, principal2
+
+                                select case (principal2)
+                                    case (1)
+                                        print *, 'Cargar Capas'
+                                        direccion = "capas.json"
+                                        call cargaCapas(direccion)
+                                    case (2)
+                                        print *, 'Cargar Albumes'
+                                        direccion = "albumes.json"
+                                        call cargaAlbumes(direccion)
+                                    case (3)
+                                        print *, 'Cargar Imagenes'
+                                        direccion = "imagenes.json"
+                                        call cargaImagenes(direccion)
+                                    case (4)
+                                        exit
+                                    case default
+                                        print *, 'Opcion no válida'
+                                end select
+                            end do
+                        case (2)
+                            do while (.true.)
+                                print *, 'Menu Crear Imagenes'
+                                print *, '1. Preorden'
+                                print *, '2. Inorden'
+                                print *, '3. Postorden'
+                                print *, '4. Ingresando capas'
+                                print *, '5. A partir de una Imagen'
+                                print *, '6. Regresar'
+                                read *, principal2
+
+                                select case (principal2)
+                                    case (1)
+                                        print *,'Crear Imagenes - Preorden'
+                                        print *,'Ingrese el limite del recorrido'
+                                        read *, buscadorGeneral
+                                            call clienteObject%avl%validarID(2,validacion)
+                                            if(validacion)then
+                                                print *, "No existe el id"
+                                                !creo mi nodo con ese id nuevo de mi imagen nueva
+                                                call clienteObject%avl%insert(2)
+                                                !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+                                                call clienteObject%tree%GrapPreorder(listaTemporal,4)
+                                                !La listaTemporal viene con los id-matrices
+                                                !Recorro la lista y extraigo la matriz de cada id junto a su id
+                                                contadorLista = 0 
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    print *, "matrizExtraida"
+                                                    !call mtxTemporal2%print()
+                                                    !read *, desicion
+                                                    call clienteObject%avl%search(2,idLista,mtxTemporal2)
+                                                end do
+                                            end if
+                                    case (2)
+                                        print *, 'Crear Imagenes - Inorden'
+                                        print *,'Ingrese el limite del recorrido'
+                                        read *, buscadorGeneral
+                                            call clienteObject%avl%validarID(3,validacion)
+                                            if(validacion)then
+                                                print *, "No existe el id"
+                                                !creo mi nodo con ese id nuevo de mi imagen nueva
+                                                call clienteObject%avl%insert(3)
+                                                !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+                                                call clienteObject%tree%GrapInorden(listaTemporal,3)
+                                                !La listaTemporal viene con los id-matrices
+                                                !Recorro la lista y extraigo la matriz de cada id junto a su id 
+                                                contadorLista = 0
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    print *, "matrizExtraida"
+                                                    !call mtxTemporal2%print()
+                                                    !read *, desicion
+                                                    call clienteObject%avl%search(3,idLista,mtxTemporal2)
+                                                end do
+                                            end if
+                                    case (3)
+                                        print *, 'Crear Imagenes - Postorden'
+                                        print *,'Ingrese el limite del recorrido'
+                                        read *, buscadorGeneral
+                                            call clienteObject%avl%validarID(4,validacion)
+                                            if(validacion)then
+                                                print *, "No existe el id"
+                                                !creo mi nodo con ese id nuevo de mi imagen nueva
+                                                call clienteObject%avl%insert(4)
+                                                !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+                                                call clienteObject%tree%GrapPostOrden(listaTemporal,4)
+                                                !La listaTemporal viene con los id-matrices
+                                                !Recorro la lista y extraigo la matriz de cada id junto a su id 
+                                                contadorLista = 0
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    print *, "matrizExtraida"
+                                                    !call mtxTemporal2%print()
+                                                    !read *, desicion
+                                                    call clienteObject%avl%search(4,idLista,mtxTemporal2)
+                                                end do
+                                            end if 
+                                    case (4)
+                                        print *, 'Crear Imagenes - Ingresando capas'
+                                        !Falta implementacion
+                                    case (5)
+                                        print *, 'Crear Imagenes - A partir de una Imagen'
+                                        !Falta implementacion
+                                    case (6)
+                                        exit
+                                    case default
+                                        print *, 'Opcion no válida'
+                                end select
+                            end do
+                        case (3)
+                            print *, 'Visualizacion General de las estructuras del cliente'
+                            do
+                                print *, "1. Ver AVL de Imagenes"
+                                print *, "2. Ver ABB de Capas"
+                                print *, "3. Ver matriz en especifico"
+                                print *, "4. Ver Imagen en especifico"
+                                print *, "4. Volver al menú principal"
+                                read(*,*) opgc
+                                select case (opgc)
+                                    case (1)
+                                        print *, "Grafica del avl de imagenes"
+                                        call arbolClientes%grafica(dpiUserInt)
+                                        
+                                    case (2)
+                                        print *, "Grafica del abb de capas"
+                                        call arbolClientes%graficaCapas(dpiUserInt)
+                                        
+                                    case (3)
+                                        print *, "Ingrese el id de la Matriz a graficar"
+                                    case (4)
+                                        print *, "Ingrese el id de la Imagen a graficar"
+                                        read *,buscadorGeneral
+                                        call arbolClientes%imagen(dpiUserInt,buscadorGeneral)
+                                    case (5)
+                                        !Sale del menu de visualizacion
+                                        exit    
+                                    case default
+                                        print *, "Opción no válida, por favor seleccione nuevamente."
+                                end select
+                            end do
+
+                        case (4)
+                            isLoggedIn=.false.
+                            exit
+                        case default
+                            print *, 'Opcion no válida'
+                    end select
+                end do
+
+            case (3)
+                print *, 'Hasta luego.'
+                exit
+
+            case default
+                print *, 'Opcion no válida'
+        end select
+    end do
 !======================================================================================================================================
 !======================================================================================================================================
 direccion="clientes.json"
@@ -383,7 +670,7 @@ subroutine cargaMasivaCliente(direccion)
             call jsonc%get(attributePointer, password)
            
              !Inserto el id del cliente en el arbol
-                read(dpi, *) dpiInt2
+            read(dpi, *) dpiInt2
              call arbolClientes%insert(dpiInt2)
              !Busco ese id para setear datos del cliente
              call arbolClientes%search(dpiInt2,nombreCliente,password)
@@ -419,8 +706,10 @@ subroutine cargaCapas(direccion)
             call jsonc%info(attributePointer,n_children=sizeAlbumes)
             !Cargo el id de la capa
             read(nombreAlbum, *) idCapaE;
+            read(dpiUser, *) dpiUserInt;
             !call clienteObject%tree%insert(idCapaE)
-            call arbolClientes%insertNodoCapa(1,idCapaE)
+            !dpiActual-idCapa
+            call arbolClientes%insertNodoCapa(dpiUserInt,idCapaE)
             
             do iCAlbumes = 1, sizeAlbumes
                 call jsonc%get_child(attributePointer, iCAlbumes, todoAlbumes, found)
@@ -437,7 +726,8 @@ subroutine cargaCapas(direccion)
                 read(fila, *) filaE;
                 read(columna, *) columnaE;
                 !call clienteObject%tree%search(idCapaE,columnaE,filaE,color)
-                call arbolClientes%insertCapa(1,idCapaE,filaE,columnaE,color)
+                !dpiActual-idCapa-fila-columna-color
+                call arbolClientes%insertCapa(dpiUserInt,idCapaE,filaE,columnaE,color)
                 print *, "----"
                 print *, 'Id capa: ',  nombreAlbum
                 print *, 'Pixeles '
@@ -512,8 +802,9 @@ subroutine cargaImagenes(direccion)
 
             !Inserto el nodo al avl del cliente
             read(idImagen, *) idImagenE;
+            read(dpiUser, *) dpiUserInt
             !call clienteObject%avl%insert(idImagenE)
-            call arbolClientes%insertNodoImagen(1,idImagenE)
+            call arbolClientes%insertNodoImagen(dpiUserInt,idImagenE)
  
 
             do iCAlbumes = 1, sizeAlbumes
@@ -527,14 +818,14 @@ subroutine cargaImagenes(direccion)
                 !Busco y extraigo la matriz del id actual
                 read(capasimagenes, *) capaImagenE;
                 !call clienteObject%tree%extraerMatriz(capaImagenE,mtxTemporal)
-                call arbolClientes%extraerM(1,capaImagenE,mtxTemporal)
+                !dpiActual-idCapa-matriz(de esa capa)
+                call arbolClientes%extraerM(dpiUserInt,capaImagenE,mtxTemporal)
                 !mtxTemporal contiene la matriz de la capa con id actual
                 !Inserto la matriz al abb del avl
                 !call clienteObject%avl%search(idImagenE,capaImagenE,mtxTemporal)
-                call arbolClientes%insertMatriz(1,idImagenE,capaImagenE,mtxTemporal)
-                print *, "================ IMPRESION DE MATRIZ TEMPORAL ================"
-                !call mtxTemporal%print()
-
+                !dpiActual-idImagen-idCapa-matriz
+                call arbolClientes%insertMatriz(dpiUserInt,idImagenE,capaImagenE,mtxTemporal)
+                print*, 'Matriz de imagen cargada a abb'
             end do
 
         end do

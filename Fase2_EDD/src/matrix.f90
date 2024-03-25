@@ -313,6 +313,7 @@ contains
             print *, "Ocurrió un error al momento de crear la imagen"
         else
             print *, "La imagen fue generada exitosamente"
+
         end if
     end subroutine graficar
 

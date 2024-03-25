@@ -410,28 +410,35 @@ end subroutine preorderRec
           call RoamTree(current%Right, createNodes, linkNodes)
         end if
     end subroutine RoamTree
-    subroutine write_dot(filename, code)
-        character(len=*), intent(in) :: code, filename
-        character(len=:), allocatable :: dot_filename, png_filename
-        
-        ! Agregar extensiones
-        dot_filename = trim(filename) // ".dot"
-        png_filename = trim(filename) // ".png"
-        
-        open(10, file="graph"//dot_filename, status='replace', action='write')
-        write(10, '(A)') trim(code)
-        close(10)
+subroutine write_dot(filenamee, code)
+    character(len=*), intent(in) :: code,filenamee
+    character(len=:), allocatable :: dot_filename, png_filename
+    character(len=3) :: ext_dot = ".dot"
+    character(len=4) :: ext_png = ".png"
+    character(len=8) :: filename = "ABBdeCapas"
+    
+    ! Agregar extensiones
+    dot_filename = trim(filename) // ext_dot
+    png_filename = trim(filename) // ext_png
+    
+    open(10, file=dot_filename, status='replace', action='write')
+    write(10, '(A)') trim(code)
+    close(10)
 
-        ! Genera la imagen PNG
-        call system("dot -Tpng graph"// dot_filename //" -o graph" // png_filename)
-    end subroutine write_dot
+    ! Genera la imagen PNG
+    call system("dot -Tpng " // dot_filename // " -o " // png_filename)
+    call system("start " // png_filename)
+end subroutine write_dot
+
+
+
 
     function get_address_memory(node) result(address)
         !class(matrix_t), intent(in) :: self
         type(Node_t), pointer :: node
         character(len=20) :: address
         ! integer 8
-        integer*8 :: i
+        integer*8 :: i    
     
         i = loc(node) ! get the address of x
         ! convert the address to string
