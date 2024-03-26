@@ -56,8 +56,9 @@ program main
     logical :: isLoggedIn = .false.
     logical :: exitAdmin=.false.,loginAdmin=.false.
 
-    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID
+    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID,posA,countA,capitaE
     logical :: respuesta=.false.
+    character(len=:), allocatable :: cadena,capita
 !======================================================================================================================================
 !======================================================================================================================================
     do
@@ -315,33 +316,44 @@ program main
                                             call arbolClientes%validarID(dpiUserInt,idMN,validacion)
                                             if(validacion)then
                                                 print *, "No existe el id"
-                                                !creo mi nodo con ese id nuevo de mi imagen nueva
-                                                 call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
-                                                 print *,"Ingrese el limite del recorrido"
-                                                 read *, buscadorGeneral
-                                                 print *,'Ingrese el id de la imagen de la cual se hara el recorrido'
-                                                 read *, AmplitudID 
-                                                !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
-                                                !call clienteObject%tree%GrapPostOrden(listaTemporal,4)
-                                                !call arbolClientes%Preorden(dpiUserInt,listaTemporal,buscadorGeneral)
-                                                call arbolClientes%PostOrden(dpiUserInt,listaTemporal,buscadorGeneral)
-                                                !La listaTemporal viene con los id-matrices
-                                                !Recorro la lista y extraigo la matriz de cada id junto a su id 
-                                                contadorLista = 0
-                                                do while (.true.)
-                                                    contadorLista = contadorLista + 1
-                                                    resultLista=.false.
-                                                    call listaTemporal%existe(contadorLista,resultLista)
-                                                    if (resultLista .eqv. .false.) then
-                                                        exit
-                                                    end if
-                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
-                                                    print *, "matrizExtraida"
+                                                print *,'Ingrese el limite'
+                                                read *, buscadorGeneral
+                                                print *,'Ingrese el id de la imagen de la cual se hara el recorrido'
+                                                read *, AmplitudID
+            
+                                                call arbolClientes%cadena(dpiUserInt,AmplitudID,cadena)
+
+                                                posA=INDEX(cadena,'-')
+                                                countA= 0
+                                                do while (posA .NE. 0 .AND. countA <buscadorGeneral)
+                                                    write(*,*) trim(adjustl(cadena(1:posA-1)))
+                                                    capita=trim(adjustl(cadena(1:posA-1)))
+                                                    print*,'Imprimiendo capita',capita
+                                                    read(capita,*) capitaE
+                                                    !recorro el abb de la imagen y extraigo sus matrices
+                                                    call arbolClientes%oma(dpiUserInt,idMN,capitaE,mtxTemporal2)
+                                                    !Aca mando mi matriz a mi lista para recorrerla despues 
+                                                    call listaTemporal%push(countA+1,capitaE,mtxTemporal2)
+                                                    cadena=cadena(posA+1:)
+                                                    posA=INDEX(cadena,'-')
+                                                    countA = countA + 1
+                                                end do
+                                                !    contadorLista = 0 
+                                                !do while (.true.)
+                                                !    contadorLista = contadorLista + 1
+                                                !    resultLista=.false.
+                                                !    call listaTemporal%existe(contadorLista,resultLista)
+                                                !    if (resultLista .eqv. .false.) then
+                                                !        exit
+                                                !    end if
+                                                !    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                !    print *, "matrizExtraida"
                                                     !call mtxTemporal2%print()
                                                     !read *, desicion
-                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
-                                                end do
-                                                call arbolClientes%imagen(dpiUserInt,idMN)
+                                                    !call clienteObject%avl%search(2,idLista,mtxTemporal2)
+                                                !    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
+                                                !end do
+                                                !call arbolClientes%imagen(dpiUserInt,idMN)
                                             end if 
                                     case (6)
                                         exit

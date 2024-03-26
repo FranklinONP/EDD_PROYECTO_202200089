@@ -30,24 +30,25 @@ use matrix_m
         procedure :: GrapPreorder
         procedure :: GrapInorden
         procedure :: GrapPostOrden
-        procedure :: Amplitud
+        !cadena
+        procedure :: recorrido_amplitud
     end type abb
 
 contains  
-subroutine Amplitud(self, cadena)
+    subroutine recorrido_amplitud(self, cadena)
         class(abb), intent(in) :: self
         character(len=:), allocatable, intent(inout) :: cadena
         integer :: h, i
-    
+        print *, 'Hola mundo'
         cadena = ""
-        h = altura(self%raiz)
+        h = altura(self%root)
         do i = 1, h
-            call agregarNivel(self%raiz, i, cadena)
+            call agregarNivel(self%root, i, cadena)
         end do
-    end subroutine Amplitud
-    
-    recursive subroutine agregarNivel(raiz, nivel, cadena)
-        type(abb), pointer, intent(in) :: raiz
+        print *, cadena
+    end subroutine recorrido_amplitud
+  recursive subroutine agregarNivel(raiz, nivel, cadena)
+        type(Node_t), pointer, intent(in) :: raiz
         integer, intent(in) :: nivel
         character(len=:), allocatable, intent(inout) :: cadena
         character(len=20) :: valor_str
@@ -55,23 +56,23 @@ subroutine Amplitud(self, cadena)
         if (.not. associated(raiz)) then
             return
         else if (nivel == 1) then
-            write(valor_str, '(I0)') raiz%valor
+            write(valor_str, '(I0)') raiz%value
             cadena = trim(cadena) // trim(valor_str) // " - "
         else if (nivel > 1) then
-            call agregarNivel(raiz%izquierda, nivel-1, cadena)
-            call agregarNivel(raiz%derecha, nivel-1, cadena)
+            call agregarNivel(raiz%left, nivel-1, cadena)
+            call agregarNivel(raiz%right, nivel-1, cadena)
         end if
     end subroutine agregarNivel
     
     recursive function altura(raiz) result(h)
-    type(abb), pointer, intent(in) :: raiz
+    type(Node_t), pointer, intent(in) :: raiz
     integer :: h, h1, h2
 
     if (.not. associated(raiz)) then
         h = 0
     else
-        h1 = altura(raiz%izquierda)
-        h2 = altura(raiz%derecha)
+        h1 = altura(raiz%left)
+        h2 = altura(raiz%right)
         if (h1 > h2) then
             h = h1 + 1
         else
@@ -79,6 +80,7 @@ subroutine Amplitud(self, cadena)
         end if
     end if
 end function altura
+
     subroutine unirMatrices(self,mR)
         class(abb), intent(in) :: self
         type(matrix), intent(inout) :: mR

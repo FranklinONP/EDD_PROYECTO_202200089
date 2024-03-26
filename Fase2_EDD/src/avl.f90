@@ -30,10 +30,73 @@ module avl_m
         procedure :: imagenInorden
         procedure :: imagenPostOrden
         procedure :: validarID
+        !--
+        procedure :: cadena
+        procedure :: extraccion
     end type avl
 
-contains
+
 !-----------------------------------------------------------------------------------------------------------------------
+subroutine extraccion(self, val, idCapa, mtx)
+    class(avl), intent(inout) :: self
+    integer, intent(in) :: val, idCapa
+    type(matrix), intent(inout) :: mtx
+    type(matrix) :: mtx2
+    call extraccionRec(self%raiz, val, idCapa, mtx2)
+    mtx = mtx2
+end subroutine extraccion
+
+recursive subroutine extraccionRec(raiz, val, idCapa, mtx)
+    type(nodo), pointer :: raiz
+    integer, intent(in) :: val, idCapa
+    type(matrix), intent(inout) :: mtx
+
+    if (.not. associated(raiz)) then
+        print*, 'Valor no encontrado:', val
+        return
+    end if
+
+    if (val < raiz%valor) then
+        call extraccionRec(raiz%izquierda, val, idCapa, mtx)
+    else if (val > raiz%valor) then
+        call extraccionRec(raiz%derecha, val, idCapa, mtx)
+    else
+        print*, 'Imagen encontrada:', val
+        !!call raiz%abb%extraerMatriz(idCapa, mtx)
+    end if
+end subroutine extraccionRec
+!-----------------------------------------------------------------------------------------------------------------------
+!Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
+   subroutine cadena(self, val,cadenaRecorrido)
+        class(avl), intent(inout) :: self
+        integer, intent(in) :: val
+        character(len=:), allocatable,intent(inout) :: cadenaRecorrido
+        character(len=:), allocatable :: cad
+
+        call cadenaRec(self%raiz, val,cad)
+        cadenaRecorrido = cad
+
+    end subroutine cadena
+
+    recursive subroutine cadenaRec(raiz, val, cadenaRecorrido) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: val
+        character(len=:), allocatable,intent(inout) :: cadenaRecorrido
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:', val
+            return
+        end if
+        if(val < raiz%valor) then
+            call cadenaRec(raiz%izquierda, val, cadenaRecorrido) 
+        else if(val > raiz%valor) then
+            call cadenaRec(raiz%derecha, val, cadenaRecorrido)
+        else
+            print*, 'Encontre id de esa imagen' 
+            call raiz%abb%recorrido_amplitud(cadenaRecorrido)
+        end if
+
+    end subroutine cadenaRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine validarID(self,val,validacion)
         class(avl), intent(in) :: self

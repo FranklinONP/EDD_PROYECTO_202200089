@@ -46,9 +46,80 @@ module avl_c
         procedure :: graficaCapas
         procedure :: login
         procedure :: insertMatrizBB
+        procedure :: cadena
+        procedure :: oma
     end type avlc
 
 contains
+    subroutine oma(self, dpi,idImagen,idCapa, mtx)
+        class(avlc), intent(in) :: self
+        integer, intent(in) :: dpi,idImagen,idCapa
+        type(matrix), intent(inout) :: mtx
+        type(matrix) :: mtx2
+
+        call cadenaRec(self%raiz, dpi,idImagen,idCapa, mtx2)
+        mtx=mtx2
+    end subroutine oma
+
+    recursive subroutine omaRec(raiz, dpi,idImagen,idCapa, mtx) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idImagen,idCapa
+        type(matrix), intent(inout) :: mtx
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call omaRec(raiz%izquierda,dpi,idImagen,idCapa, mtx)
+        
+        else if(dpi > raiz%valor) then
+            call omaRec(raiz%derecha,dpi,idImagen,idCapa, mtx)
+
+        else
+            print*, 'DPI encontrado'
+            print*, 'Empezar a extraerMatriz'
+            !call raiz%cliente%avl%cadena(idImagen,idCapa, mtx)
+            !call raiz%cliente%avl%extraccion(idImagen,idCapa,mtx)
+            print *, '^^^^^^^^^^^^^^^^^^^^'
+
+        end if
+    end subroutine omaRec
+    subroutine cadena(self, dpi,idImagen,cadenaNodos)
+        class(avlc), intent(in) :: self
+        integer, intent(in) :: dpi,idImagen
+        character(len=:), allocatable,intent(inout) :: cadenaNodos
+        character(len=:), allocatable :: cad
+
+        call cadenaRec(self%raiz, dpi,idImagen,cad)
+        cadenaNodos = cad
+    end subroutine cadena
+
+    recursive subroutine cadenaRec(raiz, dpi, idImagen,cadenaNodos) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idImagen
+        character(len=:), allocatable,intent(inout) :: cadenaNodos
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call cadenaRec(raiz%izquierda,dpi,idImagen,cadenaNodos)
+        
+        else if(dpi > raiz%valor) then
+            call cadenaRec(raiz%derecha,dpi, idImagen,cadenaNodos)
+
+        else
+            print*, 'DPI encontrado'
+            print*, 'Empezar a armar cadena'
+            call raiz%cliente%avl%cadena(idImagen,cadenaNodos)
+            print *, 'ABB del cliente graficado'
+
+        end if
+    end subroutine cadenaRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine validarID(self, dpi,idImagen,respuesta)
         class(avlc), intent(inout) :: self
