@@ -57,7 +57,7 @@ contains
         type(matrix), intent(inout) :: mtx
         type(matrix) :: mtx2
 
-        call cadenaRec(self%raiz, dpi,idImagen,idCapa, mtx2)
+        call omaRec(self%raiz, dpi,idImagen,idCapa, mtx2)
         mtx=mtx2
     end subroutine oma
 
@@ -81,7 +81,7 @@ contains
             print*, 'DPI encontrado'
             print*, 'Empezar a extraerMatriz'
             !call raiz%cliente%avl%cadena(idImagen,idCapa, mtx)
-            !call raiz%cliente%avl%extraccion(idImagen,idCapa,mtx)
+            call raiz%cliente%avl%extraccion(idImagen,idCapa,mtx)
             print *, '^^^^^^^^^^^^^^^^^^^^'
 
         end if

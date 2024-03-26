@@ -316,13 +316,14 @@ program main
                                             call arbolClientes%validarID(dpiUserInt,idMN,validacion)
                                             if(validacion)then
                                                 print *, "No existe el id"
+                                                call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
                                                 print *,'Ingrese el limite'
                                                 read *, buscadorGeneral
                                                 print *,'Ingrese el id de la imagen de la cual se hara el recorrido'
                                                 read *, AmplitudID
             
                                                 call arbolClientes%cadena(dpiUserInt,AmplitudID,cadena)
-
+                                                print *, "Cadena: ",cadena  
                                                 posA=INDEX(cadena,'-')
                                                 countA= 0
                                                 do while (posA .NE. 0 .AND. countA <buscadorGeneral)
@@ -331,29 +332,37 @@ program main
                                                     print*,'Imprimiendo capita',capita
                                                     read(capita,*) capitaE
                                                     !recorro el abb de la imagen y extraigo sus matrices
-                                                    call arbolClientes%oma(dpiUserInt,idMN,capitaE,mtxTemporal2)
-                                                    !Aca mando mi matriz a mi lista para recorrerla despues 
+                                                    print*, "voy a buscar la matriz del nodo"
+                                                    call arbolClientes%oma(dpiUserInt,AmplitudID,capitaE,mtxTemporal2)
+                                                    print *, "Impresin de la matriz qeu fui a buscar"  !!!
+                                                    call mtxTemporal2%print()
+                                                    !Aca mando mi matriz a mi lista para recorrerla despues
+                                                    print*,'id ',countA,'idCApa',capitaE 
                                                     call listaTemporal%push(countA+1,capitaE,mtxTemporal2)
                                                     cadena=cadena(posA+1:)
                                                     posA=INDEX(cadena,'-')
                                                     countA = countA + 1
                                                 end do
-                                                !    contadorLista = 0 
-                                                !do while (.true.)
-                                                !    contadorLista = contadorLista + 1
-                                                !    resultLista=.false.
-                                                !    call listaTemporal%existe(contadorLista,resultLista)
-                                                !    if (resultLista .eqv. .false.) then
-                                                !        exit
-                                                !    end if
-                                                !    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
-                                                !    print *, "matrizExtraida"
+                                                print*, 'Segundo While ========================================================='
+                                                    contadorLista = 0 
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    print *, "matrizExtraida"
+                                                    print *, 'Impresion de matriz que fuer cargada'
+                                                    call mtxTemporal2%print()
                                                     !call mtxTemporal2%print()
                                                     !read *, desicion
                                                     !call clienteObject%avl%search(2,idLista,mtxTemporal2)
-                                                !    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
-                                                !end do
-                                                !call arbolClientes%imagen(dpiUserInt,idMN)
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
+                                                end do
+                                                print*,"Empieza la creacion de la imagen----"
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
                                             end if 
                                     case (6)
                                         exit

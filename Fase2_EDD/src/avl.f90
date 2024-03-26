@@ -18,7 +18,7 @@ module avl_m
     type, public :: avl
         type(nodo), pointer :: raiz => null()
     
-    contains
+contains
         procedure :: insert
         procedure :: delete
         procedure :: preorden
@@ -30,20 +30,21 @@ module avl_m
         procedure :: imagenInorden
         procedure :: imagenPostOrden
         procedure :: validarID
-        !--
         procedure :: cadena
         procedure :: extraccion
-    end type avl
 
-
-!-----------------------------------------------------------------------------------------------------------------------
+    end type  avl
+contains
 subroutine extraccion(self, val, idCapa, mtx)
     class(avl), intent(inout) :: self
     integer, intent(in) :: val, idCapa
     type(matrix), intent(inout) :: mtx
     type(matrix) :: mtx2
+    print*, 'Extrayendo imagen:', val
     call extraccionRec(self%raiz, val, idCapa, mtx2)
     mtx = mtx2
+    print*,'Impresion desde el avl '
+    call mtx2%print()
 end subroutine extraccion
 
 recursive subroutine extraccionRec(raiz, val, idCapa, mtx)
@@ -52,7 +53,7 @@ recursive subroutine extraccionRec(raiz, val, idCapa, mtx)
     type(matrix), intent(inout) :: mtx
 
     if (.not. associated(raiz)) then
-        print*, 'Valor no encontrado:', val
+        print*, 'Imagen no encontrada con ID', val
         return
     end if
 
@@ -62,7 +63,7 @@ recursive subroutine extraccionRec(raiz, val, idCapa, mtx)
         call extraccionRec(raiz%derecha, val, idCapa, mtx)
     else
         print*, 'Imagen encontrada:', val
-        !!call raiz%abb%extraerMatriz(idCapa, mtx)
+        call raiz%abb%extraerMatriz(idCapa, mtx)
     end if
 end subroutine extraccionRec
 !-----------------------------------------------------------------------------------------------------------------------
