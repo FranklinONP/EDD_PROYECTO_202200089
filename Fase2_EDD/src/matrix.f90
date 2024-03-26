@@ -313,7 +313,6 @@ contains
             print *, "Ocurrió un error al momento de crear la imagen"
         else
             print *, "La imagen fue generada exitosamente"
-
         end if
     end subroutine graficar
 
@@ -432,6 +431,7 @@ subroutine tabla(self, dotFileName)
    ! Convert DOT to PNG using Graphviz
   command = "dot -Gnslimit=2 -Tpng -o " // trim(pngFilePath) // " " // trim(dotFilePath)
   call system(command)
+
 end subroutine tabla
 
 

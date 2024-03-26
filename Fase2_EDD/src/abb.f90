@@ -30,9 +30,55 @@ use matrix_m
         procedure :: GrapPreorder
         procedure :: GrapInorden
         procedure :: GrapPostOrden
+        procedure :: Amplitud
     end type abb
 
 contains  
+subroutine Amplitud(self, cadena)
+        class(abb), intent(in) :: self
+        character(len=:), allocatable, intent(inout) :: cadena
+        integer :: h, i
+    
+        cadena = ""
+        h = altura(self%raiz)
+        do i = 1, h
+            call agregarNivel(self%raiz, i, cadena)
+        end do
+    end subroutine Amplitud
+    
+    recursive subroutine agregarNivel(raiz, nivel, cadena)
+        type(abb), pointer, intent(in) :: raiz
+        integer, intent(in) :: nivel
+        character(len=:), allocatable, intent(inout) :: cadena
+        character(len=20) :: valor_str
+    
+        if (.not. associated(raiz)) then
+            return
+        else if (nivel == 1) then
+            write(valor_str, '(I0)') raiz%valor
+            cadena = trim(cadena) // trim(valor_str) // " - "
+        else if (nivel > 1) then
+            call agregarNivel(raiz%izquierda, nivel-1, cadena)
+            call agregarNivel(raiz%derecha, nivel-1, cadena)
+        end if
+    end subroutine agregarNivel
+    
+    recursive function altura(raiz) result(h)
+    type(abb), pointer, intent(in) :: raiz
+    integer :: h, h1, h2
+
+    if (.not. associated(raiz)) then
+        h = 0
+    else
+        h1 = altura(raiz%izquierda)
+        h2 = altura(raiz%derecha)
+        if (h1 > h2) then
+            h = h1 + 1
+        else
+            h = h2 + 1
+        end if
+    end if
+end function altura
     subroutine unirMatrices(self,mR)
         class(abb), intent(in) :: self
         type(matrix), intent(inout) :: mR

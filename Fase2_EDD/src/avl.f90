@@ -557,6 +557,7 @@ subroutine abbImagen(self, val)
             print *, "Error al momento de crear la imagen"
         else
             print *, "La imagen fue generada exitosamente"
+            call system('start ./avl_tree.png')
         end if
     end subroutine graficar
 !-----------------------------------------------------------------------------------------------------------------------

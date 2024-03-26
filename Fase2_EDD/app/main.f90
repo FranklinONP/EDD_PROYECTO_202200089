@@ -56,7 +56,7 @@ program main
     logical :: isLoggedIn = .false.
     logical :: exitAdmin=.false.,loginAdmin=.false.
 
-    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc
+    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID
     logical :: respuesta=.false.
 !======================================================================================================================================
 !======================================================================================================================================
@@ -202,15 +202,21 @@ program main
                                 select case (principal2)
                                     case (1)
                                         print *,'Crear Imagenes - Preorden'
-                                        print *,'Ingrese el limite del recorrido'
-                                        read *, buscadorGeneral
-                                            call clienteObject%avl%validarID(2,validacion)
+                                        print *,'Ingrese el id de la imagen nueva'
+                                        read *, idMN
+                                        !idCliente-idImagenNueva-validacion
+                                            call arbolClientes%validarID(dpiUserInt,idMN,validacion)
                                             if(validacion)then
                                                 print *, "No existe el id"
                                                 !creo mi nodo con ese id nuevo de mi imagen nueva
-                                                call clienteObject%avl%insert(2)
+                                                !call clienteObject%avl%insert(2)
+                                                 call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
+                                                 print *,"Ingrese el limite del recorrido"
+                                                 read *, buscadorGeneral
                                                 !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
-                                                call clienteObject%tree%GrapPreorder(listaTemporal,4)
+                                                !call clienteObject%tree%GrapPreorder(listaTemporal,4)
+                                                ! idCliente-listaTemporal-limite
+                                                call arbolClientes%Preorden(dpiUserInt,listaTemporal,buscadorGeneral)
                                                 !La listaTemporal viene con los id-matrices
                                                 !Recorro la lista y extraigo la matriz de cada id junto a su id
                                                 contadorLista = 0 
@@ -225,20 +231,26 @@ program main
                                                     print *, "matrizExtraida"
                                                     !call mtxTemporal2%print()
                                                     !read *, desicion
-                                                    call clienteObject%avl%search(2,idLista,mtxTemporal2)
+                                                    !call clienteObject%avl%search(2,idLista,mtxTemporal2)
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
                                             end if
                                     case (2)
                                         print *, 'Crear Imagenes - Inorden'
-                                        print *,'Ingrese el limite del recorrido'
-                                        read *, buscadorGeneral
-                                            call clienteObject%avl%validarID(3,validacion)
+                                        print *,'Ingrese el id de la imagen nueva'
+                                        read *, idMN
+                                            call arbolClientes%validarID(dpiUserInt,idMN,validacion)
                                             if(validacion)then
                                                 print *, "No existe el id"
                                                 !creo mi nodo con ese id nuevo de mi imagen nueva
-                                                call clienteObject%avl%insert(3)
+                                                call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
+                                                print *,"Ingrese el limite del recorrido"
+                                                 read *, buscadorGeneral
                                                 !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
-                                                call clienteObject%tree%GrapInorden(listaTemporal,3)
+                                                !call clienteObject%tree%GrapInorden(listaTemporal,3)
+                                                !call arbolClientes%Preorden(dpiUserInt,listaTemporal,buscadorGeneral)
+                                                call arbolClientes%Inorden(dpiUserInt,listaTemporal,buscadorGeneral)
                                                 !La listaTemporal viene con los id-matrices
                                                 !Recorro la lista y extraigo la matriz de cada id junto a su id 
                                                 contadorLista = 0
@@ -253,20 +265,28 @@ program main
                                                     print *, "matrizExtraida"
                                                     !call mtxTemporal2%print()
                                                     !read *, desicion
-                                                    call clienteObject%avl%search(3,idLista,mtxTemporal2)
+                                                    !call clienteObject%avl%search(3,idLista,mtxTemporal2)
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
+                                            else 
+                                               print*,'El id que ingreso ya existe, intente de nuevo'
                                             end if
                                     case (3)
                                         print *, 'Crear Imagenes - Postorden'
-                                        print *,'Ingrese el limite del recorrido'
-                                        read *, buscadorGeneral
-                                            call clienteObject%avl%validarID(4,validacion)
+                                        print *,'Ingrese el id de la imagen nueva'
+                                        read *, idMN
+                                            call arbolClientes%validarID(dpiUserInt,idMN,validacion)
                                             if(validacion)then
                                                 print *, "No existe el id"
                                                 !creo mi nodo con ese id nuevo de mi imagen nueva
-                                                call clienteObject%avl%insert(4)
+                                                 call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
+                                                 print *,"Ingrese el limite del recorrido"
+                                                 read *, buscadorGeneral
                                                 !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
-                                                call clienteObject%tree%GrapPostOrden(listaTemporal,4)
+                                                !call clienteObject%tree%GrapPostOrden(listaTemporal,4)
+                                                !call arbolClientes%Preorden(dpiUserInt,listaTemporal,buscadorGeneral)
+                                                call arbolClientes%PostOrden(dpiUserInt,listaTemporal,buscadorGeneral)
                                                 !La listaTemporal viene con los id-matrices
                                                 !Recorro la lista y extraigo la matriz de cada id junto a su id 
                                                 contadorLista = 0
@@ -281,15 +301,48 @@ program main
                                                     print *, "matrizExtraida"
                                                     !call mtxTemporal2%print()
                                                     !read *, desicion
-                                                    call clienteObject%avl%search(4,idLista,mtxTemporal2)
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
                                             end if 
                                     case (4)
                                         print *, 'Crear Imagenes - Ingresando capas'
                                         !Falta implementacion
                                     case (5)
-                                        print *, 'Crear Imagenes - A partir de una Imagen'
-                                        !Falta implementacion
+                                        print *, 'Crear Imagenes - A partir de una imagen'
+                                        print *,'Ingrese el id de la imagen nueva'
+                                        read *, idMN
+                                            call arbolClientes%validarID(dpiUserInt,idMN,validacion)
+                                            if(validacion)then
+                                                print *, "No existe el id"
+                                                !creo mi nodo con ese id nuevo de mi imagen nueva
+                                                 call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
+                                                 print *,"Ingrese el limite del recorrido"
+                                                 read *, buscadorGeneral
+                                                 print *,'Ingrese el id de la imagen de la cual se hara el recorrido'
+                                                 read *, AmplitudID 
+                                                !Recorro el abb general y extraigo sus capas  id-matriz, mando lista-limite
+                                                !call clienteObject%tree%GrapPostOrden(listaTemporal,4)
+                                                !call arbolClientes%Preorden(dpiUserInt,listaTemporal,buscadorGeneral)
+                                                call arbolClientes%PostOrden(dpiUserInt,listaTemporal,buscadorGeneral)
+                                                !La listaTemporal viene con los id-matrices
+                                                !Recorro la lista y extraigo la matriz de cada id junto a su id 
+                                                contadorLista = 0
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    print *, "matrizExtraida"
+                                                    !call mtxTemporal2%print()
+                                                    !read *, desicion
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
+                                                end do
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
+                                            end if 
                                     case (6)
                                         exit
                                     case default
@@ -303,7 +356,7 @@ program main
                                 print *, "2. Ver ABB de Capas"
                                 print *, "3. Ver matriz en especifico"
                                 print *, "4. Ver Imagen en especifico"
-                                print *, "4. Volver al menú principal"
+                                print *, "5. Volver al menú principal"
                                 read(*,*) opgc
                                 select case (opgc)
                                     case (1)
@@ -346,23 +399,23 @@ program main
     end do
 !======================================================================================================================================
 !======================================================================================================================================
-direccion="clientes.json"
-    call cargaMasivaCliente(direccion)
-direccion="capas.json"
-    call cargaCapas(direccion)
-    print *, '..............................................>'
-    print *, '..............................................>'
-    print *, '..............................................>'
-direccion='imagenes.json'
-    call cargaImagenes(direccion)
-print *, '..............................................>'
-    call arbolClientes%grafica(1)
-    print *, 'Grafica del avl del cliente1'
-    call arbolClientes%imagen(1,3)
+!direccion="clientes.json"
+!    call cargaMasivaCliente(direccion)
+!direccion="capas.json"
+!    call cargaCapas(direccion)
+!    print *, '..............................................>'
+!    print *, '..............................................>'
+!    print *, '..............................................>'
+!direccion='imagenes.json'
+!    call cargaImagenes(direccion)
+!print *, '..............................................>'
+!    call arbolClientes%grafica(1)
+!    print *, 'Grafica del avl del cliente1'
+!    call arbolClientes%imagen(1,3)
 
-print *,'Ahora a graficar en preorden limite 3, la imagen id 1, del cliente id-1'
-read *, desicion
-    call arbolClientes%graficarPreorden(1,3)
+!print *,'Ahora a graficar en preorden limite 3, la imagen id 1, del cliente id-1'
+!read *, desicion
+!    call arbolClientes%graficarPreorden(1,3)
 !=================================================================================================================
 !======================================================================================================================================
 

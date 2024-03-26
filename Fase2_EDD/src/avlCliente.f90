@@ -3,6 +3,7 @@ module avl_c
     use abb_m
     use matrix_m
     use uuid_module
+    use lista_module
     implicit none
     private
 
@@ -23,7 +24,6 @@ module avl_c
     contains
         procedure :: insert
         procedure :: delete
-        procedure :: preorden
         procedure :: graficar
         procedure :: search
         procedure :: abbImagen
@@ -40,12 +40,47 @@ module avl_c
         procedure :: insertMatriz 
         procedure :: Imagen
         procedure :: Grafica
-        procedure :: graficarPreorden
+        procedure :: Preorden
+        procedure :: Inorden
+        procedure :: PostOrden
         procedure :: graficaCapas
         procedure :: login
+        procedure :: insertMatrizBB
     end type avlc
 
 contains
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine validarID(self, dpi,idImagen,respuesta)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,idImagen
+        logical, intent(inout) :: respuesta
+
+        call validarIDRec(self%raiz, dpi,idImagen,respuesta)
+    end subroutine validarID
+
+    recursive subroutine validarIDRec(raiz, dpi,idImagen,respuesta) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idImagen
+        logical, intent(inout) :: respuesta
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call validarIDRec(raiz%izquierda,dpi,idImagen,respuesta)
+        
+        else if(dpi > raiz%valor) then
+            call validarIDRec(raiz%derecha,dpi,idImagen,respuesta)
+
+        else
+            print*, 'DPI encontrado'
+            call raiz%cliente%avl%validarID(idImagen,respuesta)
+            print *, 'Nodo imagen insertado',idImagen
+
+        end if
+    end subroutine validarIDRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine login(self, dpii, password,respuesta)
         class(avlc), intent(inout) :: self
@@ -143,16 +178,18 @@ contains
     end subroutine GraficaRec
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
-    subroutine graficarPreorden(self, dpi,idImagen)
+    subroutine insertMatrizBB(self, dpi,idImagen,idCapa,mtx)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen
+        integer, intent(in) :: dpi,idImagen,idCapa
+        type(matrix), intent(in) :: mtx
 
-        call graficarPreordenRec(self%raiz, dpi,idImagen)
-    end subroutine graficarPreorden
+        call insertMatrizBBRec(self%raiz,dpi,idImagen,idCapa,mtx)
+    end subroutine insertMatrizBB
 
-    recursive subroutine graficarPreordenRec(raiz, dpi,idImagen) 
+    recursive subroutine insertMatrizBBRec(raiz, dpi,idImagen,idCapa,mtx) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen
+        integer, intent(in) :: dpi,idImagen,idCapa
+        type(matrix), intent(in) :: mtx
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -160,15 +197,101 @@ contains
         end if
 
         if(dpi < raiz%valor) then
-           call graficarPreordenRec(raiz%izquierda,dpi,idImagen)
+           call insertMatrizBBRec(raiz%izquierda,dpi,idImagen,idCapa,mtx)
         
         else if(dpi > raiz%valor) then
-            call graficarPreordenRec(raiz%derecha,dpi,idImagen)
+            call insertMatrizBBRec(raiz%derecha,dpi,idImagen,idCapa,mtx)
 
         else
-            print*, 'DPI encontrado'
-            call raiz%cliente%avl%crearImagen(idImagen)
-            print *, 'Nodo imagen insertado',idImagen
+            print*, 'DPI encontrado insertandoMatriz abb a Imagen'
+            !call raiz%cliente%tree%GrapPreorder(listaT,limite)
+            call raiz%cliente%avl%search(idImagen,idCapa,mtx)
+            print *, '-------------------------------------------'
+
+        end if
+    end subroutine insertMatrizBBRec
+    !-----------------------------------------------------------------------------------------------------------------------
+    subroutine PostOrden(self, dpi,lista,limite)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista
+        call PostOrdenRec(self%raiz,dpi,lista,limite)
+    end subroutine PostOrden
+    recursive subroutine PostOrdenRec(raiz, dpi,lista,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista 
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+        if(dpi < raiz%valor) then
+           call PostOrdenRec(raiz%izquierda,dpi,lista,limite)
+        else if(dpi > raiz%valor) then
+            call PostOrdenRec(raiz%derecha,dpi,lista,limite)
+        else
+            print*, 'DPI encontrado --Preorder'
+            call raiz%cliente%tree%GrapPostOrden(lista,limite)
+            print *, 'Preorder ---------------'
+        end if
+    end subroutine PostOrdenRec
+    !-----------------------------------------------------------------------------------------------------------------------
+    subroutine Inorden(self, dpi,lista,limite)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista
+        call InordenRec(self%raiz,dpi,lista,limite)
+    end subroutine Inorden
+    recursive subroutine InordenRec(raiz, dpi,lista,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista 
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+        if(dpi < raiz%valor) then
+           call InordenRec(raiz%izquierda,dpi,lista,limite)
+        else if(dpi > raiz%valor) then
+            call InordenRec(raiz%derecha,dpi,lista,limite)
+        else
+            print*, 'DPI encontrado --Preorder'
+            call raiz%cliente%tree%GrapInorden(lista,limite)
+            print *, 'Preorder ---------------'
+        end if
+    end subroutine InordenRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine Preorden(self, dpi,lista,limite)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista
+
+
+        call graficarPreordenRec(self%raiz,dpi,lista,limite)
+    end subroutine Preorden
+
+    recursive subroutine graficarPreordenRec(raiz, dpi,lista,limite) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,limite
+        type(lista_m),intent(inout) :: lista 
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call graficarPreordenRec(raiz%izquierda,dpi,lista,limite)
+        
+        else if(dpi > raiz%valor) then
+            call graficarPreordenRec(raiz%derecha,dpi,lista,limite)
+
+        else
+            print*, 'DPI encontrado --Preorder'
+            call raiz%cliente%tree%GrapPreorder(lista,limite)
+            print *, 'Preorder ---------------'
 
         end if
     end subroutine graficarPreordenRec
@@ -203,28 +326,6 @@ contains
         end if
     end subroutine ImagenRec
 !-----------------------------------------------------------------------------------------------------------------------
-    subroutine validarID(self,val,validacion)
-        class(avlc), intent(in) :: self
-        logical, intent(inout) :: validacion
-        integer,intent(in) :: val
-        print *, 'Validando ID',validacion
-        call validarIDRec(self%raiz,val,validacion)
-    end subroutine validarID
-
-    recursive subroutine validarIDRec(raiz,val,validacion)
-        type(nodo), pointer, intent(in) :: raiz
-        logical, intent(inout) :: validacion
-        integer, intent(in) :: val  
-
-        if(associated(raiz)) then
-            if(raiz%valor == val) then
-                validacion = .true.
-            end if
-            call validarIDRec(raiz%izquierda,val,validacion)
-            call validarIDRec(raiz%derecha,val,validacion)
-        end if
-
-    end subroutine validarIDRec
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
@@ -776,24 +877,6 @@ subroutine abbImagen(self, val)
     end subroutine obtenerMayorDeMenores
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
-    subroutine preorden(self)
-        class(avlc), intent(in) :: self
-        
-        call preordenRec(self%raiz)
-    end subroutine preorden
-
-    recursive subroutine preordenRec(raiz)
-        type(nodo), pointer, intent(in) :: raiz
-
-        if(associated(raiz)) then
-            print *, raiz%valor
-            print *, raiz%cliente%nombre
-            print *, raiz%cliente%dpi
-            print *, raiz%cliente%password
-            call preordenRec(raiz%izquierda)
-            call preordenRec(raiz%derecha)
-        end if
-    end subroutine preordenRec
 !-----------------------------------------------------------------------------------------------------------------------
 !-----------------------------------------------------------------------------------------------------------------------
     function maximo(izquierda, derecha) result(res)
