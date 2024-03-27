@@ -446,9 +446,6 @@ program main
                                         print *,'Ingrese el id de la imagen a eliminar'
                                         read*,buscadorGeneral
                                         call arbolClientes%eliminarImagen(dpiUserInt,buscadorGeneral)
-                                        else
-                                            print*,'Imagen no encontrada'
-                                        end if
                                     case (7)
                                         exit
                                     case default

@@ -5,16 +5,18 @@
  node0 -> element00 [dir="forward"];
  element00 -> element01 [dir="forward"];
  element01 [label="3         ", shape="ellipse"];
- element01 -> element02 [dir="forward"];
- element02 [label="1         ", shape="ellipse"];
  node1 [label="Album2", color="red", shape="rectangle"];
- element10 [label="2         ", shape="ellipse"];
+ element10 [label="4         ", shape="ellipse"];
  node1 -> element10 [dir="forward"];
+ element10 -> element11 [dir="forward"];
+ element11 [label="3         ", shape="ellipse"];
  node0 -> node1 [dir="back"];
  node0 -> node1 [dir="forward"];
  node2 [label="Album3", color="red", shape="rectangle"];
- element20 [label="8         ", shape="ellipse"];
+ element20 [label="6         ", shape="ellipse"];
  node2 -> element20 [dir="forward"];
+ element20 -> element21 [dir="forward"];
+ element21 [label="5         ", shape="ellipse"];
  node1 -> node2 [dir="back"];
  node1 -> node2 [dir="forward"];
  }

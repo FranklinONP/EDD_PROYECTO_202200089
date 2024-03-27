@@ -63,15 +63,14 @@ module avl_c
 
 contains
 !-----------------------------------------------------------------------------------------------------------------------
-    subroutine eliminarImagen(self, dpi,idCapa,res)
+    subroutine eliminarImagen(self, dpi,idCapa)
         class(avlc), intent(inout) :: self
         integer, intent(in) :: dpi,idCapa
-        logical, intent(inout) :: res
 
-        call delRec(self%raiz, dpi,idCapa,res)
+        call delRec(self%raiz, dpi,idCapa)
     end subroutine eliminarImagen
 
-    recursive subroutine delRec(raiz, dpi,idCapa,res) 
+    recursive subroutine delRec(raiz, dpi,idCapa) 
         type(nodo), pointer :: raiz
         integer, intent(in) :: dpi,idCapa
         
@@ -81,15 +80,14 @@ contains
         end if
 
         if(dpi < raiz%valor) then
-           call delRec(raiz%izquierda,dpi,idCapa,res)
+           call delRec(raiz%izquierda,dpi,idCapa)
         
         else if(dpi > raiz%valor) then
-            call delRec(raiz%derecha,dpi,idCapa,res)
+            call delRec(raiz%derecha,dpi,idCapa)
 
         else
             !call raiz%cliente%tree%profundidad_arbol( 
             call raiz%cliente%avl%delete(idCapa)
-            res=.true. 
             call raiz%cliente%Albumes%actualizar(idCapa)   
             print *, "Imagen eliminada"
             print *, "Albumes Actualizados"    
