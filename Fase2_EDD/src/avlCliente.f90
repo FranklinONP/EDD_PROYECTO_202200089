@@ -48,9 +48,51 @@ module avl_c
         procedure :: insertMatrizBB
         procedure :: cadena
         procedure :: oma
+        procedure :: validarCapa
     end type avlc
 
 contains
+
+    subroutine validarCapa(self, dpi,idCapa,mtx,existeCapa)
+        class(avlc), intent(in) :: self
+        integer, intent(in) :: dpi,idCapa
+        type(matrix),intent(inout) :: mtx
+        type(matrix) :: mtx2
+        logical, intent(inout) ::existeCapa
+        logical :: res
+
+        call validarCapaRec(self%raiz, dpi,idCapa,mtx2,existeCapa)
+        if (res)then 
+            mtx=mtx2
+        end if
+
+    end subroutine validarCapa
+
+    recursive subroutine validarCapaRec(raiz, dpi,idCapa,mtx,res) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idCapa
+        type(matrix),intent(inout) :: mtx
+        logical :: res
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call validarCapaRec(raiz%izquierda,dpi,idCapa,mtx,res)
+        
+        else if(dpi > raiz%valor) then
+            call validarCapaRec(raiz%derecha,dpi,idCapa,mtx,res)
+
+        else
+            print*, 'DPI encontrado'
+            print*, 'Empieza a buscar id de capa'
+            call raiz%cliente%tree%extraerMatriz2(idCapa,mtx,res)
+            print *, '==========================='
+
+        end if
+    end subroutine validarCapaRec
+
     subroutine oma(self, dpi,idImagen,idCapa, mtx)
         class(avlc), intent(in) :: self
         integer, intent(in) :: dpi,idImagen,idCapa
@@ -148,7 +190,7 @@ contains
         else
             print*, 'DPI encontrado'
             call raiz%cliente%avl%validarID(idImagen,respuesta)
-            print *, 'Nodo imagen insertado',idImagen
+            print *, '================'
 
         end if
     end subroutine validarIDRec

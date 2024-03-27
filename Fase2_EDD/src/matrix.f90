@@ -313,6 +313,7 @@ contains
             print *, "Ocurrió un error al momento de crear la imagen"
         else
             print *, "La imagen fue generada exitosamente"
+            call system("start matrix.png")
         end if
     end subroutine graficar
 
@@ -431,7 +432,7 @@ subroutine tabla(self, dotFileName)
    ! Convert DOT to PNG using Graphviz
   command = "dot -Gnslimit=2 -Tpng -o " // trim(pngFilePath) // " " // trim(dotFilePath)
   call system(command)
-
+ call system("start " // trim(pngFilePath))
 end subroutine tabla
 
 

@@ -115,6 +115,7 @@ end subroutine extraccionRec
         if(associated(raiz)) then
             if(raiz%valor == val) then
                 validacion = .true.
+                print*, 'El ide existe -->',val
             end if
             call validarIDRec(raiz%izquierda,val,validacion)
             call validarIDRec(raiz%derecha,val,validacion)

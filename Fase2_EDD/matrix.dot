@@ -1,20 +1,15 @@
  digraph Matrix {
  node[shape = "box"]
  "Nodo0_0"[label = "root", group="0"]                                                                                                                  
- "Nodo0_0"->"Nodo3_0"
- "Nodo0_0"->"Nodo3_0"[dir = back]
- "Nodo0_0"->"Nodo0_3"
- "Nodo0_0"->"Nodo0_3"[dir = back]
- "Nodo3_0"[label = "2", group="3"]                                                                                                                     
- "Nodo3_0"->"Nodo4_0"
- "Nodo3_0"->"Nodo4_0"[dir = back]
- "Nodo3_0"->"Nodo3_3"
- "Nodo3_0"->"Nodo3_3"[dir = back]
- "Nodo4_0"[label = "3", group="4"]                                                                                                                     
- "Nodo4_0"->"Nodo6_0"
- "Nodo4_0"->"Nodo6_0"[dir = back]
- "Nodo4_0"->"Nodo4_4"
- "Nodo4_0"->"Nodo4_4"[dir = back]
+ "Nodo0_0"->"Nodo5_0"
+ "Nodo0_0"->"Nodo5_0"[dir = back]
+ "Nodo0_0"->"Nodo0_5"
+ "Nodo0_0"->"Nodo0_5"[dir = back]
+ "Nodo5_0"[label = "4", group="5"]                                                                                                                     
+ "Nodo5_0"->"Nodo6_0"
+ "Nodo5_0"->"Nodo6_0"[dir = back]
+ "Nodo5_0"->"Nodo5_5"
+ "Nodo5_0"->"Nodo5_5"[dir = back]
  "Nodo6_0"[label = "5", group="6"]                                                                                                                     
  "Nodo6_0"->"Nodo7_0"
  "Nodo6_0"->"Nodo7_0"[dir = back]
@@ -23,21 +18,14 @@
  "Nodo7_0"[label = "6", group="7"]                                                                                                                     
  "Nodo7_0"->"Nodo7_7"
  "Nodo7_0"->"Nodo7_7"[dir = back]
- {rank=same;"Nodo0_0";"Nodo3_0";"Nodo4_0";"Nodo6_0";"Nodo7_0"}
- "Nodo0_3"[label = "2", group="0"]                                                                                                                     
- "Nodo0_3"->"Nodo3_3"
- "Nodo0_3"->"Nodo3_3"[dir = back]
- "Nodo0_3"->"Nodo0_4"
- "Nodo0_3"->"Nodo0_4"[dir = back]
- "Nodo3_3"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="3"]                                                                          
- {rank=same;"Nodo0_3";"Nodo3_3"}
- "Nodo0_4"[label = "3", group="0"]                                                                                                                     
- "Nodo0_4"->"Nodo4_4"
- "Nodo0_4"->"Nodo4_4"[dir = back]
- "Nodo0_4"->"Nodo0_6"
- "Nodo0_4"->"Nodo0_6"[dir = back]
- "Nodo4_4"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="4"]                                                                          
- {rank=same;"Nodo0_4";"Nodo4_4"}
+ {rank=same;"Nodo0_0";"Nodo5_0";"Nodo6_0";"Nodo7_0"}
+ "Nodo0_5"[label = "4", group="0"]                                                                                                                     
+ "Nodo0_5"->"Nodo5_5"
+ "Nodo0_5"->"Nodo5_5"[dir = back]
+ "Nodo0_5"->"Nodo0_6"
+ "Nodo0_5"->"Nodo0_6"[dir = back]
+ "Nodo5_5"[label = "#FFCC33", style = filled, fillcolor= "#FFCC33" group="5"]                                                                          
+ {rank=same;"Nodo0_5";"Nodo5_5"}
  "Nodo0_6"[label = "5", group="0"]                                                                                                                     
  "Nodo0_6"->"Nodo6_6"
  "Nodo0_6"->"Nodo6_6"[dir = back]

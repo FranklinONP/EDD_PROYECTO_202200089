@@ -19,6 +19,7 @@ use matrix_m
         procedure :: print
         procedure :: existe
         procedure :: cargarDatos
+        procedure :: reset
 
     end type lista_m
 
@@ -94,5 +95,16 @@ contains
             current => current%next
         end do
     end subroutine print
+subroutine reset(self)
+    class(lista_m), intent(inout) :: self
+    type(node), pointer :: current, temp
 
+    current => self%head
+    do while(associated(current))
+        temp => current
+        current => current%next
+        deallocate(temp)
+    end do
+    self%head => null()
+end subroutine reset
 end module lista_module

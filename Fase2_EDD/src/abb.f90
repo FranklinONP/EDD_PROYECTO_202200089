@@ -31,6 +31,7 @@ use matrix_m
         procedure :: GrapInorden
         procedure :: GrapPostOrden
         !cadena
+        procedure :: extraerMatriz2
         procedure :: recorrido_amplitud
     end type abb
 
@@ -109,7 +110,42 @@ recursive subroutine unirMatricesRec(root,mtx)
         end if
 
 end subroutine unirMatricesRec
+!==================================================================================================  
+subroutine extraerMatriz2(self, original_val, mtx,res)
+    class(abb), intent(inout) :: self
+    integer, intent(in) :: original_val
+    type(matrix), intent(inout) :: mtx
+    logical, intent(inout) :: res
+    type(matrix) :: mtx2
 
+    call search_and_modifyRec22(self%root, original_val,mtx2,res)
+    if(res) then
+        mtx=mtx2
+    end if
+
+end subroutine extraerMatriz2
+
+recursive subroutine search_and_modifyRec22(root, original_value,mtx,res)
+    type(Node_t), pointer, intent(in) :: root
+    integer, intent(in) :: original_value
+    logical, intent(inout) :: res 
+    type(matrix),intent(inout) :: mtx
+
+    if (.not. associated(root)) then
+        print *, "El valor", original_value, "no se encuentra en el árbol."
+        return
+    end if
+
+    if (original_value < root%value) then
+        call search_and_modifyRec22(root%left, original_value,mtx,res)
+    else if (original_value > root%value) then
+        call  search_and_modifyRec22(root%right, original_value,mtx,res)
+    else
+        print *, "El valor",root%value, " se ha encontrado "
+        mtx = root%mtx
+        res=.true.
+    end if
+end subroutine search_and_modifyRec22
 !==================================================================================================  
 subroutine extraerMatriz(self, original_val, mtx)
     class(abb), intent(inout) :: self

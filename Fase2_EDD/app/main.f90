@@ -56,9 +56,11 @@ program main
     logical :: isLoggedIn = .false.
     logical :: exitAdmin=.false.,loginAdmin=.false.
 
-    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID,posA,countA,capitaE
+    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID,posA,countA,capitaE,capasUsuarioInt
     logical :: respuesta=.false.
-    character(len=:), allocatable :: cadena,capita
+    character(len=:), allocatable :: cadena,capita,capasUsuario,cuAux
+    character(len=1) :: respuestaIC,respuestaQ
+    logical :: existeCapa=.false.
 !======================================================================================================================================
 !======================================================================================================================================
     do
@@ -236,6 +238,7 @@ program main
                                                     call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
                                                 call arbolClientes%imagen(dpiUserInt,idMN)
+                                                call listaTemporal%reset()
                                             end if
                                     case (2)
                                         print *, 'Crear Imagenes - Inorden'
@@ -270,6 +273,7 @@ program main
                                                     call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
                                                 call arbolClientes%imagen(dpiUserInt,idMN)
+                                                call listaTemporal%reset()
                                             else 
                                                print*,'El id que ingreso ya existe, intente de nuevo'
                                             end if
@@ -305,10 +309,66 @@ program main
                                                     call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
                                                 end do
                                                 call arbolClientes%imagen(dpiUserInt,idMN)
+                                                call listaTemporal%reset()
                                             end if 
                                     case (4)
                                         print *, 'Crear Imagenes - Ingresando capas'
-                                        !Falta implementacion
+                                        print *,'Ingrese el id de la imagen nueva'
+                                        print *,'VAlidacion: ',validacion
+                                        validacion=.false.
+                                        read *, idMN
+                                        call arbolClientes%validarID(dpiUserInt,idMN,validacion)
+                                        if(validacion .eqv. .false.)then
+                                        !Falta implementacion  respuestaIC  capasUsuario,cuAux
+                                        call arbolClientes%insertNodoImagen(dpiUserInt,idMN)
+                                        contadorLista=0
+                                            do
+                                                print*, 'Por favor, ingresa el ide de una Capa del ABB general'
+                                                read*, capasUsuarioInt
+                                                !Tengo la capa... le aviso si existe o no la capa y la agrego si si
+                                                print*, 'Capa ingresada: ',capasUsuarioInt
+                                                call arbolClientes%validarCapa(dpiUserInt,capasUsuarioInt,mtxTemporal2,existeCapa)
+                                                if(existeCapa)then
+                                                    print*, 'Capa encontrada'
+                                                    !matriz ya viene segun la capa
+                                                    call listaTemporal%push(contadorLista+1,capasUsuarioInt,mtxTemporal2)
+                                                    existeCapa=.false.
+                                                    print *, 'Error ========>'
+                                                    call mtxTemporal2%print()
+                                                else
+                                                    print*, 'Capa no encontrada'
+                                                end if
+                                                print*, '¿Quieres agregar más números? (s/n)'
+                                                read*, respuestaQ
+                                                if (respuestaQ == 'n' .or. respuestaQ == 'N') exit
+                                                contadorLista=contadorLista+1
+                                            end do
+                                            !aca ya tengo mi lista con las capas indicadas
+                                            contadorLista = 0
+                                                do while (.true.)
+                                                    contadorLista = contadorLista + 1
+                                                    resultLista=.false.
+                                                    call listaTemporal%existe(contadorLista,resultLista)
+                                                    if (resultLista .eqv. .false.) then
+                                                        exit
+                                                    end if
+                                                    call listaTemporal%cargarDatos(contadorLista,idLista,mtxTemporal2)
+                                                    call listaTemporal%print()
+                                                    print *, "matrizExtraida --->"
+                                                    print *, 'Impresion de matriz que fuer cargada'
+                                                    print *, 'id ',contadorLista,'idCApa',idLista
+                                                    call mtxTemporal2%print()
+                                                    call arbolClientes%insertMatrizBB(dpiUserInt,idMN,idLista,mtxTemporal2)
+                                                end do
+                                                print*,"Empieza la creacion de la imagen----"
+                                                print*, 'Usuario: ',dpiUserInt,' Id Imagen: ',idMN
+                                                call arbolClientes%imagen(dpiUserInt,idMN)
+                                                call listaTemporal%reset()
+                                        else
+                                            print*,'El id que ingreso ya existe, intente de nuevo'
+                                        end if
+
+                                            
                                     case (5)
                                         print *, 'Crear Imagenes - A partir de una imagen'
                                         print *,'Ingrese el id de la imagen nueva'
@@ -344,6 +404,8 @@ program main
                                                     countA = countA + 1
                                                 end do
                                                 print*, 'Segundo While ========================================================='
+                                                call listaTemporal%print()
+                                                print*, 'Segundo While ========================================================='
                                                     contadorLista = 0 
                                                 do while (.true.)
                                                     contadorLista = contadorLista + 1
@@ -363,6 +425,7 @@ program main
                                                 end do
                                                 print*,"Empieza la creacion de la imagen----"
                                                 call arbolClientes%imagen(dpiUserInt,idMN)
+                                                call listaTemporal%reset()
                                             end if 
                                     case (6)
                                         exit
