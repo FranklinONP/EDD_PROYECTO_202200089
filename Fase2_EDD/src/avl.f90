@@ -592,17 +592,20 @@ subroutine abbImagen(self, val)
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine preorden(self)
         class(avl), intent(in) :: self
+        integer :: veces=0
         
-        call preordenRec(self%raiz)
+        call preordenRec(self%raiz,veces)
+        print *, "Numero de Imagenes del Usuario en el arbol AVL: ", veces
     end subroutine preorden
 
-    recursive subroutine preordenRec(raiz)
+    recursive subroutine preordenRec(raiz,veces)
         type(nodo), pointer, intent(in) :: raiz
+        integer, intent(inout) :: veces
 
         if(associated(raiz)) then
-            print *, raiz%valor
-            call preordenRec(raiz%izquierda)
-            call preordenRec(raiz%derecha)
+            veces = veces + 1
+            call preordenRec(raiz%izquierda,veces)
+            call preordenRec(raiz%derecha,veces)
         end if
     end subroutine preordenRec
 !-----------------------------------------------------------------------------------------------------------------------

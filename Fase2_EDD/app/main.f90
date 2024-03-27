@@ -56,11 +56,12 @@ program main
     logical :: isLoggedIn = .false.
     logical :: exitAdmin=.false.,loginAdmin=.false.
 
-    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID,posA,countA,capitaE,capasUsuarioInt
+    integer :: dpiInt,dpiInt2, buscadorGeneral,dpiUserInt,opgc,idMN,AmplitudID,posA,countA,capitaE,capasUsuarioInt,idReporte
     logical :: respuesta=.false.
     character(len=:), allocatable :: cadena,capita,capasUsuario,cuAux
     character(len=1) :: respuestaIC,respuestaQ
     logical :: existeCapa=.false.
+    logical :: idReporteR=.false.
 !======================================================================================================================================
 !======================================================================================================================================
     do
@@ -125,7 +126,18 @@ program main
                                 end select
                             end do
                         case (4)
-                            print *, 'Reporte Administrador'
+                            print *, "Ingrese el dpi de un cliente para ver su reporte"
+                            read *, idReporte
+                            idReporteR=.false.
+                            print *, '============================================================'
+                            print *, '=================== Reporte Administrador =================='
+                            print *, '============================================================'
+                            call arbolClientes%reporteAdmin(idReporte,idReporteR)
+                            if(idReporteR )then
+                                idReporteR=.false. 
+                                else 
+                                print *, 'No existe el cliente'
+                            end if
                         case (5)
                             
                             exitAdmin = .true.
@@ -156,7 +168,7 @@ program main
                 do while (.true.)
                     print *, 'SubMenu 2'
                     print *, '1. Cargar Jsons'
-                    print *, '2. Crear Imagenes'
+                    print *, '2. Gestion Imagenes'
                     print *, '3. Ver Estructuras'
                     print *, '4. Ver Reporte'
                     print *, '5. Salir'
@@ -200,7 +212,8 @@ program main
                                 print *, '3. Postorden'
                                 print *, '4. Ingresando capas'
                                 print *, '5. A partir de una Imagen'
-                                print *, '6. Regresar'
+                                print *, '6. Eliminar una Imagen'
+                                print *, '7. Regresar'
                                 read *, principal2
 
                                 select case (principal2)
@@ -429,6 +442,14 @@ program main
                                                 call listaTemporal%reset()
                                             end if 
                                     case (6)
+                                        print *, 'Eliminar una Imagen'
+                                        print *,'Ingrese el id de la imagen a eliminar'
+                                        read*,buscadorGeneral
+                                        call arbolClientes%eliminarImagen(dpiUserInt,buscadorGeneral)
+                                        else
+                                            print*,'Imagen no encontrada'
+                                        end if
+                                    case (7)
                                         exit
                                     case default
                                         print *, 'Opcion no válida'
@@ -455,6 +476,8 @@ program main
                                         
                                     case (3)
                                         print *, "Ingrese el id de la Matriz a graficar"
+                                        read *,buscadorGeneral
+                                        call arbolClientes%graficarMatriz(dpiUserInt,buscadorGeneral)
                                     case (4)
                                         print *, "Ingrese el id de la Imagen a graficar"
                                         read *,buscadorGeneral

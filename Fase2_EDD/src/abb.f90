@@ -39,9 +39,28 @@ use matrix_m
         procedure :: preorder
         procedure :: inorder
         procedure :: posorder
+        procedure :: veces
     end type abb
 
 contains  
+subroutine veces(self)
+        class(abb), intent(in) :: self
+        integer :: contador = 0
+        
+        call vecesR(self%root,contador)
+        print *, "Numero de capas totales del Usuario: ", contador
+    end subroutine veces
+    recursive subroutine vecesR(root,contador)
+        type(Node_t), pointer, intent(in) :: root
+        integer, intent(inout) :: contador
+
+        if(associated(root)) then
+            contador = contador + 1
+            call vecesR(root%left,contador)
+            call vecesR(root%right,contador)
+        end if
+    end subroutine vecesR
+
     subroutine preorder(self)
         class(abb), intent(in) :: self
         

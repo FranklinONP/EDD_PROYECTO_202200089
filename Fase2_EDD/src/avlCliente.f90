@@ -56,10 +56,115 @@ module avl_c
         procedure :: hojas
         procedure :: profundidadCapas
         procedure :: recorridos
+        procedure :: reporteAdmin
+        procedure :: graficarMatriz
+        procedure :: eliminarImagen
     end type avlc
 
 contains
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine eliminarImagen(self, dpi,idCapa,res)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,idCapa
+        logical, intent(inout) :: res
 
+        call delRec(self%raiz, dpi,idCapa,res)
+    end subroutine eliminarImagen
+
+    recursive subroutine delRec(raiz, dpi,idCapa,res) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idCapa
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call delRec(raiz%izquierda,dpi,idCapa,res)
+        
+        else if(dpi > raiz%valor) then
+            call delRec(raiz%derecha,dpi,idCapa,res)
+
+        else
+            !call raiz%cliente%tree%profundidad_arbol( 
+            call raiz%cliente%avl%delete(idCapa)
+            res=.true. 
+            call raiz%cliente%Albumes%actualizar(idCapa)   
+            print *, "Imagen eliminada"
+            print *, "Albumes Actualizados"    
+        end if
+    end subroutine delRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine graficarMatriz(self, dpi,idCapa)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi,idCapa
+
+        call matrixRec(self%raiz, dpi,idCapa)
+    end subroutine graficarMatriz
+
+    recursive subroutine matrixRec(raiz, dpi,idCapa) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi,idCapa
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call matrixRec(raiz%izquierda,dpi,idCapa)
+        
+        else if(dpi > raiz%valor) then
+            call matrixRec(raiz%derecha,dpi,idCapa)
+
+        else
+            !call raiz%cliente%tree%profundidad_arbol( 
+            call raiz%cliente%tree%grapEspecifico(idCapa)        
+        end if
+    end subroutine matrixRec
+
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine reporteAdmin(self, dpi,res)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+        logical, intent(inout) :: res
+
+        call reporteAdminRec(self%raiz, dpi,res)
+    end subroutine reporteAdmin
+
+    recursive subroutine reporteAdminRec(raiz, dpi,res) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        logical, intent(inout) :: res
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call reporteAdminRec(raiz%izquierda,dpi,res)
+        
+        else if(dpi > raiz%valor) then
+            call reporteAdminRec(raiz%derecha,dpi,res)
+
+        else
+            !call raiz%cliente%tree%profundidad_arbol()
+            res=.true.
+            print *, "Nombre Usuario: ", raiz%cliente%nombre
+            print *, "DPI: ", raiz%cliente%dpi
+            print *, "Password: ", raiz%cliente%password
+            print *, "================== CANTIDAD DE ALBUMES Y SUS IMAGENES ========================"
+
+            print *, "===================== CANTIDAD DE IMAGENES TOTALES ==========================="
+            call raiz%cliente%avl%preorden()
+            print *, "===================== CANTIDAD DE CAPAS TOTALES =============================="
+            call raiz%cliente%tree%veces()
+
+
+        end if
+    end subroutine reporteAdminRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine recorridos(self, dpi)
         class(avlc), intent(inout) :: self

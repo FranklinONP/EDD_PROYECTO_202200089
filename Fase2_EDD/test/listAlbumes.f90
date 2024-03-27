@@ -31,47 +31,10 @@ module listaAlbumes
         procedure :: printList
         procedure :: graphV
         procedure :: actualizar
-
         
     end type List_of_listsA
 
 contains
-
-subroutine actualizar(this, valor)
-    class(List_of_listsA), intent(inout) :: this
-    integer, intent(in) :: valor
-
-    type(node), pointer :: aux
-    aux => this%head
-
-    do while(associated(aux))
-        call aux%actualizar2(valor)
-        aux => aux%next
-    end do
-end subroutine actualizar
-
-subroutine actualizar2(this, valor)
-    class(node), intent(inout) :: this
-    integer, intent(in) :: valor
-
-    type(string_node), pointer :: aux, current, previous
-    current => this%top
-    previous => null()
-
-    do while (associated(current))
-        if (current%value == valor) then
-            if (associated(previous)) then
-                previous%next => current%next
-            else
-                this%top => current%next
-            end if
-            deallocate(current)
-            exit
-        end if
-        previous => current
-        current => current%next
-    end do
-end subroutine actualizar2
 
  subroutine push(this, value)
         class(node), intent(inout) :: this
@@ -187,6 +150,44 @@ subroutine printList(this)
             aux => aux%next
         end do
 end subroutine printList
+
+
+subroutine actualizar(this, valor)
+    class(List_of_listsA), intent(inout) :: this
+    integer, intent(in) :: valor
+
+    type(node), pointer :: aux
+    aux => this%head
+
+    do while(associated(aux))
+        call aux%actualizar2(valor)
+        aux => aux%next
+    end do
+end subroutine actualizar
+
+subroutine actualizar2(this, valor)
+    class(node), intent(inout) :: this
+    integer, intent(in) :: valor
+
+    type(string_node), pointer :: aux, current, previous
+    current => this%top
+    previous => null()
+
+    do while (associated(current))
+        if (current%value == valor) then
+            if (associated(previous)) then
+                previous%next => current%next
+            else
+                this%top => current%next
+            end if
+            deallocate(current)
+            exit
+        end if
+        previous => current
+        current => current%next
+    end do
+end subroutine actualizar2
+
 
 subroutine printer(this)
         class(node), intent(in) :: this
@@ -306,18 +307,22 @@ end subroutine agregarSublista
 end module listaAlbumes
 !=======================================================================================================================================
 
-!program main
-!use listaAlbumes
-!implicit none
-!type(List_of_listsA) :: lista
-!call lista%addNode(1, 'Album 1')
-!call lista%addNode(2, 'Album 2')
-!call lista%addNode(3, 'Album 3')
-!call lista%pushToNode('Album 1', 'Cliente 1')
-!call lista%pushToNode('Album 1', 'Cliente 2')
-!call lista%pushToNode('Album 1', 'Cliente 3')
-!call lista%pushToNode('Album 2', 'Cliente 4')
-!call lista%graphV()
+program main
+use listaAlbumes
+implicit none
+type(List_of_listsA) :: lista
+call lista%addNode( "alb1")
+call lista%addNode( "alb2")
+call lista%addNode( "alb3")
+call lista%pushToNode("alb1", 1)
+call lista%pushToNode("alb1", 2)
+call lista%pushToNode("alb1", 3)
+call lista%pushToNode("alb2", 4)
+call lista%pushToNode("alb2", 2)
+call lista%graphV()
 
-!call lista%printList()
-!end program main
+call lista%printList()
+call lista%actualizar(2)
+print *, "==============================="
+call lista%printList()
+end program main
