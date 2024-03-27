@@ -158,7 +158,8 @@ program main
                     print *, '1. Cargar Jsons'
                     print *, '2. Crear Imagenes'
                     print *, '3. Ver Estructuras'
-                    print *, '4. Salir'
+                    print *, '4. Ver Reporte'
+                    print *, '5. Salir'
                     read (dpiUser, *)dpiUserInt
                     read *, principal1
 
@@ -440,7 +441,8 @@ program main
                                 print *, "2. Ver ABB de Capas"
                                 print *, "3. Ver matriz en especifico"
                                 print *, "4. Ver Imagen en especifico"
-                                print *, "5. Volver al menú principal"
+                                print *, "5. Ver lista Albumes"
+                                print *, "6. Volver al menú principal"
                                 read(*,*) opgc
                                 select case (opgc)
                                     case (1)
@@ -458,7 +460,8 @@ program main
                                         read *,buscadorGeneral
                                         call arbolClientes%imagen(dpiUserInt,buscadorGeneral)
                                     case (5)
-                                        !Sale del menu de visualizacion
+                                        call arbolClientes%graficarAlbumes(dpiUserInt)
+                                    case (6)
                                         exit    
                                     case default
                                         print *, "Opción no válida, por favor seleccione nuevamente."
@@ -466,6 +469,17 @@ program main
                             end do
 
                         case (4)
+                            print *, '================================================================='
+                            print *, '======================== Reporte Cliente ========================'
+                            print *, '================================================================='
+                            call arbolClientes%top5(dpiUserInt) !AVL
+                            print *, '================================================================='
+                            call arbolClientes%hojas(dpiUserInt) !ABB
+                            print *, '================================================================='
+                            call arbolClientes%profundidadCapas(dpiUserInt) !ABB
+                            print *, '================================================================='
+                            call arbolClientes%recorridos(dpiUserInt) !ABB
+                        case (5)
                             isLoggedIn=.false.
                             exit
                         case default
@@ -881,6 +895,7 @@ end subroutine cargaCapas
 
 subroutine cargaAlbumes(direccion)
         character(len=1000), intent(in) :: direccion
+        integer :: imagenIntA
         
         call json%initialize()
        
@@ -899,13 +914,15 @@ subroutine cargaAlbumes(direccion)
             call jsonc%get_child(animalPointer, 'imgs', attributePointer, found)
    
             call jsonc%info(attributePointer,n_children=sizeAlbumes)
-            
+
+            call arbolClientes%agregarAlbumes(dpiUserInt, nombreAlbum)
+
             do iCAlbumes = 1, sizeAlbumes
                 call jsonc%get_child(attributePointer, iCAlbumes, todoAlbumes, found)
 
                 call jsonc%get(todoAlbumes, imgs)
-
-            
+                read (imgs, *) imagenIntA
+               call arbolClientes%agregarImagenesAlbum(dpiUserInt,nombreAlbum,imagenIntA)
                 print *, "----"
                 print *, 'Nombre Album: ',  nombreAlbum
                 print *, 'Imgs: ', imgs

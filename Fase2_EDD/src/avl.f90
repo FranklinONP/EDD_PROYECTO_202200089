@@ -32,9 +32,81 @@ contains
         procedure :: validarID
         procedure :: cadena
         procedure :: extraccion
+        procedure :: top_5_imagenes
 
     end type  avl
 contains
+
+subroutine top_5_imagenes(self)
+        class(avl), intent(inout) :: self
+        integer :: max1, max2, max3, max4, max5
+        integer :: id1, id2, id3, id4, id5
+        max1 = 0
+        max2 = 0
+        max3 = 0
+        max4 = 0
+        max5 = 0
+        id1 = 0
+        id2 = 0
+        id3 = 0
+        id4 = 0
+        id5 = 0
+        call buscar_top_5(self%raiz, max1, max2, max3, max4, max5, id1, id2, id3, id4, id5)
+        print *, "Top 5 de imágenes con más número de capas:"
+        print *, "ID imagen:", id1, "Numero de capas:", max1
+        print *, "ID imagen:", id2, "Número de capas:", max2
+        print *, "ID imagen:", id3, "Número de capas:", max3
+        print *, "ID imagen:", id4, "Número de capas:", max4
+        print *, "ID imagen:", id5, "Número de capas:", max5
+    end subroutine top_5_imagenes
+    
+    recursive subroutine buscar_top_5(raiz, max1, max2, max3, max4, max5, id1, id2, id3, id4, id5)
+        type(nodo), pointer, intent(in) :: raiz
+        integer, intent(inout) :: max1, max2, max3, max4, max5
+        integer, intent(inout) :: id1, id2, id3, id4, id5
+        integer :: num_nodos
+        if (.not. associated(raiz)) return
+        num_nodos = raiz%abb%numero_nodos()
+        if (num_nodos > max1) then
+            max5 = max4
+            id5 = id4
+            max4 = max3
+            id4 = id3
+            max3 = max2
+            id3 = id2
+            max2 = max1
+            id2 = id1
+            max1 = num_nodos
+            id1 = raiz%valor
+        else if (num_nodos > max2) then
+            max5 = max4
+            id5 = id4
+            max4 = max3
+            id4 = id3
+            max3 = max2
+            id3 = id2
+            max2 = num_nodos
+            id2 = raiz%valor
+        else if (num_nodos > max3) then
+            max5 = max4
+            id5 = id4
+            max4 = max3
+            id4 = id3
+            max3 = num_nodos
+            id3 = raiz%valor
+        else if (num_nodos > max4) then
+            max5 = max4
+            id5 = id4
+            max4 = num_nodos
+            id4 = raiz%valor
+        else if (num_nodos > max5) then
+            max5 = num_nodos
+            id5 = raiz%valor
+        end if
+        call buscar_top_5(raiz%izquierda, max1, max2, max3, max4, max5, id1, id2, id3, id4, id5)
+        call buscar_top_5(raiz%derecha, max1, max2, max3, max4, max5, id1, id2, id3, id4, id5)
+end subroutine buscar_top_5
+
 subroutine extraccion(self, val, idCapa, mtx)
     class(avl), intent(inout) :: self
     integer, intent(in) :: val, idCapa

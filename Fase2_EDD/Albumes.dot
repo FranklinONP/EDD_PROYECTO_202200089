@@ -1,0 +1,20 @@
+ digraph G {
+ rankdir=TB;
+ node0 [label="Album1", color="red", shape="rectangle"];
+ element00 [label="5         ", shape="ellipse"];
+ node0 -> element00 [dir="forward"];
+ element00 -> element01 [dir="forward"];
+ element01 [label="3         ", shape="ellipse"];
+ element01 -> element02 [dir="forward"];
+ element02 [label="1         ", shape="ellipse"];
+ node1 [label="Album2", color="red", shape="rectangle"];
+ element10 [label="2         ", shape="ellipse"];
+ node1 -> element10 [dir="forward"];
+ node0 -> node1 [dir="back"];
+ node0 -> node1 [dir="forward"];
+ node2 [label="Album3", color="red", shape="rectangle"];
+ element20 [label="8         ", shape="ellipse"];
+ node2 -> element20 [dir="forward"];
+ node1 -> node2 [dir="back"];
+ node1 -> node2 [dir="forward"];
+ }

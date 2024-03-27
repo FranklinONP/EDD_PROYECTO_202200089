@@ -33,9 +33,121 @@ use matrix_m
         !cadena
         procedure :: extraerMatriz2
         procedure :: recorrido_amplitud
+        procedure :: numero_nodos
+        procedure :: imprimir_hoja
+        procedure :: profundidad_arbol
+        procedure :: preorder
+        procedure :: inorder
+        procedure :: posorder
     end type abb
 
 contains  
+    subroutine preorder(self)
+        class(abb), intent(in) :: self
+        
+        call preorderR(self%root)
+        write(*, '()')
+    end subroutine preorder
+    recursive subroutine preorderR(root)
+        type(Node_t), pointer, intent(in) :: root
+
+        if(associated(root)) then
+            ! RAIZ - IZQ - DER
+            write(*, '(I0 A)', advance='no') root%value, " - "
+            call preorderR(root%left)
+            call preorderR(root%right)
+        end if
+    end subroutine preorderR
+
+    subroutine inorder(self)
+        class(abb), intent(in) :: self
+        
+        call inordenR(self%root)
+        print *, ""
+    end subroutine inorder
+    recursive subroutine inordenR(root)
+        type(Node_t), pointer, intent(in) :: root
+
+        if(associated(root)) then
+            ! IZQ - RAIZ - DER
+            call inordenR(root%left)
+            write(*, '(I0 A)', advance='no') root%value, " - "
+            call inordenR(root%right)
+        end if
+    end subroutine inordenR
+
+    subroutine posorder(self)
+        class(abb), intent(in) :: self
+        
+        call posordenR(self%root)
+        print *, ""
+    end subroutine posorder
+    recursive subroutine posordenR(root)
+        type(Node_t), pointer, intent(in) :: root
+
+        if(associated(root)) then
+            ! IZQ - DER - RAIZ
+            call posordenR(root%left)
+            call posordenR(root%right)
+            write(*, '(I0 A)', advance='no') root%value, " - "
+        end if
+    end subroutine posordenR
+!==================================================================================================
+subroutine profundidad_arbol(self)
+        class(abb), intent(in) :: self
+        integer :: profundidad
+        profundidad = profundidad_recursivo(self%root)
+        print *, "Profundidad del Arbol General de Capas: ", profundidad
+    end subroutine profundidad_arbol
+    
+    recursive function profundidad_recursivo(raiz) result(profundidad)
+        type(Node_t), pointer, intent(in) :: raiz
+        integer :: profundidad
+        integer :: profundidad_izquierda, profundidad_derecha
+        if (.not. associated(raiz)) then
+            profundidad = 0
+        else
+            profundidad_izquierda = profundidad_recursivo(raiz%left)
+            profundidad_derecha = profundidad_recursivo(raiz%right)
+            profundidad = max(profundidad_izquierda, profundidad_derecha) + 1
+        end if
+    end function profundidad_recursivo
+
+subroutine imprimir_hoja(self)
+        class(abb), intent(in) :: self
+        print *, "Capas que son hojas dentro del Arbol General de Capas: "
+        call imprimir_hoja_recursivo(self%root)
+end subroutine imprimir_hoja
+    
+recursive subroutine imprimir_hoja_recursivo(raiz)
+        type(Node_t), pointer, intent(in) :: raiz
+        if (associated(raiz)) then
+            if (.not. associated(raiz%left) .and. .not. associated(raiz%right)) then
+                print *, raiz%value
+            else
+                call imprimir_hoja_recursivo(raiz%left)
+                call imprimir_hoja_recursivo(raiz%right)
+            end if
+        end if
+end subroutine imprimir_hoja_recursivo
+
+function numero_nodos(self) result(num_nodos)
+        class(abb), intent(in) :: self
+        integer :: num_nodos
+        num_nodos = contar_nodos(self%root)
+    end function numero_nodos
+    
+    recursive function contar_nodos(raiz) result(num_nodos)
+        type(Node_t), pointer, intent(in) :: raiz
+        integer :: num_nodos
+        if (.not. associated(raiz)) then
+            num_nodos = 0
+        else
+            num_nodos = 1 + contar_nodos(raiz%left) + contar_nodos(raiz%right)
+        end if
+    end function contar_nodos
+
+
     subroutine recorrido_amplitud(self, cadena)
         class(abb), intent(in) :: self
         character(len=:), allocatable, intent(inout) :: cadena

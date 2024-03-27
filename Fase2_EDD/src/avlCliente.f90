@@ -49,9 +49,227 @@ module avl_c
         procedure :: cadena
         procedure :: oma
         procedure :: validarCapa
+        procedure :: agregarAlbumes
+        procedure :: agregarImagenesAlbum
+        procedure :: graficarAlbumes
+        procedure :: top5
+        procedure :: hojas
+        procedure :: profundidadCapas
+        procedure :: recorridos
     end type avlc
 
 contains
+
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine recorridos(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call recorridosRec(self%raiz, dpi)
+    end subroutine recorridos
+
+    recursive subroutine recorridosRec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call recorridosRec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call recorridosRec(raiz%derecha,dpi)
+
+        else
+            !call raiz%cliente%tree%profundidad_arbol()
+            print *, '================== RECORRRIDO EN PREORDER ========================'
+            call raiz%cliente%tree%preorder()
+            print *, '=================== RECORRIDO EN INORDER ========================='
+            call raiz%cliente%tree%inorder()
+            print *, '=================== RECORRIDO EN POSORDER ========================'
+            call raiz%cliente%tree%posorder()
+        end if
+    end subroutine recorridosRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine profundidadCapas(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call profRec(self%raiz, dpi)
+    end subroutine profundidadCapas
+
+    recursive subroutine profRec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call profRec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call profRec(raiz%derecha,dpi)
+
+        else
+            call raiz%cliente%tree%profundidad_arbol()
+        end if
+    end subroutine profRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine hojas(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call hojasRec(self%raiz, dpi)
+    end subroutine hojas
+
+    recursive subroutine hojasRec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call hojasRec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call hojasRec(raiz%derecha,dpi)
+
+        else
+            call raiz%cliente%tree%imprimir_hoja()
+        end if
+    end subroutine hojasRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine top5(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call top5Rec(self%raiz, dpi)
+    end subroutine top5
+
+    recursive subroutine top5Rec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call top5Rec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call top5Rec(raiz%derecha,dpi)
+
+        else
+            call raiz%cliente%avl%top_5_imagenes()
+        end if
+    end subroutine top5Rec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine graficarAlbumes(self, dpi)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+
+        call graficarAlbumesRec(self%raiz, dpi)
+    end subroutine graficarAlbumes
+
+    recursive subroutine graficarAlbumesRec(raiz, dpi) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call graficarAlbumesRec(raiz%izquierda,dpi)
+        
+        else if(dpi > raiz%valor) then
+            call graficarAlbumesRec(raiz%derecha,dpi)
+
+        else
+            print*, 'DPI encontrado'
+            call raiz%cliente%albumes%graphV()
+            print *, 'Album agregado'
+
+        end if
+    end subroutine graficarAlbumesRec
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine agregarImagenesAlbum(self, dpi,name,value)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: value,dpi
+        character(len=:), allocatable, intent(in) :: name
+
+        call agregarImagenesAlbumRec(self%raiz, dpi,name,value)
+    end subroutine agregarImagenesAlbum
+
+    recursive subroutine agregarImagenesAlbumRec(raiz, dpi,name,value) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: value,dpi
+        character(len=:), allocatable, intent(in) :: name
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call agregarImagenesAlbumRec(raiz%izquierda, dpi,name,value)
+        
+        else if(dpi > raiz%valor) then
+            call agregarImagenesAlbumRec(raiz%derecha, dpi,name,value)
+
+        else
+            print*, 'DPI encontrado'
+            call raiz%cliente%albumes%pushToNode(name, value)
+            print *, 'Imagen agraegada al album'
+
+        end if
+    end subroutine agregarImagenesAlbumRec
+
+!-----------------------------------------------------------------------------------------------------------------------
+    subroutine agregarAlbumes(self, dpi,Album)
+        class(avlc), intent(inout) :: self
+        integer, intent(in) :: dpi
+        character(len=:), allocatable, intent(in) :: album
+
+        call agregarAlbumesRec(self%raiz, dpi,Album)
+    end subroutine agregarAlbumes
+
+    recursive subroutine agregarAlbumesRec(raiz, dpi,Album) 
+        type(nodo), pointer :: raiz
+        integer, intent(in) :: dpi
+        character(len=:), allocatable, intent(in) :: album
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call agregarAlbumesRec(raiz%izquierda,dpi,Album)
+        
+        else if(dpi > raiz%valor) then
+            call agregarAlbumesRec(raiz%derecha,dpi,Album)
+
+        else
+            print*, 'DPI encontrado'
+            call raiz%cliente%albumes%addNode(Album)
+            print *, 'Album agregado'
+
+        end if
+    end subroutine agregarAlbumesRec
+
 
     subroutine validarCapa(self, dpi,idCapa,mtx,existeCapa)
         class(avlc), intent(in) :: self
