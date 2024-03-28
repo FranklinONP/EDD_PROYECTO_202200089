@@ -7,7 +7,7 @@ module clienteTemporal
     type :: cliente
         
         character(len=100) :: nombre
-        integer :: dpi
+        integer(kind=8) :: dpi
         character(len=100) :: password
         type(abb) :: tree
         type(avl) :: avl

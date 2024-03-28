@@ -8,7 +8,7 @@ module avl_c
     private
 
     type :: nodo
-        integer :: valor
+        integer(kind=8) :: valor
         type(cliente) :: cliente
         integer :: altura = 1
         !type(abb) :: abb
@@ -59,20 +59,103 @@ module avl_c
         procedure :: reporteAdmin
         procedure :: graficarMatriz
         procedure :: eliminarImagen
+        procedure :: exist
+        procedure :: cambiarDatos
     end type avlc
 
 contains
+subroutine cambiarDatos(self, dpi,nombre,password)
+        class(avlc), intent(inout) :: self
+        integer(kind=8), intent(in) :: dpi
+         character(len=100):: nombre,password
+
+        call cambiarDatosRec(self%raiz, dpi,nombre,password)
+    end subroutine cambiarDatos
+    recursive subroutine cambiarDatosRec(raiz, dpi,nombre,password) 
+        type(nodo), pointer :: raiz
+        integer(kind=8), intent(in) :: dpi
+         character(len=100):: nombre,password
+
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call cambiarDatosRec(raiz%izquierda,dpi,nombre,password)
+        
+        else if(dpi > raiz%valor) then
+            call cambiarDatosRec(raiz%derecha,dpi,nombre,password)
+
+        else
+            print*, '================================================================'
+            print*, 'DPI encontrado: ', raiz%valor
+            print*, "Nombre: ", raiz%cliente%nombre
+            print*, "Password: ", raiz%cliente%password
+            print*, '================================================================'
+            if (len_trim(nombre) == 0) then
+                !esta vacia
+            else
+                raiz%cliente%nombre = nombre
+            end if
+            if (len_trim(password) == 0) then
+                !esta vacia
+            else
+                raiz%cliente%password = password
+            end if
+            print*, '================================================================'
+            print*, '                      USUARIO MODIFICADO  '
+            print*, '================================================================'
+            print*, 'DPI encontrado: ', raiz%valor
+            print*, "Nombre: ", raiz%cliente%nombre
+            print*, "Password: ", raiz%cliente%password
+            print*, '================================================================'
+
+        end if
+    end subroutine cambiarDatosRec
+!-----------------------------------------------------------------------------------------------------------------------
+subroutine exist(self, dpi,existe)
+        class(avlc), intent(inout) :: self
+        integer(kind=8), intent(in) :: dpi
+        logical, intent(inout) :: existe
+
+        call existeRec(self%raiz, dpi,existe)
+    end subroutine exist
+
+    recursive subroutine existeRec(raiz, dpi,existe) 
+        type(nodo), pointer :: raiz
+        integer(kind=8), intent(in) :: dpi
+        logical,intent(inout) :: existe
+        
+        if(.not. associated(raiz)) then
+            print*, 'Valor no encontrado:'
+            existe = .false.
+            return
+        end if
+
+        if(dpi < raiz%valor) then
+           call existeRec(raiz%izquierda,dpi,existe)
+        
+        else if(dpi > raiz%valor) then
+            call existeRec(raiz%derecha,dpi,existe)
+
+        else
+            existe = .true.
+        end if
+    end subroutine existeRec
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine eliminarImagen(self, dpi,idCapa)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) :: idCapa
 
         call delRec(self%raiz, dpi,idCapa)
     end subroutine eliminarImagen
 
     recursive subroutine delRec(raiz, dpi,idCapa) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in):: idCapa
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -96,14 +179,16 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine graficarMatriz(self, dpi,idCapa)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapa
 
         call matrixRec(self%raiz, dpi,idCapa)
     end subroutine graficarMatriz
 
     recursive subroutine matrixRec(raiz, dpi,idCapa) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapa
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -125,7 +210,7 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine reporteAdmin(self, dpi,res)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         logical, intent(inout) :: res
 
         call reporteAdminRec(self%raiz, dpi,res)
@@ -133,7 +218,7 @@ contains
 
     recursive subroutine reporteAdminRec(raiz, dpi,res) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         logical, intent(inout) :: res
         
         if(.not. associated(raiz)) then
@@ -166,14 +251,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine recorridos(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call recorridosRec(self%raiz, dpi)
     end subroutine recorridos
 
     recursive subroutine recorridosRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -199,14 +284,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine profundidadCapas(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call profRec(self%raiz, dpi)
     end subroutine profundidadCapas
 
     recursive subroutine profRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -226,14 +311,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine hojas(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call hojasRec(self%raiz, dpi)
     end subroutine hojas
 
     recursive subroutine hojasRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -253,14 +338,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine top5(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call top5Rec(self%raiz, dpi)
     end subroutine top5
 
     recursive subroutine top5Rec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -280,14 +365,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine graficarAlbumes(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call graficarAlbumesRec(self%raiz, dpi)
     end subroutine graficarAlbumes
 
     recursive subroutine graficarAlbumesRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -310,7 +395,8 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine agregarImagenesAlbum(self, dpi,name,value)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: value,dpi
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::value
         character(len=:), allocatable, intent(in) :: name
 
         call agregarImagenesAlbumRec(self%raiz, dpi,name,value)
@@ -318,7 +404,8 @@ contains
 
     recursive subroutine agregarImagenesAlbumRec(raiz, dpi,name,value) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: value,dpi
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::value
         character(len=:), allocatable, intent(in) :: name
 
         if(.not. associated(raiz)) then
@@ -343,7 +430,7 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine agregarAlbumes(self, dpi,Album)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         character(len=:), allocatable, intent(in) :: album
 
         call agregarAlbumesRec(self%raiz, dpi,Album)
@@ -351,7 +438,7 @@ contains
 
     recursive subroutine agregarAlbumesRec(raiz, dpi,Album) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         character(len=:), allocatable, intent(in) :: album
 
         if(.not. associated(raiz)) then
@@ -376,7 +463,8 @@ contains
 
     subroutine validarCapa(self, dpi,idCapa,mtx,existeCapa)
         class(avlc), intent(in) :: self
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapa
         type(matrix),intent(inout) :: mtx
         type(matrix) :: mtx2
         logical, intent(inout) ::existeCapa
@@ -391,7 +479,8 @@ contains
 
     recursive subroutine validarCapaRec(raiz, dpi,idCapa,mtx,res) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapa
         type(matrix),intent(inout) :: mtx
         logical :: res
         if(.not. associated(raiz)) then
@@ -416,7 +505,8 @@ contains
 
     subroutine oma(self, dpi,idImagen,idCapa, mtx)
         class(avlc), intent(in) :: self
-        integer, intent(in) :: dpi,idImagen,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen,idCapa
         type(matrix), intent(inout) :: mtx
         type(matrix) :: mtx2
 
@@ -426,7 +516,8 @@ contains
 
     recursive subroutine omaRec(raiz, dpi,idImagen,idCapa, mtx) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen,idCapa
         type(matrix), intent(inout) :: mtx
 
         if(.not. associated(raiz)) then
@@ -451,7 +542,8 @@ contains
     end subroutine omaRec
     subroutine cadena(self, dpi,idImagen,cadenaNodos)
         class(avlc), intent(in) :: self
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
         character(len=:), allocatable,intent(inout) :: cadenaNodos
         character(len=:), allocatable :: cad
 
@@ -461,7 +553,8 @@ contains
 
     recursive subroutine cadenaRec(raiz, dpi, idImagen,cadenaNodos) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
         character(len=:), allocatable,intent(inout) :: cadenaNodos
 
         if(.not. associated(raiz)) then
@@ -486,7 +579,8 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine validarID(self, dpi,idImagen,respuesta)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
         logical, intent(inout) :: respuesta
 
         call validarIDRec(self%raiz, dpi,idImagen,respuesta)
@@ -494,7 +588,8 @@ contains
 
     recursive subroutine validarIDRec(raiz, dpi,idImagen,respuesta) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
         logical, intent(inout) :: respuesta
 
         if(.not. associated(raiz)) then
@@ -520,7 +615,7 @@ contains
         class(avlc), intent(inout) :: self
         character(len=*), intent(in) :: password,dpii
         logical, intent(inout) :: respuesta
-        integer :: dpi
+        integer(kind=8) :: dpi
         read(dpii,*) dpi
         call loginRec(self%raiz, dpi,password,respuesta)
     end subroutine login
@@ -528,7 +623,7 @@ contains
     recursive subroutine loginRec(raiz, dpi,password,respuesta) 
         type(nodo), pointer :: raiz
         character(len=*), intent(in) :: password
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
         logical, intent(inout) :: respuesta
 
         if(.not. associated(raiz)) then
@@ -552,14 +647,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine GraficaCapas(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call GraficaCapasRec(self%raiz, dpi)
     end subroutine GraficaCapas
 
     recursive subroutine GraficaCapasRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -582,14 +677,14 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine Grafica(self, dpi)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         call GraficaRec(self%raiz, dpi)
     end subroutine Grafica
 
     recursive subroutine GraficaRec(raiz, dpi) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi
+        integer(kind=8), intent(in) :: dpi
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -614,7 +709,8 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine insertMatrizBB(self, dpi,idImagen,idCapa,mtx)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) :: idImagen,idCapa
         type(matrix), intent(in) :: mtx
 
         call insertMatrizBBRec(self%raiz,dpi,idImagen,idCapa,mtx)
@@ -622,7 +718,8 @@ contains
 
     recursive subroutine insertMatrizBBRec(raiz, dpi,idImagen,idCapa,mtx) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen,idCapa
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) :: idImagen,idCapa
         type(matrix), intent(in) :: mtx
 
         if(.not. associated(raiz)) then
@@ -647,13 +744,15 @@ contains
     !-----------------------------------------------------------------------------------------------------------------------
     subroutine PostOrden(self, dpi,lista,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista
         call PostOrdenRec(self%raiz,dpi,lista,limite)
     end subroutine PostOrden
     recursive subroutine PostOrdenRec(raiz, dpi,lista,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista 
 
         if(.not. associated(raiz)) then
@@ -673,13 +772,15 @@ contains
     !-----------------------------------------------------------------------------------------------------------------------
     subroutine Inorden(self, dpi,lista,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista
         call InordenRec(self%raiz,dpi,lista,limite)
     end subroutine Inorden
     recursive subroutine InordenRec(raiz, dpi,lista,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista 
 
         if(.not. associated(raiz)) then
@@ -699,7 +800,8 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine Preorden(self, dpi,lista,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista
 
 
@@ -708,7 +810,8 @@ contains
 
     recursive subroutine graficarPreordenRec(raiz, dpi,lista,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,limite
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::limite
         type(lista_m),intent(inout) :: lista 
 
         if(.not. associated(raiz)) then
@@ -732,14 +835,16 @@ contains
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine Imagen(self, dpi,idImagen)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
 
         call ImagenRec(self%raiz, dpi,idImagen)
     end subroutine Imagen
 
     recursive subroutine ImagenRec(raiz, dpi,idImagen) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -765,7 +870,7 @@ contains
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
    subroutine imagenPostOrden(self, val,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         call imagenPostOrdenRec(self%raiz, val,limite)
@@ -773,7 +878,7 @@ contains
     end subroutine imagenPostOrden
     recursive subroutine imagenPostOrdenRec(raiz, val,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         if(.not. associated(raiz)) then
@@ -806,7 +911,7 @@ contains
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
    subroutine imagenInorden(self, val,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         call imagenInordenRec(self%raiz, val,limite)
@@ -815,7 +920,7 @@ contains
 
     recursive subroutine imagenInordenRec(raiz, val,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         if(.not. associated(raiz)) then
@@ -848,7 +953,7 @@ contains
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
    subroutine imagenPreorden(self, val,limite)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         call imagenPreordenRec(self%raiz, val,limite)
@@ -857,7 +962,7 @@ contains
 
     recursive subroutine imagenPreordenRec(raiz, val,limite) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         integer, intent(in) :: limite
 
         if(.not. associated(raiz)) then
@@ -890,7 +995,7 @@ contains
 !Con esta search busco el nodo X de este arbol, para unificar las matrices que ya tiene guardadas
    subroutine crearImagen(self, val)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         call crearImagenRec(self%raiz, val)
 
@@ -898,7 +1003,7 @@ contains
 
     recursive subroutine crearImagenRec(raiz, val) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:', val
@@ -930,14 +1035,14 @@ contains
 !Grafica el abb de cada nodo de este arbol
 subroutine abbImagen(self, val)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         call searchRec2(self%raiz, val)
     end subroutine abbImagen
 
     recursive subroutine searchRec2(raiz, val) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:', val
@@ -961,7 +1066,7 @@ subroutine abbImagen(self, val)
 !Con esta search busco el nodo X de este arbol, y a ese nodo le creo el abb con su matriz
    subroutine search(self, val, nombre,password)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         character(len=*), intent(in) :: nombre,password
         print *, '--------------------->',val
         call searchRec(self%raiz,val, nombre,password)
@@ -969,7 +1074,7 @@ subroutine abbImagen(self, val)
 
     recursive subroutine searchRec(raiz, val, nombre,password) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
         character(len=*), intent(in) :: nombre,password
 
         if(.not. associated(raiz)) then
@@ -993,7 +1098,8 @@ subroutine abbImagen(self, val)
     !-----------------------------------------------------------------------------------------------------------------------
     subroutine insertMatriz(self, dpi,idImagen,idCapaE,mtxT)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen,idCapaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen,idCapaE
         type(matrix), intent(in) :: mtxT
 
         call insertMatrizRec(self%raiz,dpi,idImagen,idCapaE,mtxT)
@@ -1001,7 +1107,8 @@ subroutine abbImagen(self, val)
 
     recursive subroutine insertMatrizRec(raiz,dpi,idImagen,idCapaE,mtxT) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen,idCapaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen,idCapaE
         type(matrix), intent(in) :: mtxT
 
         if(.not. associated(raiz)) then
@@ -1025,7 +1132,8 @@ subroutine abbImagen(self, val)
     !-----------------------------------------------------------------------------------------------------------------------
     subroutine extraerM(self, dpi,idCapaE,mtxT)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idCapaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapaE
         type(matrix), intent(inout) :: mtxT
 
         call extraerMRec(self%raiz,dpi,idCapaE,mtxT)
@@ -1034,7 +1142,8 @@ subroutine abbImagen(self, val)
 
     recursive subroutine extraerMRec(raiz,dpi,idCapaE,mtxT) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapaE
         type(matrix), intent(inout) :: mtxT
 
         if(.not. associated(raiz)) then
@@ -1058,14 +1167,16 @@ subroutine abbImagen(self, val)
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine insertNodoImagen(self, dpi,idImagen)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
 
         call insertNodoImagenRec(self%raiz, dpi,idImagen)
     end subroutine insertNodoImagen
 
     recursive subroutine insertNodoImagenRec(raiz, dpi,idImagen) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idImagen
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idImagen
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -1089,7 +1200,8 @@ subroutine abbImagen(self, val)
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine insertCapa(self, dpi,idCapaE,filaE,columnaE,color)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idCapaE,filaE,columnaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapaE,filaE,columnaE
         character(len=*), intent(in) :: color
 
         call insertCapaRec(self%raiz,dpi,idCapaE,filaE,columnaE,color)
@@ -1097,7 +1209,8 @@ subroutine abbImagen(self, val)
 
     recursive subroutine insertCapaRec(raiz,dpi,idCapaE,filaE,columnaE,color) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapaE,filaE,columnaE
+        integer(kind=8), intent(in) :: dpi
+        integer, intent(in) ::idCapaE,filaE,columnaE
         character(len=*), intent(in) :: color
 
         if(.not. associated(raiz)) then
@@ -1122,13 +1235,15 @@ subroutine abbImagen(self, val)
 !-----------------------------------------------------------------------------------------------------------------------
     subroutine insertNodoCapa(self, dpi,idCapa)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+         integer, intent(in) ::idCapa
         call insertNodoCapaRec(self%raiz,dpi,idCapa)
     end subroutine insertNodoCapa
 
     recursive subroutine insertNodoCapaRec(raiz,dpi,idCapa) 
         type(nodo), pointer :: raiz
-        integer, intent(in) :: dpi,idCapa
+        integer(kind=8), intent(in) :: dpi
+         integer, intent(in) ::idCapa
 
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:'
@@ -1153,7 +1268,7 @@ subroutine abbImagen(self, val)
 !Con este insert creo un nuevo nodo a mi arbol avlc
     subroutine insert(self, val)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         call insertRec(self%raiz, val)
 
@@ -1161,7 +1276,7 @@ subroutine abbImagen(self, val)
 
     recursive subroutine insertRec(raiz, val)
         type(nodo), pointer, intent(inout) :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         if(.not. associated(raiz)) then
             allocate(raiz)
@@ -1200,14 +1315,14 @@ subroutine abbImagen(self, val)
 !Subrutina para eliminar un nodo de mi arbol avlc
     subroutine delete(self, val)
         class(avlc), intent(inout) :: self
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         self%raiz => deleteRec(self%raiz, val)
     end subroutine delete
 
     recursive function deleteRec(raiz, val) result(res)
         type(nodo), pointer :: raiz
-        integer, intent(in) :: val
+        integer(kind=8), intent(in) :: val
 
         type(nodo), pointer :: temp
         type(nodo), pointer :: res 
