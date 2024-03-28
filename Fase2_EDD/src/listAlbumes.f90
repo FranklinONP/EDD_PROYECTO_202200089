@@ -20,6 +20,7 @@ module listaAlbumes
         procedure :: search
         procedure :: agregarSublista
         procedure :: actualizar2
+        procedure :: reporter
     end type node
 
     !objeto de lista de lista
@@ -31,6 +32,7 @@ module listaAlbumes
         procedure :: printList
         procedure :: graphV
         procedure :: actualizar
+        procedure :: reporte
 
         
     end type List_of_listsA
@@ -173,6 +175,34 @@ subroutine pushToNode(this, name, value)
             aux => aux%next
         end do
 end subroutine pushToNode
+
+subroutine reporte(this)
+        class(List_of_listsA), intent(in) :: this
+        type(node), pointer :: aux
+        integer :: i,j
+
+        aux => this%head
+
+        do while(associated(aux))
+            call aux%reporter(j)
+            i=i+1
+            aux => aux%next
+        end do
+        PRINT *, 'Numero de Albumes Totales: ',i 
+        PRINT *, 'Numero de Imagenes Totales: ',j-1
+end subroutine reporte
+
+subroutine reporter(this,j)
+        class(node), intent(in) :: this
+        type(string_node), pointer :: aux
+        integer, intent(inout) :: j
+        aux => this%top
+
+        do while(associated(aux))
+            j=j+1
+            aux => aux%next
+        end do
+end subroutine reporter
 
 subroutine printList(this)
         class(List_of_listsA), intent(in) :: this

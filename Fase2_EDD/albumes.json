@@ -10,6 +10,10 @@
     {
         "nombre_album":"Album3",
         "imgs":[2,5,6]
+    },
+    {
+        "nombre_album":"Album4",
+        "imgs":[2,5,6]
     }
     
 ]

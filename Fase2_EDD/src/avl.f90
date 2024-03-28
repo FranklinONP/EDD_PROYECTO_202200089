@@ -325,15 +325,11 @@ end subroutine extraccionRec
    subroutine crearImagen(self, val)
         class(avl), intent(inout) :: self
         integer, intent(in) :: val
-
         call crearImagenRec(self%raiz, val)
-
     end subroutine crearImagen
-
     recursive subroutine crearImagenRec(raiz, val) 
         type(nodo), pointer :: raiz
         integer, intent(in) :: val
-
         if(.not. associated(raiz)) then
             print*, 'Valor no encontrado:', val
             return
@@ -344,7 +340,6 @@ end subroutine extraccionRec
             call crearImagenRec(raiz%derecha, val)
         else
             print*, 'NodoImagen a crear encontrado:', val
-            !Si ya tengo la matriz creada entonces ya lo la grafico
             if (raiz%cargada .eqv. .true.)then
                 print*, 'Matriz ya creada=================================================================================='
                 call raiz%mtx%graficar()

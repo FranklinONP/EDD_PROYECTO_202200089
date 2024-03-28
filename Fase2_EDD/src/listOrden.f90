@@ -84,8 +84,7 @@ contains
         aux => self%head
 
         do while(associated(aux))
-            print *, 'INDICE: ', aux%index
-            print *, ""
+            print *,  aux%index,"-"
             aux => aux%next
         end do
     end subroutine printList

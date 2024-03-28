@@ -239,7 +239,7 @@ subroutine exist(self, dpi,existe)
             print *, "DPI: ", raiz%cliente%dpi
             print *, "Password: ", raiz%cliente%password
             print *, "================== CANTIDAD DE ALBUMES Y SUS IMAGENES ========================"
-
+            call raiz%cliente%Albumes%reporte()
             print *, "===================== CANTIDAD DE IMAGENES TOTALES ==========================="
             call raiz%cliente%avl%preorden()
             print *, "===================== CANTIDAD DE CAPAS TOTALES =============================="
