@@ -15,7 +15,7 @@ program Proyecto_202200089
    
 
 contains 
-subroutine cargaMasivaCliente(direccion)
+subroutine cargaSucursales(direccion)
         integer :: idInt,img_gInt,img_pInt
         character(len=1000), intent(in) :: direccion
         print*, direccion
@@ -56,6 +56,6 @@ subroutine cargaMasivaCliente(direccion)
 
         end do
         call json%destroy()
-end subroutine cargaMasivaCliente
+end subroutine cargaSucursales
 
 end program Proyecto_202200089
