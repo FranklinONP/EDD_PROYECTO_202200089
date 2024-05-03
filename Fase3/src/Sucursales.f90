@@ -22,9 +22,17 @@ module modulo_arbol_avl
         procedure :: obtener_nodo
         procedure :: valor_existe
         procedure :: graficar_arbol
+        procedure :: cabeza
     end type arbol_avl
 
     contains
+    
+    function cabeza(self) result(nodo)
+        class(arbol_avl), intent(inout) :: self
+        type(nodo_avl), pointer :: nodo
+        nodo => self%raiz
+    end function cabeza
+
     subroutine insertar_nodo(self, valor, departamento, direccion, contrasena)
         class(arbol_avl), intent(inout) :: self
         integer, intent(in) :: valor
@@ -157,60 +165,64 @@ module modulo_arbol_avl
         res = n%altura
     end function obtenerAltura
 
-    subroutine graficar_arbol(this,nombre_grafica)
-        class(arbol_avl), intent(inout) :: this
-        character(len=:), allocatable :: codigo_dot
-        character(len=:), allocatable :: crear_nodo
-        character(len=:), allocatable :: direccion_nodo
-        character(len=*), intent(in) :: nombre_grafica
-        crear_nodo = ''
-        direccion_nodo = ''
-        codigo_dot = "digraph G{" // new_line('a')
-        codigo_dot = codigo_dot // "node [shape=component];" // new_line('a')
-        codigo_dot = codigo_dot //&
-        'Titulo [fontname="Courier New", color=red shape=box3d label="Arbol Avl Sucursales"]' &
-        // new_line('a')
-        codigo_dot = codigo_dot // "{rank=same; Titulo;}" // new_line('a')
-        if (associated(this%raiz)) then
-            call RoamTree(this%raiz, crear_nodo, direccion_nodo)
-        end if
-        codigo_dot = codigo_dot // trim(crear_nodo) // trim(direccion_nodo) // "}" // new_line('a')
-        call generar_grafica(nombre_grafica, codigo_dot)
-        print *, "Grafica '"//trim(nombre_grafica)//"' Generada Correctamente."
-    end subroutine graficar_arbol
+subroutine graficar_arbol(this,nombre_grafica)
+    class(arbol_avl), intent(inout) :: this
+    character(len=:), allocatable :: codigo_dot
+    character(len=:), allocatable :: crear_nodo
+    character(len=:), allocatable :: direccion_nodo
+    character(len=*), intent(in) :: nombre_grafica
+    crear_nodo = ''
+    direccion_nodo = ''
+    codigo_dot = "digraph G{" // new_line('a')
+    codigo_dot = codigo_dot // "node [shape=circles, fontname=Arial, fontsize=10];" // new_line('a')
+    codigo_dot = codigo_dot //&
+    'Titulo [fontname="Times New Roman", color=blue, label=""]' &
+    // new_line('a')
+    codigo_dot = codigo_dot // "{rank=same; Titulo;}" // new_line('a')
+    if (associated(this%raiz)) then
+        call RoamTree(this%raiz, crear_nodo, direccion_nodo)
+    end if
+    codigo_dot = codigo_dot // trim(crear_nodo) // trim(direccion_nodo) // "}" // new_line('a')
+    call generar_grafica(nombre_grafica, codigo_dot)
+    print *, "Grafica '"//trim(nombre_grafica)//"' Generada Correctamente."
+end subroutine graficar_arbol
+
     
-    recursive subroutine RoamTree(actual, crear_nodo, direccion_nodo)
-            type(nodo_avl), pointer :: actual
-            character(len=:), allocatable, intent(inout) :: crear_nodo
-            character(len=:), allocatable, intent(inout) :: direccion_nodo
-            character(len=20) :: direccion
-            character(len=20) :: str_valor
-            if (associated(actual)) then
+recursive subroutine RoamTree(actual, crear_nodo, direccion_nodo)
+    type(nodo_avl), pointer :: actual
+    character(len=:), allocatable, intent(inout) :: crear_nodo
+    character(len=:), allocatable, intent(inout) :: direccion_nodo
+    character(len=20) :: direccion
+    character(len=20) :: str_valor
+    if (associated(actual)) then
+        direccion = obtener_direccion_memoria_avl(actual)
+        write(str_valor, '(I0)') actual%valor
+        crear_nodo = crear_nodo // '"' // trim(direccion) // '"' // '[fontname="Arial" fontsize=10 label="' &
+        //"ID: "//trim(str_valor) // new_line('a') // &
+        "Departamento: "//actual%departamento // new_line('a') // &
+        "Direccion: "//actual%direccion // new_line('a') // &
+        "Password: "//sha256(actual%contrasena) // &
+        '"];' // new_line('a')
+        if (associated(actual%izquierda)) then
+            direccion_nodo = direccion_nodo // '"' // trim(direccion) // '"' // " -> "
+            direccion = obtener_direccion_memoria_avl(actual%izquierda)
+            direccion_nodo = direccion_nodo // '"' // trim(direccion) // '" ' &
+                    // '[label = "L" fontname="Arial" fontsize=10];' // new_line('a')
+        end if
+        if (associated(actual%derecha)) then
             direccion = obtener_direccion_memoria_avl(actual)
-            write(str_valor, '(I0)') actual%valor
-            crear_nodo = crear_nodo // '"' // trim(direccion) // '"' // '[fontname="Courier New" label="' &
-            //"ID: "//trim(str_valor) // new_line('a') // &
-            "Departamento: "//actual%departamento // new_line('a') // &
-            "Direccion: "//actual%direccion // new_line('a') // &
-            "Password: "//sha256(actual%contrasena) // &
-            '"];' // new_line('a')
-            if (associated(actual%izquierda)) then
-                direccion_nodo = direccion_nodo // '"' // trim(direccion) // '"' // " -> "
-                direccion = obtener_direccion_memoria_avl(actual%izquierda)
-                direccion_nodo = direccion_nodo // '"' // trim(direccion) // '" ' &
-                        // '[label = "L"];' // new_line('a')
-            end if
-            if (associated(actual%derecha)) then
-                direccion = obtener_direccion_memoria_avl(actual)
-                direccion_nodo = direccion_nodo // '"' // trim(direccion) // '"' // " -> "
-                direccion = obtener_direccion_memoria_avl(actual%derecha)
-                direccion_nodo = direccion_nodo // '"' // trim(direccion) // '" ' &
-                        // '[label = "R"];' // new_line('a')
-            end if
-            call RoamTree(actual%izquierda, crear_nodo, direccion_nodo)
-            call RoamTree(actual%derecha, crear_nodo, direccion_nodo)
-            end if
-    end subroutine RoamTree
+            direccion_nodo = direccion_nodo // '"' // trim(direccion) // '"' // " -> "
+            direccion = obtener_direccion_memoria_avl(actual%derecha)
+            direccion_nodo = direccion_nodo // '"' // trim(direccion) // '" ' &
+                    // '[label = "R" fontname="Arial" fontsize=10];' // new_line('a')
+        end if
+        call RoamTree(actual%izquierda, crear_nodo, direccion_nodo)
+        call RoamTree(actual%derecha, crear_nodo, direccion_nodo)
+    end if
+end subroutine RoamTree
+
+
+
 
     function obtener_direccion_memoria_avl(node) result(direccion)
         type(nodo_avl), pointer :: node
@@ -224,7 +236,7 @@ module modulo_arbol_avl
     subroutine generar_grafica(nombre_grafica, codigo)
         character(len=*), intent(in) :: codigo, nombre_grafica
         character(len=:), allocatable :: filepath
-        filepath = 'graph/' // trim(nombre_grafica) 
+        filepath =  trim(nombre_grafica) 
         open(10, file=filepath, status='replace', action='write')
         write(10, '(A)') trim(codigo)
         close(10)

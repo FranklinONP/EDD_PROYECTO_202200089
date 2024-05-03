@@ -1,0 +1,75 @@
+digraph G{
+node [shape=circles, fontname=Arial, fontsize=10];
+Titulo [fontname="Times New Roman", color=blue, label=""]
+{rank=same; Titulo;}
+"3060924223680"[fontname="Arial" fontsize=10 label="ID: 7
+Departamento: Guatemala
+Direccion: Avenida 6 901
+Password: 2851A4656A0172413C9E510FCED3FE881D9C8073ADEEDA03DFDAB22414FAA2CC"];
+"3060926084192"[fontname="Arial" fontsize=10 label="ID: 4
+Departamento: Guatemala
+Direccion: Avenida 7 501
+Password: E410FC90DCD6FD1EB2EF353512ACC30B77CD2D339AE25699D7D12FCE9A1F6BAA"];
+"3060926107952"[fontname="Arial" fontsize=10 label="ID: 2
+Departamento: Guatemala
+Direccion: Avenida Norte 456
+Password: 30EEBC5D932B9D9F3263200936E1BD5DF2817786664B0B32BDBAA8F0DCC64893"];
+"3060924227296"[fontname="Arial" fontsize=10 label="ID: 1
+Departamento: Guatemala
+Direccion: Avenida Principal 123
+Password: 2A8C49D96A8E17AA5A3C620FBF11B9BCB8104F65DC7C127139BF5A45CBECE426"];
+"3060926107232"[fontname="Arial" fontsize=10 label="ID: 3
+Departamento: Guatemala
+Direccion: Calle Sur 789
+Password: 5FEEE95973559B02348E90D2B8A6369E6346F8A5D7B6BCD2C571B4C40DD4F792"];
+"3060926101920"[fontname="Arial" fontsize=10 label="ID: 5
+Departamento: Guatemala
+Direccion: Avenida Oeste 345
+Password: 9CAA2257002FBD000E7F30FA9A994E325A3761120F84B8BD9D01DCE877B8CC16"];
+"3060926107472"[fontname="Arial" fontsize=10 label="ID: 6
+Departamento: Guatemala
+Direccion: Calle 5 678
+Password: 448EB68E329B773FC0B2977C807DEFD1453720AE25192AAA7CB78A704CEAB2A8"];
+"3060926102640"[fontname="Arial" fontsize=10 label="ID: 11
+Departamento: Guatemala
+Direccion: Avenida 10 1234
+Password: B117CBD378745CC28F836EF2329C83F2CCD9F3CEEA57CD906B3CD3E57FE74098"];
+"3060926102400"[fontname="Arial" fontsize=10 label="ID: 9
+Departamento: Guatemala
+Direccion: Avenida 8 567
+Password: A8922D4BE2A9A6970489334FE1B6268CE0A08DDB92D46D8EFB5E17A5942554B2"];
+"3060926106992"[fontname="Arial" fontsize=10 label="ID: 8
+Departamento: Guatemala
+Direccion: Calle 7 234
+Password: E340E7525309BD972242AE95711B7192F9220C3D811F28052A7C70DEEB6E41C4"];
+"3060926107712"[fontname="Arial" fontsize=10 label="ID: 10
+Departamento: Guatemala
+Direccion: Calle 9 890
+Password: 180745B1D360D1F7351680EE029BAABB3967705D15204307911A8F3B49119762"];
+"3060926108192"[fontname="Arial" fontsize=10 label="ID: 13
+Departamento: Guatemala
+Direccion: Avenida 12 9012
+Password: C0F094D84AF9C2349CA50FFE8D716F0839DCE177C789CDD88E61FD2392E1E1D5"];
+"3060926102160"[fontname="Arial" fontsize=10 label="ID: 12
+Departamento: Guatemala
+Direccion: Calle 11 5678
+Password: 964D527426255A7E5AE648D093FF837164143AD4610024E933E9AD8F1DDBE0C0"];
+"3060924227056"[fontname="Arial" fontsize=10 label="ID: 14
+Departamento: Guatemala
+Direccion: Calle 13 2345
+Password: 4D15CE3E324523F00DDF5B66B3FE5CF285237EE96F9FC74B40DBF82526FB2768"];
+"3060924223680" -> "3060926084192" [label = "L" fontname="Arial" fontsize=10];
+"3060924223680" -> "3060926102640" [label = "R" fontname="Arial" fontsize=10];
+"3060926084192" -> "3060926107952" [label = "L" fontname="Arial" fontsize=10];
+"3060926084192" -> "3060926101920" [label = "R" fontname="Arial" fontsize=10];
+"3060926107952" -> "3060924227296" [label = "L" fontname="Arial" fontsize=10];
+"3060926107952" -> "3060926107232" [label = "R" fontname="Arial" fontsize=10];
+"3060926101920" -> "3060926107472" [label = "R" fontname="Arial" fontsize=10];
+"3060926102640" -> "3060926102400" [label = "L" fontname="Arial" fontsize=10];
+"3060926102640" -> "3060926108192" [label = "R" fontname="Arial" fontsize=10];
+"3060926102400" -> "3060926106992" [label = "L" fontname="Arial" fontsize=10];
+"3060926102400" -> "3060926107712" [label = "R" fontname="Arial" fontsize=10];
+"3060926108192" -> "3060926102160" [label = "L" fontname="Arial" fontsize=10];
+"3060926108192" -> "3060924227056" [label = "R" fontname="Arial" fontsize=10];
+}
+

@@ -11,7 +11,7 @@ module modulo_tabla_hash
         integer :: elemento = 0
         type(tecnico), allocatable :: arreglo(:)
         contains
-        procedure :: insertar, imprimir, listar_tecnico, grafica_tabla
+        procedure :: insertar, imprimir, listar_tecnico, grafica_tabla,graphTecnicos
         procedure, private :: resolver_colision
     end type TablaHash
 
@@ -181,12 +181,86 @@ contains
     subroutine generar_grafica(nombre_grafica, codigo)
         character(len=*), intent(in) :: codigo, nombre_grafica
         character(len=:), allocatable :: filepath
-        filepath = 'graph/' // trim(nombre_grafica) 
+        filepath =  trim(nombre_grafica) 
         open(10, file=filepath, status='replace', action='write')
         write(10, '(A)') trim(codigo)
         close(10)
         call system('dot -Tpdf ' // trim(filepath) // ' -o ' // trim(adjustl(filepath)) // '.pdf')
         call system('start ' // trim(adjustl(filepath)) // '.pdf')
     end subroutine generar_grafica
+
+    subroutine graphTecnicos(self)
+        class(TablaHash), intent(in) :: self
+        integer :: indice = 0
+        character(len=100) :: dotFile, dotFilePath, pngFilePath
+        character(len=200) :: command
+        character(len=100) :: nombre, apellido, direccion, genero, index, dpi, telefono
+            integer :: i
+
+        ! Add '.dot' and '.png' extensions to the filename
+        character(len=*), parameter :: dotExtension = ".dot"
+        character(len=*), parameter :: pngExtension = ".png"
+        dotFile = "tablaTecnicos" // dotExtension
+        dotFilePath = dotFile
+        pngFilePath = "tablaTecnicos" // pngExtension
+
+        ! Open the DOT file for writing
+        open(unit=10, file=dotFilePath, status='replace')
+
+        ! Write the DOT code to the file
+        write(10, '(A)') "digraph {"
+        write(10, '(A)') "  node [ shape=plaintext fontname=Helvetica ]"
+        write(10, '(A)') ""
+        write(10, '(A)') "  n [ label = <"
+        write(10, '(A)') "    <table border=""0"" cellborder=""1"" cellspacing=""0"" bgcolor=""white"" color=""black"">"
+
+            write(10, '(A)') "      <tr>"
+            write(10, '(A)') "        <td># </td>"
+            write(10, '(A)') "        <td>DPI: </td>"
+            write(10, '(A)') "        <td>Nombre: </td>"
+            write(10, '(A)') "        <td>Apellido: </td>"
+            write(10, '(A)') "        <td>Direccion: </td>"
+            write(10, '(A)') "        <td>Telefono: </td>"
+            write(10, '(A)') "        <td>Genero: </td>"
+            write(10, '(A)') "      </tr>"
+
+        do i = 0, size(self%arreglo)-1
+            write(index, '(I0)') indice
+            write(dpi, '(I0)') self%arreglo(i)%dpi
+            write(nombre, '(A)') self%arreglo(i)%nombre
+            write(apellido, '(A)') self%arreglo(i)%apellido
+            write(direccion, '(A)') self%arreglo(i)%direccion
+            write(telefono, '(I0)') self%arreglo(i)%telefono
+            write(genero, '(A)') self%arreglo(i)%genero
+
+            write(10, '(A)') "      <tr>"
+            write(10, '(A)') "        <td>" // trim(index) // "</td>"
+            write(10, '(A)') "        <td>" // trim(dpi) // "</td>"
+            write(10, '(A)') "        <td>" // trim(nombre) // "</td>"
+            write(10, '(A)') "        <td>" // trim(apellido) // "</td>"
+            write(10, '(A)') "        <td>" // trim(direccion) // "</td>"
+            write(10, '(A)') "        <td>" // trim(telefono) // "</td>"
+            write(10, '(A)') "        <td>" // trim(genero) // "</td>"
+            write(10, '(A)') "      </tr>"
+            indice = indice + 1
+        end do
+
+        write(10, '(A)') "    </table>"
+        write(10, '(A)') "  > ]"
+        write(10, '(A)') ""
+        write(10, '(A)') "}"
+
+        ! Close the DOT file
+        close(unit=10)
+
+        ! Convert DOT to PNG using Graphviz
+        command = "dot -Gnslimit=2 -Tpng -o " // trim(pngFilePath) // " " // trim(dotFilePath)
+        call system(command)
+
+        ! Open the PNG file
+        command = "start " // trim(pngFilePath)
+        call system(command)
+
+    end subroutine graphTecnicos
     
 end module modulo_tabla_hash

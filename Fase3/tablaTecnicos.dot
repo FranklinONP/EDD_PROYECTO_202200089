@@ -1,0 +1,270 @@
+digraph {
+  node [ shape=plaintext fontname=Helvetica ]
+
+  n [ label = <
+    <table border="0" cellborder="1" cellspacing="0" bgcolor="white" color="black">
+      <tr>
+        <td># </td>
+        <td>DPI: </td>
+        <td>Nombre: </td>
+        <td>Apellido: </td>
+        <td>Direccion: </td>
+        <td>Telefono: </td>
+        <td>Genero: </td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>8392016475839</td>
+        <td>Carlos</td>
+        <td>Hernández García</td>
+        <td>3 calle 10-23 zona 4</td>
+        <td>34567890</td>
+        <td>Masculino</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>9012345678901</td>
+        <td>Pedro</td>
+        <td>Gómez Sánchez</td>
+        <td>9 calle 15-32 zona 5</td>
+        <td>56789012</td>
+        <td>Masculino</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>2837465890234</td>
+        <td>María</td>
+        <td>López Pérez</td>
+        <td>12 avenida 5-67 zona 2</td>
+        <td>23456789</td>
+        <td>Femenino</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>6789012345678</td>
+        <td>Luis</td>
+        <td>Torres Ramírez</td>
+        <td>11 calle 4-21 zona 7</td>
+        <td>78901234</td>
+        <td>Masculino</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>1111111111111</td>
+        <td>Calificacion</td>
+        <td>Fase3</td>
+        <td>8 calle 3-45 zona 1</td>
+        <td>12345678</td>
+        <td>Masculino</td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td>1234567890123</td>
+        <td>Elena</td>
+        <td>Vásquez Méndez</td>
+        <td>4 avenida 9-87 zona 8</td>
+        <td>89012345</td>
+        <td>Femenino</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td>4567890123456</td>
+        <td>Javier</td>
+        <td>Jiménez Hernández</td>
+        <td>10 calle 6-78 zona 9</td>
+        <td>90123456</td>
+        <td>Masculino</td>
+      </tr>
+      <tr>
+        <td>18</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td>5678234890123</td>
+        <td>Ana</td>
+        <td>Martínez Rodríguez</td>
+        <td>15 avenida 8-90 zona 3</td>
+        <td>45678901</td>
+        <td>Femenino</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td>7890123456789</td>
+        <td>Laura</td>
+        <td>Pérez García</td>
+        <td>5 avenida 11-43 zona 10</td>
+        <td>12345678</td>
+        <td>Femenino</td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>24</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>25</td>
+        <td>3456789012345</td>
+        <td>Sofía</td>
+        <td>Díaz López</td>
+        <td>6 avenida 7-54 zona 6</td>
+        <td>67890123</td>
+        <td>Femenino</td>
+      </tr>
+      <tr>
+        <td>26</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>27</td>
+        <td>-1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>3058050269186</td>
+        <td></td>
+      </tr>
+    </table>
+  > ]
+
+}
